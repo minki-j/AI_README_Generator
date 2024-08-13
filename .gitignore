@@ -1,0 +1,8 @@
+.env
+.venv
+.git
+.DS_Store
+__pycache__/
+
+cache/
+scratchpad.ipynb
