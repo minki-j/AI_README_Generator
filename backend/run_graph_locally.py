@@ -5,11 +5,11 @@ import os
 import re
 import subprocess
 
-from utils.github_api_call import fetch_commits
-from utils.request import github_api_request
-from utils.generate_tree import generate_tree
+from app.utils.github_api_call import fetch_commits
+from app.utils.request import github_api_request
+from app.utils.generate_tree import generate_tree
 
-from main_graph import langgraph_app
+from app.langgraph.main_graph import langgraph_app
 
 CLONE_URL = "https://github.com/minki-j/GitMeetup.git"
 

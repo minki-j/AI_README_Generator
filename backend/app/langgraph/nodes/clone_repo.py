@@ -2,7 +2,7 @@ from varname import nameof as n
 import os
 import json
 import subprocess
-from state_schema import State
+from app.langgraph.state_schema import State
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate

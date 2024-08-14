@@ -5,7 +5,7 @@ from langchain_core.runnables import ConfigurableField
 from langchain_openai import ChatOpenAI, OpenAI
 from langchain_anthropic import ChatAnthropic, Anthropic
 
-load_dotenv('.env')
+load_dotenv('.env', override=True)
 
 DEFAULT_MODEL = os.getenv("DEFAULT_MODEL")
 print(f"==>> DEFAULT_MODEL: {DEFAULT_MODEL}")

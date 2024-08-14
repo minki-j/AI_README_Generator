@@ -4,10 +4,10 @@ from difflib import SequenceMatcher
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 
-from common import chat_model
-from state_schema import State
+from app.langgraph.common import chat_model
+from app.langgraph.state_schema import State
 
-from subgraphs.retrieval.graph import subGraph_retrieval
+from app.langgraph.subgraphs.retrieval.graph import subGraph_retrieval
 from .hypothesis import generate_hypothesis
 
 # We are NOT going to use LLM here because judging whether something is enough or not is a subjective and resource-dependent task. LLMs are not suitable for this type of task.

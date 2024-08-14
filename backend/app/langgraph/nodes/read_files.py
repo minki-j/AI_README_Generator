@@ -1,5 +1,5 @@
 import os
-from state_schema import State
+from app.langgraph.state_schema import State
 import json
 
 

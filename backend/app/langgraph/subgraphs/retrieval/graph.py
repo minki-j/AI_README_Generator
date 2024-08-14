@@ -3,15 +3,17 @@ from varname import nameof as n
 from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnablePassthrough
 
-from utils.converters import to_path_map
-from state_schema import State
+from app.utils.converters import to_path_map
+from app.langgraph.state_schema import State
 
-from nodes.read_files import read_files_suggested_by_LLM
-from nodes.validate_file_path import (
+from app.langgraph.nodes.read_files import read_files_suggested_by_LLM
+from app.langgraph.nodes.validate_file_path import (
     validate_file_paths_from_LLM,
     correct_file_paths,
 )
-from nodes.retrieve_code_snippets import retrieve_code_by_hybrid_search_with_queries
+from app.langgraph.nodes.retrieve_code_snippets import (
+    retrieve_code_by_hybrid_search_with_queries,
+)
 
 g = StateGraph(State)
 g.add_node(
@@ -58,5 +60,5 @@ g.add_edge("increment_retrieval_count", END)
 subGraph_retrieval = g.compile()
 
 
-with open("./graph_diagrams/subGraph_retrieval.png", "wb") as f:
-    f.write(subGraph_retrieval.get_graph().draw_mermaid_png())
+# with open("./app/langgraph/graph_diagrams/subGraph_retrieval.png", "wb") as f:
+#     f.write(subGraph_retrieval.get_graph().draw_mermaid_png())

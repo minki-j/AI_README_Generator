@@ -1,16 +1,20 @@
 from varname import nameof as n
 
 from langgraph.graph import END, StateGraph
+from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.runnables import RunnablePassthrough
 
-from state_schema import State
-from utils.converters import to_path_map
+from app.langgraph.state_schema import State
+from app.utils.converters import to_path_map
 
-from subgraphs.retrieval.graph import subGraph_retrieval
+from app.langgraph.subgraphs.retrieval.graph import subGraph_retrieval
 
-from nodes.hypothesis import generate_hypothesis, evaluate_hypothesis
-from nodes.check import do_we_need_more_retrieval, do_we_have_enough_hypotheses
-from nodes.clone_repo import clone_repo
+from app.langgraph.nodes.hypothesis import generate_hypothesis, evaluate_hypothesis
+from app.langgraph.nodes.check import (
+    do_we_need_more_retrieval,
+    do_we_have_enough_hypotheses,
+)
+from app.langgraph.nodes.clone_repo import clone_repo
 
 g = StateGraph(State)
 g.add_node("entry", RunnablePassthrough())
@@ -56,8 +60,11 @@ g.add_conditional_edges(
     ),
 )
 
-langgraph_app = g.compile()
+main_graph = g.compile(
+    checkpointer=MemorySaver(), interrupt_before=[n(clone_repo), n(generate_hypothesis)]
+)
 
 
-with open("./graph_diagrams/main_graph.png", "wb") as f:
-    f.write(langgraph_app.get_graph().draw_mermaid_png())
+# with open("./app/langgraph/graph_diagrams/main_graph.png", "wb") as f:
+#     f.write(main_graph
+# .get_graph().draw_mermaid_png())

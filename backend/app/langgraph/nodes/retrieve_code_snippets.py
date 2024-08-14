@@ -9,9 +9,9 @@ from langchain.retrievers import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
 from langchain_community.vectorstores import FAISS
 
-from state_schema import State
+from app.langgraph.state_schema import State
 
-from utils.semantic_splitter import semantic_code_splitter
+from app.utils.semantic_splitter import semantic_code_splitter
 
 
 def retrieve_code_by_hybrid_search_with_queries(state: State):
