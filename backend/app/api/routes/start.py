@@ -15,8 +15,9 @@ def root():
 
 
 @router.post("")
-def recieve_project(clone_url: str = Form(...)):
+def recieve_project(project: dict):
     print("--- /initiate POST ---")
+    clone_url = project.get("clone_url")
     print(f"clone_url: {clone_url}")
     print("vol dir list: ", os.listdir("/vol"))
     user_name = clone_url.split("/")[-2]
