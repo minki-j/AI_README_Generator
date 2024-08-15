@@ -1,4 +1,4 @@
-# Back-end Server for WriteMeReadMe application. 
+# Back-End Server for writemereadme.com
 
 ### This server is running on Modal Labs["https://modal.com"]
 
