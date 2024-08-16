@@ -1,7 +1,7 @@
 from modal import App, Image, Volume
 from app.utils.env_converter import env_converter
 
-app = App("WriteMeReadMe_app")
+app = App("backend_ai-readme-generator")
 
 image = (
     Image.debian_slim(python_version="3.12.2")
@@ -27,4 +27,4 @@ image = (
     )
 )
 
-vol = Volume.from_name("WriteMeReadMe")
+main_vol = Volume.from_name("main")

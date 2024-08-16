@@ -4,7 +4,7 @@ FastHTML on Modal Labs
 
 To run locally:
 ```bash
-cd app/home/
+cd frontend/app/home/
 uvicorn main:app --reload
 ```
 

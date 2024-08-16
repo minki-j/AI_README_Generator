@@ -1,12 +1,9 @@
 from modal import App, Image, Volume
 
-app = App("WriteMeReadMe_app")
+app = App("frontend_ai-readme-generator")
 
-image = (
-    Image.debian_slim(python_version="3.12.2")
-    .pip_install(
-        "python_fasthtml",
-    )
+image = Image.debian_slim(python_version="3.12.2").pip_install(
+    "python_fasthtml", "requests"
 )
 
-vol = Volume.from_name("WriteMeReadMe")
+main_vol = Volume.from_name("main")

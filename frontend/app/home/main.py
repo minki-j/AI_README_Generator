@@ -6,11 +6,15 @@ import requests
 
 dotenv.load_dotenv()
 
-# print currecnt directory
-os.makedirs("static", exist_ok=True)
-print("Current directory: ", os.getcwd())
 
-app, rt = fast_app()
+# Flexbox CSS (http://flexboxgrid.com/)
+gridlink = Link(
+    rel="stylesheet",
+    href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css",
+    type="text/css",
+)
+
+app, rt = fast_app(hdrs=(picolink, gridlink))
 
 
 @rt("/")
@@ -34,7 +38,16 @@ def get():
             hx_swap="beforeend",
             target_id="middle_step",
         ),
-        Div(Img(id="loader", cls="loader", src="../static/loading.jpeg")), #! src not working
+        Div(
+            Div(
+                Img(id="loader", cls="box loader", src="/img/loading.jpeg"),
+                P(
+                    "Loading...", cls="",
+                ),
+                cls="col-xs-6",
+            ),
+            cls="row center-xs",
+        ),
         Div(id="middle_step"),
         cls="container",
     )

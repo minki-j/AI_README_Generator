@@ -2,7 +2,8 @@
 .venv
 .git
 .DS_Store
+.sesskey
 __pycache__/
 
 cache/
-scratchpad.ipynb
+scatch_pad.ipynb
