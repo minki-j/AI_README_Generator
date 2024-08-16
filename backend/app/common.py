@@ -5,7 +5,7 @@ app = App("backend_ai-readme-generator")
 
 image = (
     Image.debian_slim(python_version="3.12.2")
-    .apt_install("graphviz", "libgraphviz-dev")
+    .apt_install("graphviz", "libgraphviz-dev", "git")
     .pip_install(
         "langchain",
         "langchain_core",
@@ -24,6 +24,9 @@ image = (
         "Requests",
         "psycopg2_binary",
         "pydantic==1.10.2",
+        "pipreqs",
+        "faiss-cpu",
+        "rank_bm25",
     )
 )
 

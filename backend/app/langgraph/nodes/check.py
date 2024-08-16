@@ -22,7 +22,7 @@ def do_we_need_more_retrieval(state: State):
         if SequenceMatcher(None, modified_hypotheses, original_hypothesis).ratio() > 0.8:
             return "put_candidate_as_final_hypothesis"
         
-    if state["retrieval_count"] >= 3:
+    if state["retrieval_count"] >= 1:
         return "put_candidate_as_final_hypothesis"
     else:
         return n(subGraph_retrieval)

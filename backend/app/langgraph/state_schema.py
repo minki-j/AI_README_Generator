@@ -22,6 +22,7 @@ class State(TypedDict):
         return attribute_instance + "\n\n" + new_result
 
     title: str
+    cache_dir: str
     repo_root_path: str
     repo_description_by_user: str
     directory_tree: str

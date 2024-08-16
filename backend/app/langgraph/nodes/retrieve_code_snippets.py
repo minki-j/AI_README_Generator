@@ -16,35 +16,37 @@ from app.utils.semantic_splitter import semantic_code_splitter
 
 def retrieve_code_by_hybrid_search_with_queries(state: State):
     print("Retrieving code snippets for ", state["title"])
+    cache_dir = state["cache_dir"]
     hypothesis_dict = state["candidate_hypothesis"]
     queries = hypothesis_dict["queries"][:3]  #! only use top 3 queries for now
-    if os.path.exists(f"./cache/documents/{state['title']}.pkl") and os.path.exists(
-        f"./cache/faiss_vectorstore/{state['title']}"
+
+    if os.path.exists(f"{cache_dir}/documents/{state['title']}.pkl") and os.path.exists(
+        f"{cache_dir}/faiss_vectorstore/{state['title']}"
     ):
         print("Loading cached documents and embeddings")
-        with open(f"./cache/documents/{state['title']}.pkl", "rb") as f:
+        with open(f"{cache_dir}/documents/{state['title']}.pkl", "rb") as f:
             documents = pickle.load(f)
         embedding = OpenAIEmbeddings(model="text-embedding-3-large")
         faiss_vectorstore = FAISS.load_local(
-            f"./cache/faiss_vectorstore/{state['title']}",
+            f"{cache_dir}/faiss_vectorstore/{state['title']}",
             embedding,
             allow_dangerous_deserialization=True,
         )
     else:
         print("Embedidngs does not exist")
-        print(f"./cache/documents/{state['title']}.pkl")
-        print(f"./cache/faiss_vectorstore/{state['title']}")
+        print(f"{cache_dir}/documents/{state['title']}.pkl")
+        print(f"{cache_dir}/faiss_vectorstore/{state['title']}")
         documents = semantic_code_splitter(state["repo_root_path"])
 
-        os.makedirs("./cache/documents", exist_ok=True)
-        with open(f"./cache/documents/{state['title']}.pkl", "wb") as f:
+        os.makedirs(f"{cache_dir}/documents", exist_ok=True)
+        with open(f"{cache_dir}/documents/{state['title']}.pkl", "wb") as f:
             pickle.dump(documents, f)
 
         print(f"Creating FAISS vectorstore for {len(documents)} documents")
         embedding = OpenAIEmbeddings(model="text-embedding-3-large")
         faiss_vectorstore = FAISS.from_documents(documents, embedding)
 
-        faiss_vectorstore.save_local(f"./cache/faiss_vectorstore/{state['title']}")
+        faiss_vectorstore.save_local(f"{cache_dir}/faiss_vectorstore/{state['title']}")
 
     bm25_retriever = BM25Retriever.from_documents(documents)
     bm25_retriever.k = 2

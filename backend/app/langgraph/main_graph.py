@@ -44,7 +44,10 @@ g.add_conditional_edges(
 
 g.add_node(
     "put_candidate_as_final_hypothesis",
-    lambda state: {"final_hypotheses": [state["candidate_hypothesis"]], "hypothesis_count": state["hypothesis_count"] + 1},
+    lambda state: {
+        "final_hypotheses": [state["candidate_hypothesis"]],
+        "hypothesis_count": state["hypothesis_count"] + 1,
+    },
 )
 g.add_edge("put_candidate_as_final_hypothesis", n(do_we_have_enough_hypotheses))
 
@@ -61,7 +64,7 @@ g.add_conditional_edges(
 )
 
 main_graph = g.compile(
-    checkpointer=MemorySaver(), interrupt_before=[n(clone_repo), n(generate_hypothesis)]
+    checkpointer=MemorySaver(), interrupt_after=[n(do_we_have_enough_hypotheses)]
 )
 
 

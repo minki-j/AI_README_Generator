@@ -4,39 +4,48 @@ from fastapi import APIRouter, Form
 
 from app.langgraph.main_graph import main_graph
 from ..common import THREAD
+from app.feedback_scenario.middle_step_list import middle_step_list
+from app.utils.get_repo_info import get_repo_info
 
 router = APIRouter()
 
 
 @router.get("")
 def root():
-    print("--- / GET ---")
+    print("--- /start POST ---")
     return {"message": "/recieveProject route working fine"}
 
 
 @router.post("")
 def recieve_project(project: dict):
-    print("--- /initiate POST ---")
+    print("--- /start POST ---")
+
     clone_url = project.get("clone_url")
-    print(f"clone_url: {clone_url}")
-    print("vol dir list: ", os.listdir("/vol"))
-    user_name = clone_url.split("/")[-2]
-    print(f"user_name: {user_name}")
-    title = clone_url.split("/")[-1]
-    print(f"title: {title}")
 
     # create directory for user and the project
-    project_dir = f"/vol/{user_name}/{title}"
-    os.makedirs(project_dir, exist_ok=True)
-    print(f"project_dir: {project_dir}")
+    cache_dir = f"/vol/cache"
+    os.makedirs(cache_dir, exist_ok=True)
+
+    repo_info = get_repo_info(clone_url, cache_dir)
+    print(f"==>> repo_info: {repo_info}")
 
     res = main_graph.invoke(
         {
-            "clone_url": clone_url,
+            **repo_info,
+            "cache_dir": cache_dir,
+            "steps": [],
+            "analysis_results": [],
+            "final_hypotheses": [],
+            "validate_count": 0,
+            "retrieval_count": 0,
+            "hypothesis_count": 0,
         },
         THREAD,
     )
 
-    print("res: ", res)
+    llm_output = res.get("final_hypotheses", [])[0]["hypothesis"]
 
-    return {"message": "recieveProject route working fine"}
+    return {
+        "next_step": middle_step_list[0]["feedback_question"],
+        "llm_output": llm_output,
+    }
