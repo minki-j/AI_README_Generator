@@ -45,7 +45,7 @@ def get():
     return Title("AI README Generator"), Main(
         Titled("AI README Generator"),
         P(
-            "Having trouble writing a killer README? 😩 No worries, I’ve got your back! 💪 Share your project with me, and together we’ll create a README that stands out. ✍️🚀 Let’s get started!",
+            "Having trouble writing a killer README? No worries, I’ve got your back! 💪 Share your project with me, and together we’ll create a README that stands out. 🚀 Let’s get started!",
             cls="",
         ),
         Form(
@@ -87,8 +87,10 @@ def return_confirmation_box(next_step, llm_output):
             P(next_step),
             Form(
                 Div(
-                    Input(name="llm_output", value=llm_output),
-                    Input(name="user_feedback", placeholder="Enter your feedback here"),
+                    Textarea(llm_output, name="llm_output", rows="15"),
+                    Textarea(
+                        name="user_feedback", placeholder="Enter your feedback here"
+                    ),
                     Group(
                         Button("Send", type="submit", cls="outline col-xs-6"),
                         Button("Retry", cls="outline col-xs-6", hx_get="/retry"),
@@ -120,14 +122,16 @@ def post(clone_url: str):
     print("Request url: ", url)
 
     r = requests.post(url, json={"clone_url": clone_url})
-    print(f"==>> r: {r}")
-    next_step = "Step 2: Analyzing the repository"
-    llm_output = "Analyzing the repository..."
+
+    r_data = r.json()
 
     if r.status_code != 200:
         confirmation_box = P("Error: Something went wrong. Please try again later.")
     else:
-        confirmation_box = return_confirmation_box(next_step, llm_output)
+        print("llm_output: ", r_data["llm_output"])
+        confirmation_box = return_confirmation_box(
+            r_data["next_step"], r_data["llm_output"]
+        )
 
     return (
         Input(
@@ -152,11 +156,10 @@ def post(
     r = requests.post(
         url, json={"user_feedback": user_feedback, "llm_output": llm_output}
     )
-    print(f"==>> r: {r}")
-    next_step = "Step 2: Analyzing the repository"
-    llm_output = "Analyzing the repository..."
 
-    return return_confirmation_box(next_step, llm_output)
+    r_data = r.json()
+
+    return return_confirmation_box(r_data["next_step"], r_data["llm_output"])
 
 
 @rt("/retry")

@@ -6,20 +6,21 @@ from langchain_core.runnables import RunnablePassthrough
 from app.utils.converters import to_path_map
 from app.langgraph.state_schema import State
 
-from app.langgraph.nodes.read_files import read_files_suggested_by_LLM
-from app.langgraph.nodes.validate_file_path import (
+from .read_files import read_files_suggested_by_LLM
+from .validate_file_path import (
     validate_file_paths_from_LLM,
     correct_file_paths,
 )
-from app.langgraph.nodes.retrieve_code_snippets import (
+from .retrieve_code_snippets import (
     retrieve_code_by_hybrid_search_with_queries,
 )
 
 g = StateGraph(State)
+g.set_entry_point("entry")
+
 g.add_node(
     "entry", lambda state: {"retrieved_code_snippets": "RESET", "valid_paths": "RESET"}
 )
-g.set_entry_point("entry")
 g.add_edge("entry", n(retrieve_code_by_hybrid_search_with_queries))
 g.add_edge("entry", n(validate_file_paths_from_LLM))
 

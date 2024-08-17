@@ -14,6 +14,7 @@ from app.home.main import app as web_app
         Secret.from_name("my-github-secret"),
         Secret.from_name("my-langsmith-secret"),
         Secret.from_name("my-custom-secret"),
+        Secret.from_name("backend_base_url"),
     ],
     volumes={"/vol": main_vol},
     timeout=600,  # 10 minutes

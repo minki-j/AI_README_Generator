@@ -1,5 +1,4 @@
 from modal import App, Image, Volume
-from app.utils.env_converter import env_converter
 
 app = App("backend_ai-readme-generator")
 

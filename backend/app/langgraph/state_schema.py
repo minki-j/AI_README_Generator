@@ -36,12 +36,9 @@ class State(TypedDict):
     corrected_paths: List[str] = []
     validate_count: int = 0
 
-    candidate_hypothesis: dict
-    analysis_results: Annotated[List[dict], merge_lists] = []
-    final_hypotheses: Annotated[List[dict], merge_lists] = []
-
     retrieved_code_snippets: Annotated[str, concat_strings] = ""
     opened_files: Annotated[List[str], merge_lists] = []
     retrieval_count: int = 0
 
-    hypothesis_count: int = 0
+    shorterm_memory: str = ""
+    user_feedback: str = ""

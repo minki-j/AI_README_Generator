@@ -13,11 +13,10 @@ from app.langgraph.main_graph import main_graph
 from app.utils.get_repo_info import get_repo_info
 
 
-
 CLONE_URL = "https://github.com/minki-j/GitMeetup.git"
 
 repo_info = get_repo_info(clone_url=CLONE_URL, cache_dir="./cache")
-
+config = {"configurable": {"thread_id": "2"}, "recursion_limit": 100}
 result = main_graph.invoke(
     {
         **repo_info,
@@ -29,14 +28,18 @@ result = main_graph.invoke(
         "retrieval_count": 0,
         "hypothesis_count": 0,
     },
-    {"configurable": {"thread_id": "2"}, "recursion_limit": 100}
+    config,
 )
 
-os.makedirs("./cache/results", exist_ok=True)
-with open(f"./cache/results/{repo_info["title"]}.txt", "w") as f:
-    f.write(f"LLM's analysis of {repo_info['title']}\nRepo URL: {repo_info['clone_url']}\n\n\n")
-    f.write(
-        "\n\n-----------\n\n".join(
-            [x["hypothesis"] for x in result["final_hypotheses"]]
-        )
-    )
+user_feedback = input("Enter a feedback:")
+for state in main_graph.get_state_history(config):
+    last_state = state
+    break
+
+main_graph.update_state(
+    last_state.config, {**last_state.values, "user_feedback": user_feedback}
+)
+result = main_graph.invoke(
+    None, {"configurable": {"thread_id": "2"}, "recursion_limit": 100}
+)
+print(result)

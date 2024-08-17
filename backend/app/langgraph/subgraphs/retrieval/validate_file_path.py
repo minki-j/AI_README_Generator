@@ -15,8 +15,7 @@ def validate_file_paths_from_LLM(state: State):
         # If this node is recursively called, use corrected paths from correct_file_paths node
         full_paths = state["corrected_paths"]
     else:
-        hypothesis_dict = state["candidate_hypothesis"]
-        file_paths = hypothesis_dict["files_to_open"]
+        file_paths = [] #TODO: update this with middle_step subgraph
         if len(file_paths) == 0:
             print("No file paths to validate")
             return {
