@@ -10,4 +10,4 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 
 def generate_queries(state: State):
     print("==>> generate_queries node started")
-    return {"shorterm_memory": "generate_queries node finished"}
+    return {"shortterm_memory": ["generate_queries node finished"]}

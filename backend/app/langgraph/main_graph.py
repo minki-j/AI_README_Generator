@@ -20,9 +20,16 @@ g.add_node(n(subGraph_middle_step), subGraph_middle_step)
 g.add_edge(n(subGraph_middle_step), n(subGraph_generate_readme))
 
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
-g.add_edge(n(subGraph_middle_step), END)
+g.add_conditional_edges(
+    n(subGraph_middle_step),
+    lambda state: (
+        n(subGraph_middle_step) if len(state["shortterm_memory"]) < 3 else END
+    ),
+)
 
-main_graph = g.compile(checkpointer=MemorySaver(), interrupt_after=[n(subGraph_middle_step)])
+main_graph = g.compile(
+    checkpointer=MemorySaver(), interrupt_after=[n(subGraph_middle_step)]
+)
 
 
 # with open("./app/langgraph/graph_diagrams/main_graph.png", "wb") as f:

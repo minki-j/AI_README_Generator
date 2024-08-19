@@ -11,5 +11,5 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 def answer_middle_step_question(state: State) -> State:
 
     return {
-        "shorterm_memory": "answer_middle_step_question node finished",
+        "shorterm_memory": ["answer_middle_step_question node finished"],
     }

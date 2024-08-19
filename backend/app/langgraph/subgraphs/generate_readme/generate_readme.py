@@ -25,4 +25,4 @@ class Readme(BaseModel):
 
 
 def generate_readme(state: State):
-    return {"shorterm_memory": "generate_readme node finished"}
+    return {"shortterm_memory": ["generate_readme node finished"]}

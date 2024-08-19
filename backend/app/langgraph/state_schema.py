@@ -40,5 +40,5 @@ class State(TypedDict):
     opened_files: Annotated[List[str], merge_lists] = []
     retrieval_count: int = 0
 
-    shorterm_memory: str = ""
+    shortterm_memory: Annotated[List[str], merge_lists] = []
     user_feedback: str = ""
