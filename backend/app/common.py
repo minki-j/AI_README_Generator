@@ -26,6 +26,9 @@ image = (
         "pipreqs",
         "faiss-cpu",
         "rank_bm25",
+        "RAGatouille",
+        "tree-sitter<0.22.0",
+        "tree_sitter_languages",
     )
 )
 

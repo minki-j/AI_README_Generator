@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from fastapi import Body
+from fastapi import Body, Form
 
 from app.langgraph.main_graph import main_graph
 from ..common import THREAD
-from app.feedback_scenario.middle_step_list import middle_step_list
+from app.data.middle_step_list import middle_step_list
 
 router = APIRouter()
 
@@ -14,12 +14,14 @@ def root():
 
 
 @router.post("")
-def middle_steps(user_feedback: str = Body(...), llm_output: str = Body(...)):
+def middle_steps(user_feedback: str = Form(...)):
     print("--- /middleSteps POST ---")
-    
-    # res = main_graph.invoke(None, THREAD)
-    # print(f"==>> res: {res}")
-    
+    print(f"==>> user_feedback: {user_feedback}")
+
+    main_graph.update_state(THREAD, user_feedback)
+    res = main_graph.invoke(None, THREAD)
+    print(f"==>> res: {res}")
+
     step_number = 1
     llm_output = "Analyzing the repository..."
 

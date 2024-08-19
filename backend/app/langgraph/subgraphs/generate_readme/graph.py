@@ -20,5 +20,5 @@ g.add_edge(n(generate_readme), END)
 subGraph_generate_readme = g.compile()
 
 
-# with open("./app/langgraph/graph_diagrams/subGraph_retrieval.png", "wb") as f:
-#     f.write(subGraph_retrieval.get_graph().draw_mermaid_png())
+with open("./app/langgraph/graph_diagrams/generate_readme.png", "wb") as f:
+    f.write(subGraph_generate_readme.get_graph().draw_mermaid_png())

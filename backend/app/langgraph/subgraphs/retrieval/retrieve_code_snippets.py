@@ -2,6 +2,7 @@ import os
 import json
 import pickle
 from varname import nameof as n
+from pathlib import Path
 
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai.embeddings import OpenAIEmbeddings
@@ -9,66 +10,64 @@ from langchain.retrievers import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
 from langchain_community.vectorstores import FAISS
 
+from ragatouille import RAGPretrainedModel
+
 from app.langgraph.state_schema import State
 
-from app.utils.semantic_splitter import semantic_code_splitter
+from .chunking import chunk_with_AST_parser
+from .colbert import index_documents_with_colbert
 
 
 def retrieve_code_by_hybrid_search_with_queries(state: State):
     print("Retrieving code snippets for ", state["title"])
     cache_dir = state["cache_dir"]
-    hypothesis_dict = state["candidate_hypothesis"]
-    queries = hypothesis_dict["queries"][:3]  #! only use top 3 queries for now
+    queries = state["middle_step"]["queries"]
+    root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
 
-    if os.path.exists(f"{cache_dir}/documents/{state['title']}.pkl") and os.path.exists(
-        f"{cache_dir}/faiss_vectorstore/{state['title']}"
-    ):
+    doc_path = f"{cache_dir}/{state['title']}/documents.pkl"
+    index_path = f"{cache_dir}/colbert/indexes/{state['title']}"
+
+    if os.path.exists(doc_path) and os.path.exists(index_path):
         print("Loading cached documents and embeddings")
-        with open(f"{cache_dir}/documents/{state['title']}.pkl", "rb") as f:
+        with open(doc_path, "rb") as f:
             documents = pickle.load(f)
-        embedding = OpenAIEmbeddings(model="text-embedding-3-large")
-        faiss_vectorstore = FAISS.load_local(
-            f"{cache_dir}/faiss_vectorstore/{state['title']}",
-            embedding,
-            allow_dangerous_deserialization=True,
-        )
+
     else:
         print("Embedidngs does not exist")
-        print(f"{cache_dir}/documents/{state['title']}.pkl")
-        print(f"{cache_dir}/faiss_vectorstore/{state['title']}")
-        documents = semantic_code_splitter(state["repo_root_path"])
+        os.makedirs(f"{cache_dir}/{state['title']}", exist_ok=True)
 
-        os.makedirs(f"{cache_dir}/documents", exist_ok=True)
-        with open(f"{cache_dir}/documents/{state['title']}.pkl", "wb") as f:
+        documents = chunk_with_AST_parser(root_path, language="python")
+        if not documents:
+            print("No documents found")
+            raise ValueError("No documents found")
+
+        with open(doc_path, "wb") as f:
             pickle.dump(documents, f)
 
-        print(f"Creating FAISS vectorstore for {len(documents)} documents")
-        embedding = OpenAIEmbeddings(model="text-embedding-3-large")
-        faiss_vectorstore = FAISS.from_documents(documents, embedding)
+        index_documents_with_colbert(documents, cache_dir, state["title"])
 
-        faiss_vectorstore.save_local(f"{cache_dir}/faiss_vectorstore/{state['title']}")
+    RAG = RAGPretrainedModel.from_index(index_path)
 
-    bm25_retriever = BM25Retriever.from_documents(documents)
-    bm25_retriever.k = 2
-
-    faiss_retriever = faiss_vectorstore.as_retriever(search_kwargs={"k": 2})
-
-    ensemble_retriever = EnsembleRetriever(
-        retrievers=[bm25_retriever, faiss_retriever], weights=[0.5, 0.5]
-    )
     retrieved_code_snippets = []
-    for query in queries: #TODO parallelize this
-        result = ensemble_retriever.invoke(query)
-        retrieved_code_snippets.extend(result)
+    for query in queries:  # TODO parallelize this
+        print(f"--------Searching for query: {query}")
+        results = RAG.search(
+            query,
+            k=5,
+        )
+        retrieved_code_snippets.extend([result["content"] for result in results])
 
-    print(f"Retrieved {len(retrieved_code_snippets)} code snippets (hybrid search)")
+    print(f"Retrieved {len(retrieved_code_snippets)} code snippets")
 
-    formatted_snippets = [
-        f"{document.metadata['source']}:\n{document.page_content}"
-        for document in retrieved_code_snippets
-    ]
+    # TODO: RAGatouille doesn't add metatdata to the documents so we need to add it manually
+    # formatted_snippets = [
+    #     f"{document.metadata["source"]}:\n{document.page_content}"
+    #     for document in retrieved_code_snippets
+    # ]
 
     return {
-        "retrieved_code_snippets": "\n\n------------\n\n".join(formatted_snippets),
-        "opened_files": [document.metadata["source"] for document in retrieved_code_snippets],
+        "retrieved_chunks": retrieved_code_snippets,
+        # "opened_files": [
+        #     document.metadata["source"] for document in retrieved_code_snippets
+        # ],
     }

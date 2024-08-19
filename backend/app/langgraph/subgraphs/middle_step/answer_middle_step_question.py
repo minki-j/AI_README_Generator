@@ -9,7 +9,12 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 
 
 def answer_middle_step_question(state: State) -> State:
-
+    middle_step = state["middle_step"]
     return {
-        "shorterm_memory": ["answer_middle_step_question node finished"],
+        "answered_middle_steps": [
+            {
+                **middle_step,
+                "answer": "Placeholder",
+            }
+        ]
     }

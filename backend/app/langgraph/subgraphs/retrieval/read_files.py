@@ -35,7 +35,7 @@ def read_files_suggested_by_LLM(state: State):
             f"{path}:\n\n{content}" for path, content in opened_files.items()
         ]
     return {
-        "retrieved_code_snippets": "",
-        # "retrieved_code_snippets": "\n\n------------\n\n".join(formatted_snippets),
+        "retrieved_chunks": "",
+        # "retrieved_chunks": "\n\n------------\n\n".join(formatted_snippets),
         "opened_files": valid_paths,
     }

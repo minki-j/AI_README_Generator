@@ -27,8 +27,8 @@ g.add_edge(n(subGraph_retrieval), n(answer_middle_step_question))
 g.add_node(n(answer_middle_step_question), answer_middle_step_question)
 g.add_edge(n(answer_middle_step_question), END)
 
-subGraph_middle_step = g.compile(checkpointer=MemorySaver(), interrupt_after=[n(generate_queries)])
+subGraph_middle_step = g.compile()
 
 
-# with open("./app/langgraph/graph_diagrams/subGraph_retrieval.png", "wb") as f:
-#     f.write(subGraph_retrieval.get_graph().draw_mermaid_png())
+with open("./app/langgraph/graph_diagrams/subGraph_middle_step.png", "wb") as f:
+    f.write(subGraph_middle_step.get_graph().draw_mermaid_png())

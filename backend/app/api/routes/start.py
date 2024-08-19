@@ -4,7 +4,7 @@ from fastapi import APIRouter, Form
 
 from app.langgraph.main_graph import main_graph
 from ..common import THREAD
-from app.feedback_scenario.middle_step_list import middle_step_list
+from app.data.middle_step_list import middle_step_list
 from app.utils.get_repo_info import get_repo_info
 
 router = APIRouter()
@@ -30,22 +30,18 @@ def recieve_project(project: dict):
     print(f"==>> repo_info: {repo_info}")
 
     res = main_graph.invoke(
-        {
-            **repo_info,
-            "cache_dir": cache_dir,
-            "steps": [],
-            "analysis_results": [],
-            "final_hypotheses": [],
-            "validate_count": 0,
-            "retrieval_count": 0,
-            "hypothesis_count": 0,
-        },
+        repo_info,
         THREAD,
     )
 
-    llm_output = res.get("final_hypotheses", [])[0]["hypothesis"]
+    middle_steps = res.get("middle_steps", None)
+    retrieved_chunks = res.get("retrieved_chunks", None)
 
-    return {
-        "next_step": middle_step_list[0]["feedback_question"],
-        "llm_output": llm_output,
-    }
+    if not middle_steps:
+        return {"next_step": "No final hypothesis found", "llm_output": ""}
+    else:
+        return {
+            "next_step": middle_step_list[0]["feedback_question"],
+            "llm_output": middle_steps[-1]["answer"],
+            "retrieved_chunks": retrieved_chunks,
+        }

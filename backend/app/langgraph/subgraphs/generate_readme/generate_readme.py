@@ -19,10 +19,5 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import List
 
 
-class Readme(BaseModel):
-    """This is a Hypothesis of the repository. You must follow the order below when generating the properties
-    1. rationale 2. hypothesis 3.queries_for_code_retrieval 4.files_to_open"""
-
-
 def generate_readme(state: State):
-    return {"shortterm_memory": ["generate_readme node finished"]}
+    return {"generated_readme": "placeholder"}

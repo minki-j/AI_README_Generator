@@ -12,9 +12,7 @@ def get_repo_info(clone_url, cache_dir):
     repo_info["clone_url"] = clone_url
     repo_info["user"] = clone_url.split("/")[-2]
     repo_info["title"] = clone_url.split("/")[-1].replace(".git", "")
-    repo_info["repo_root_path"] = (
-        f"{cache_dir}/cloned_repositories/{repo_info['title']}/"
-    )
+    repo_info["cache_dir"] = cache_dir
 
     # get the directory tree
     commits, _, _, _, _ = fetch_commits(
