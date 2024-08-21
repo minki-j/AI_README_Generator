@@ -23,21 +23,25 @@ g.add_node(
 g.add_edge("entry", n(subGraph_middle_step))
 
 g.add_node(n(subGraph_middle_step), subGraph_middle_step)
-g.add_edge(n(subGraph_middle_step), "reduce_middle_step")
+g.add_edge(n(subGraph_middle_step), "increment_step")
 
 g.add_node(
-    "reduce_middle_step", lambda state: {"current_step": state["current_step"] + 1}
+    "increment_step", lambda state: {"current_step": state["current_step"] + 1}
 )
 g.add_conditional_edges(
-    "reduce_middle_step",
+    "increment_step",
     lambda state: (
         n(subGraph_generate_readme)
         if state["current_step"] >= state["total_number_of_steps"]
         else "human_in_the_loop"
     ),
+    to_path_map(
+        [n(subGraph_generate_readme),
+         "human_in_the_loop"]
+    ),
 )
 
-g.add_node("human_in_the_loop", lambda state: print(f"Human feedback: {state["user_feedback"]}"))
+g.add_node("human_in_the_loop", lambda state: print(f"Got feedback from the user: {state["user_feedback_list"]}"))
 g.add_edge("human_in_the_loop", n(subGraph_middle_step))
 
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)

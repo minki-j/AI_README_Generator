@@ -33,7 +33,7 @@ for i in range(len(middle_step_list) - 1):
     main_graph.update_state(
         config,
         {
-            "user_feedback": user_feedback,
+            "user_feedback_list": [user_feedback],  # Must be a list
             "middle_step": middle_step_list[i + 1],
         },
     )

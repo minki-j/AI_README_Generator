@@ -73,7 +73,7 @@ def get_repo_info(clone_url, cache_dir):
         requirements = f.read().splitlines()
 
     requirements = [re.sub(r"==.*", "", requirement) for requirement in requirements]
-    print(f"python packages: {requirements}")
+
 
     repo_info["packages_used"] = ", ".join(requirements)
 

@@ -9,17 +9,14 @@ from app.langgraph.state_schema import State
 
 from app.langgraph.subgraphs.retrieval.graph import subGraph_retrieval
 
-from .generate_queries import generate_queries
+
 from .answer_middle_step_question import answer_middle_step_question
 
 g = StateGraph(State)
 g.set_entry_point("entry")
 
 g.add_node("entry", RunnablePassthrough())
-g.add_edge("entry", n(generate_queries))
-
-g.add_node(n(generate_queries), generate_queries)
-g.add_edge(n(generate_queries), n(subGraph_retrieval))
+g.add_edge("entry", n(subGraph_retrieval))
 
 g.add_node(n(subGraph_retrieval), subGraph_retrieval)
 g.add_edge(n(subGraph_retrieval), n(answer_middle_step_question))

@@ -1,13 +1,13 @@
 middle_step_list = [
     {
-        "prompt": "Step1 What is the entry point of the codebase?",
+        "prompt": "What is the entry point of the codebase?",
         "queries": ["Entry point of the codebase", "How to run the codebase"],
-        "feedback_question": "Is this the entry point of your project?",
+        "feedback_question": "Step 1 Is this the entry point of your project?",
     },
     {
-        "prompt": "Step2 Write the summary of this repository in 200 words or less.",
+        "prompt": "Write the summary of this repository in 200 words or less.",
         "queries": ["Summary of the repository", "What is this repository about?"],
-        "feedback_question": "Does this summary look good to you?",
+        "feedback_question": "Step 2 Does this summary look good to you?",
     },
     {
         "prompt": "List what technologies are used in this repository",

@@ -27,21 +27,24 @@ def recieve_project(project: dict):
     os.makedirs(cache_dir, exist_ok=True)
 
     repo_info = get_repo_info(clone_url, cache_dir)
-    print(f"==>> repo_info: {repo_info}")
-
+    initial_state = {
+        **repo_info,
+        "middle_step": middle_step_list[0],
+    }
+    print("initial_state: ", initial_state)
     res = main_graph.invoke(
-        repo_info,
+        initial_state,
         THREAD,
     )
 
-    middle_steps = res.get("middle_steps", None)
+    answered_middle_steps = res.get("answered_middle_steps", None)
     retrieved_chunks = res.get("retrieved_chunks", None)
 
-    if not middle_steps:
-        return {"next_step": "No final hypothesis found", "llm_output": ""}
+    if not answered_middle_steps:
+        return {"feedback_question": "No final hypothesis found", "answer": ""}
     else:
         return {
-            "next_step": middle_step_list[0]["feedback_question"],
-            "llm_output": middle_steps[-1]["answer"],
+            "feedback_question": answered_middle_steps[-1]["feedback_question"],
+            "answer": answered_middle_steps[-1]["answer"],
             "retrieved_chunks": retrieved_chunks,
         }

@@ -2,7 +2,7 @@ import modal
 from modal import asgi_app, Secret
 
 from app.common import app, image, main_vol
-from app.home.main import app as web_app
+from app.fasthtml_app import app as web_app
 
 
 @app.function(
