@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from fastapi import Body, Form
+from fastapi import Body, Form, Query
 
 from app.langgraph.main_graph import main_graph
 from ..common import THREAD
@@ -14,11 +14,12 @@ def root():
 
 
 @router.post("")
-def middle_steps(user_feedback: str = Form(...)):
+def middle_steps(id: str = Query(...),user_feedback: str = Form(...)):
     print("--- /middleSteps POST ---")
     print(f"==>> user_feedback: {user_feedback}")
+    print(f"==>> id: {id}")
 
-    main_graph.update_state(THREAD, user_feedback)
+    main_graph.update_state(THREAD, {"user_feedback": user_feedback})
     res = main_graph.invoke(None, THREAD)
     print(f"==>> res: {res}")
 

@@ -4,6 +4,8 @@
 
 To run the server locally:
 ```bash
+uvicorn app.main:web_app --reload --port 8001
+or
 modal serve app.main
 ```
 
@@ -19,3 +21,10 @@ python run_graph_locally.py
 
 
 When new packages are added, you need to add that in the image method .pip_install() of the file app/common.py
+
+
+
+
+
+
+

@@ -1,9 +1,16 @@
-import modal 
-from modal import asgi_app, Secret
+import modal
+from modal import App, Image, Volume, asgi_app, Secret
 
-from app.common import app, image, main_vol
 from app.fasthtml_app import app as web_app
 
+app = App("frontend_ai-readme-generator")
+
+image = Image.debian_slim(python_version="3.12.2").pip_install(
+    "python_fasthtml",
+    "requests",
+)
+
+main_vol = Volume.from_name("main")
 
 @app.function(
     image=image,
