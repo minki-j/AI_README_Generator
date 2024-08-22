@@ -7,13 +7,13 @@ from app.langgraph.common import chat_model
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 
+
 class Answer(BaseModel):
     ratoionale: str = Field(
         description="Think out loud and step by step to answer the question"
     )
-    answer: str = Field(
-        description="The answer to the question"
-    )
+    answer: str = Field(description="The answer to the question")
+
 
 def answer_middle_step_question(state: State) -> State:
     print("==>> answer_middle_step_question node started")

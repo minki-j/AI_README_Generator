@@ -20,6 +20,7 @@ from .colbert import index_documents_with_colbert
 
 def retrieve_code_by_hybrid_search_with_queries(state: State):
     print("Retrieving code snippets for ", state["title"])
+
     cache_dir = state["cache_dir"]
     queries = state["middle_step"]["queries"]
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])

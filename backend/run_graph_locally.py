@@ -8,7 +8,7 @@ from app.utils.get_repo_info import get_repo_info
 
 from app.data.middle_step_list import middle_step_list
 
-CLONE_URL = "https://github.com/minki-j/GitMeetup.git"
+CLONE_URL = "https://github.com/minki-j/AI_README_Generator.git"
 
 current_dir = os.getcwd()
 repo_info = get_repo_info(clone_url=CLONE_URL, cache_dir=f"{current_dir}/cache")

@@ -1,6 +1,15 @@
 from fasthtml.common import *
 
-def return_confirmation_box(feedback_question, answer, retrieved_chunks):
+
+def Step(
+    feedback_question,
+    answer,
+    retrieved_chunks,
+    project_id,
+    next_step
+):
+    """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
+
     return Div(
         Div(
             Titled("Let's write a README together!"),
@@ -8,7 +17,10 @@ def return_confirmation_box(feedback_question, answer, retrieved_chunks):
             Form(
                 Div(
                     Textarea(answer, name="answer", rows="15"),
-                    *[Code(chunk) for chunk in retrieved_chunks],
+                    Div(
+                        *[Code(chunk) for chunk in retrieved_chunks],
+                        cls="container",
+                    ),
                     Textarea(
                         name="user_feedback", placeholder="Enter your feedback here"
                     ),
@@ -19,9 +31,10 @@ def return_confirmation_box(feedback_question, answer, retrieved_chunks):
                     ),
                     cls="row around-xs",
                 ),
-                hx_post="/middle_steps",
+                post=uri("step_handler", project_id=project_id, step=next_step),
                 hx_swap="outerHTML",
-                target_id="middle_step",
+                hx_target="#step",
+                hx_replace_url="true",
             ),
             cls="container bordered-container",
         ),
