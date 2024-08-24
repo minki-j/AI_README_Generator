@@ -1,9 +1,9 @@
 import modal
 from modal import App, Image, Volume, asgi_app, Secret
 
-from fasthtml_app import app as web_app
+from app.fasthtml_app import app as web_app
 
-app = App("ai-readme-generator(fully SSR)")
+app = App("ai-readme-generator")
 
 image = (
     Image.debian_slim(python_version="3.12.2")
@@ -54,5 +54,5 @@ main_vol = Volume.from_name("main")
     container_idle_timeout=600,
 )
 @asgi_app()
-def fastapi_asgi():
+def fasthtml_asgi():
     return web_app

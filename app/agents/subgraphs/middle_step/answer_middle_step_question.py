@@ -6,6 +6,7 @@ from app.agents.state_schema import State
 from app.agents.common import chat_model
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+from app.global_vars import SKIP_LLM_CALLINGS
 
 
 class Answer(BaseModel):
@@ -33,6 +34,17 @@ Based on the retrieved code snippets, answer the following question.
     )
 
     chain = prompt | chat_model.with_structured_output(Answer)
+
+    if SKIP_LLM_CALLINGS:
+        print("DEBUG MODE. SKIP answer_middle_step_question")
+        return {
+            "answered_middle_steps": [
+                {
+                    **middle_step,
+                    "answer": "DEBUG MODE",
+                }
+            ]
+        }
 
     response = chain.invoke(
         {

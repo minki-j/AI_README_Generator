@@ -1,1 +1,3 @@
-DEBUG = True
+DEBUG = False
+SKIP_COLBERT = False
+SKIP_LLM_CALLINGS = False

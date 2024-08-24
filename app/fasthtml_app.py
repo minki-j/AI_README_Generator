@@ -19,7 +19,7 @@ beforeware = Beforeware(
     skip=[r"/favicon\.ico", r"/static/.*", r".*\.css", r".*\.js", "/login", "/"],
 )
 
-app, rt = fast_app(
+app, _ = fast_app(
     live=True,
     hdrs=(
         picolink,
@@ -40,6 +40,6 @@ app, rt = fast_app(
 setup_toasts(app)
 
 app.get("/")(gen_views.home_view)
-app.post("/{project_id}/init")(gen_views.step_initializer)
-app.get("/{project_id}/{step}")(gen_views.step_view)
-app.post("/{project_id}/{step}")(gen_views.step_handler)
+app.post("/init/{project_id}")(gen_views.step_initializer)
+app.get("/step/{step}/{project_id}")(gen_views.step_view)
+app.post("/step/{step}/{project_id}")(gen_views.step_handler)
