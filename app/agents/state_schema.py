@@ -54,3 +54,4 @@ class State(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     opened_files: Annotated[List[str], merge_lists]
     answered_middle_steps: Annotated[List[str], merge_lists]
+    generated_readme: str

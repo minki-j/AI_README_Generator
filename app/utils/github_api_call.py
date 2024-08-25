@@ -39,9 +39,6 @@ def fetch_paginated_github_api_request(initial_url, params=None):
             result = response.json()
             if result:
                 results.extend(result)
-            else:
-                if next_url != "first_page":
-                    print(f"NO data found. URL: {next_url}")
             next_url = response.links.get("next", {}).get("url")
         else:
             print(f"Failed to fetch {next_url}: {response.status_code}")

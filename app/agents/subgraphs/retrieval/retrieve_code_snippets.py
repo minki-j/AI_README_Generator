@@ -52,7 +52,7 @@ def retrieve_code_by_hybrid_search_with_queries(state: State):
 
         index_documents_with_colbert(documents, cache_dir, state["title"])
 
-    RAG = RAGPretrainedModel.from_index(index_path)
+    RAG = RAGPretrainedModel.from_index(index_path, verbose=0)
 
     retrieved_code_snippets = []
     for query in queries:  # TODO parallelize this
