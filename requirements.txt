@@ -17,3 +17,4 @@ scikit_learn==1.5.1
 tree_sitter==0.21.3
 tree_sitter_languages==1.10.2
 varname==0.13.3
+uvicorn==0.30.1
