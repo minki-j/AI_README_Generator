@@ -47,9 +47,11 @@ g.add_edge("human_in_the_loop", n(subGraph_middle_step))
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
 g.add_edge(n(subGraph_generate_readme), END)
 
-conn = sqlite3.connect("checkpoints.sqlite")
+# conn = sqlite3.connect("./cache/checkpoints.sqlite")
+# memory = SqliteSaver(conn)
+memory = MemorySaver()
 main_graph = g.compile(
-    checkpointer=SqliteSaver(conn), interrupt_before=["human_in_the_loop"]
+    checkpointer=memory, interrupt_before=["human_in_the_loop"]
 )
 
 

@@ -9,7 +9,7 @@ image = (
     Image.debian_slim(python_version="3.12.2")
     .apt_install("graphviz", "libgraphviz-dev", "git")
     .pip_install(
-        "python_fasthtml",
+        "python_fasthtml==0.3.6",
         "requests",
         "langchain",
         "langchain_core",

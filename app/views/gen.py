@@ -126,10 +126,7 @@ async def step_initializer(
         retrieved_chunks = r.get("retrieved_chunks", None)
 
     except Exception as e:
-        return Div(
-            f"Error: Something went wrong. Please try again later. ERROR_MESSAGE: {e}",
-            cls="error-message",
-        )
+        raise e
     
     r = initialize_db(session["session_id"], project_id, answered_middle_steps[0]["answer"], step_list[0]["feedback_question"], retrieved_chunks)
     if r:
@@ -172,6 +169,13 @@ async def step_handler(
     step: str,
     request: Request,
 ):
+    if int(step) > len(step_list) - 1:
+        return Main(id="step")(
+            Titled("AI README Generator"),
+            Div()(
+                P("Congratulations! You have completed the README generation process."),
+            )
+        )
     print("==>> step_handler for step: ", step)
     if DEBUG:
         print("DEBUG MODE. SKIP GRAPH")  
@@ -230,6 +234,7 @@ async def step_handler(
         )
         answered_middle_steps = r.get("answered_middle_steps", None)
         retrieved_chunks = r.get("retrieved_chunks", None)
+        generated_readme = r.get("generated_readme", None)
  
     except Exception as e:
         raise e
@@ -243,12 +248,15 @@ async def step_handler(
     )
     
     if r:
-        return Step(
-            step_list[int(step)]["feedback_question"],
-            answered_middle_steps[-1]["answer"],
-            retrieved_chunks,
-            project_id,
-            next_step=str(int(step) + 1),
+        return Main(id="step")(
+            Titled("AI README Generator"),
+            Step(
+                step_list[int(step)]["feedback_question"],
+                answered_middle_steps[-1]["answer"],
+                retrieved_chunks,
+                project_id,
+                next_step=str(int(step) + 1),
+            )
         )
     else:
         return Div(
