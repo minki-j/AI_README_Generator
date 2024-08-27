@@ -13,6 +13,7 @@ langgraph-checkpoint-sqlite==1.0.0
 llama_index==0.11.1
 modal==0.62.236
 pendulum==3.0.0
+pipreqs==0.5.0
 python-dotenv==1.0.1
 python_fasthtml==0.4.5
 ragatouille==0.0.8.post4
