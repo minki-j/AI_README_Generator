@@ -51,13 +51,7 @@ def get_repo_info(clone_url, cache_dir):
 
     # get the list of packages used
     requirement_dir = os.path.join(cache_dir, "packages_used", repo_info["title"])
-    subprocess.run(
-        "mkdir -p " + requirement_dir + " && ls",
-        capture_output=True,
-        check=True,
-        text=True,
-        shell=True,
-    )
+    os.makedirs(requirement_dir, exist_ok=True)
     save_path = os.path.join(requirement_dir, "requirements.txt")
     subprocess.run(
         "pipreqs --scan-notebooks --mode no-pin --savepath "

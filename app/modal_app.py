@@ -9,7 +9,7 @@ image = (
     Image.debian_slim(python_version="3.12.2")
     .apt_install("graphviz", "libgraphviz-dev", "git")
     .pip_install(
-        "python_fasthtml==0.3.6",
+        "python_fasthtml==0.4.5",
         "requests",
         "langchain",
         "langchain_core",
@@ -18,7 +18,9 @@ image = (
         "langchain_community",
         "langchainhub",
         "langchain_text_splitters",
-        "langgraph",
+        "langgraph==0.1.8",
+        "langgraph-checkpoint==1.0.6",
+        "langgraph-checkpoint-sqlite==1.0.0",
         "varname",
         "python-dotenv",
         "scikit_learn",

@@ -1,3 +1,5 @@
+# python version 3.12.2
+
 fastapi==0.112.2
 graphviz==0.20.3
 langgraph==0.2.14

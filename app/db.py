@@ -1,6 +1,5 @@
 import threading
 from fasthtml.common import *
-import graphviz
 
 db = database("data/main.db")
 
@@ -58,8 +57,8 @@ Users, Readmes, Steps, RetrievedChunks = (
 )
 db_lock = threading.Lock()  # Since we're multi-threading here
 
-main_db_diagram = diagram(db.tables)
 try:
+    main_db_diagram = diagram(db.tables)    
     main_db_diagram.render("data/main_db_diagram", format="png", cleanup=True)
 except:
     print(
