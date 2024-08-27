@@ -14,7 +14,7 @@ llama_index==0.11.1
 modal==0.62.236
 pendulum==3.0.0
 python-dotenv==1.0.1
-python_fasthtml==0.3.6
+python_fasthtml==0.4.5
 ragatouille==0.0.8.post4
 Requests==2.32.3
 scikit_learn==1.5.1
