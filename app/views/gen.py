@@ -8,8 +8,8 @@ from fasthtml.common import *
 from app.components.step import Step
 
 from app.utils.get_repo_info import get_repo_info
-from app.utils.db_functions import initialize_db, insert_step_db
-from app.data.step_list import step_list
+from app.utils.db_functions import initialize_db, insert_step_db, update_readme_content
+from app.data.step_list import STEP_LIST
 from app.agents.main_graph import main_graph
 from app.global_vars import DEBUG
 from app.db import db
@@ -97,7 +97,6 @@ async def step_initializer(
             "error",
         ) #! toast not working
         return Div(Titled("Invalid Github clone URL"), cls="container")
-    
 
     if os.path.exists(f"/vol"):
         cache_dir = f"/vol/cache"
@@ -110,8 +109,8 @@ async def step_initializer(
     repo_info = get_repo_info(clone_url, cache_dir)
     initial_state = {
         **repo_info,
-        "middle_step": step_list[0],
-        "total_number_of_steps": len(step_list),
+        "middle_step": STEP_LIST[0],
+        "total_number_of_steps": len(STEP_LIST),
     }
 
     try:
@@ -128,13 +127,13 @@ async def step_initializer(
     except Exception as e:
         raise e
     
-    r = initialize_db(session["session_id"], project_id, answered_middle_steps[0]["answer"], step_list[0]["feedback_question"], retrieved_chunks)
+    r = initialize_db(session["session_id"], project_id, answered_middle_steps[0]["answer"], STEP_LIST[0]["feedback_question"], retrieved_chunks)
     if r:
         return RedirectResponse(url=f"/step/{"0"}/{project_id}", status_code=303) #TODO: need to be able to use uri instead of hardcoding
 
 
 def step_view(step: str, project_id: str):
-    print("==>> step_view")
+    print("==>> step_view:", step, project_id)
     step_data = next(db.t.steps.rows_where(
         "step = ? AND readme_id= ?", [step, project_id]
     ), None)
@@ -151,6 +150,7 @@ def step_view(step: str, project_id: str):
                 retrieved_chunks,
                 project_id,
                 next_step=str(int(step) + 1),
+                is_last_step= True if int(step) == len(STEP_LIST)-1 else False,
             )
         )
     else:
@@ -168,29 +168,13 @@ async def step_handler(
     project_id: str,
     step: str,
     request: Request,
-):
-    if int(step) > len(step_list) - 1:
-        return Main(id="step")(
-            Titled("AI README Generator"),
-            Div()(
-                P("Congratulations! You have completed the README generation process."),
-            )
-        )
+):    
     print("==>> step_handler for step: ", step)
     if DEBUG:
         print("DEBUG MODE. SKIP GRAPH")  
         r = insert_step_db(step, project_id,  "test_feedback_question", "test_answer",["test_retrieved_chunks"])
         if r:
-            return Main(id="step")(
-                Titled("AI README Generator"),
-                Step(
-                    "DEBUG MODE",
-                    "DEBUG MODE",
-                    ["DEBUG MODE"],
-                    project_id,
-                    next_step=str(int(step) + 1),
-                )
-            )
+            return RedirectResponse(url=f"/step/{str(int(step))}/{project_id}", status_code=303)
         else:
             return Div(
                 "Error: Something went wrong. Please try again later.",
@@ -212,20 +196,21 @@ async def step_handler(
 
     try:
         config = {"configurable": {"thread_id": project_id}}
-        last_state = None
-        for state in main_graph.get_state_history(config):
-            last_state = state
-            break
-        print("==>> last_state: ", last_state)
-        if last_state is None:
-            raise Exception("No state found in the graph")
+        # last_state = None
+        # for state in main_graph.get_state_history(config):
+        #     last_state = state
+        #     break
+        # print("==>> last_state: ", last_state)
+        # if last_state is None:
+        #     raise Exception("No state found in the graph")
+        print(f"update state with curent_step: ", int(step))
         main_graph.update_state(
             config,
             values={
+                # **(last_state.values if last_state is not None else {}),
                 "user_feedback_list": [user_feedback],
                 "current_step": int(step),
-                "middle_step": step_list[int(step)],
-                **(last_state.values if last_state is not None else {})
+                "middle_step": STEP_LIST[int(step)],
             }
         )
         r = main_graph.invoke(
@@ -234,7 +219,6 @@ async def step_handler(
         )
         answered_middle_steps = r.get("answered_middle_steps", None)
         retrieved_chunks = r.get("retrieved_chunks", None)
-        generated_readme = r.get("generated_readme", None)
  
     except Exception as e:
         raise e
@@ -242,24 +226,62 @@ async def step_handler(
     r = insert_step_db(
         step, 
         project_id,
-        step_list[int(step)]["feedback_question"], 
+        STEP_LIST[int(step)]["feedback_question"], 
         answered_middle_steps[-1]["answer"],
         retrieved_chunks,
     )
     
     if r:
-        return Main(id="step")(
-            Titled("AI README Generator"),
-            Step(
-                step_list[int(step)]["feedback_question"],
-                answered_middle_steps[-1]["answer"],
-                retrieved_chunks,
-                project_id,
-                next_step=str(int(step) + 1),
-            )
-        )
+        return RedirectResponse(url=f"/step/{str(int(step))}/{project_id}", status_code=303)
     else:
         return Div(
             "Error: Something went wrong. Please try again later.",
             cls="error-message",
         )
+
+async def generate_readme(project_id: str):
+    print("==>> generate_readme")
+    if DEBUG:
+        print("DEBUG MODE. SKIP GRAPH")  
+        r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
+        if r:
+            return RedirectResponse(url=f"/result/{project_id}", status_code=303)
+        else:
+            return Div(
+                "Error: Something went wrong. Please try again later.",
+                cls="error-message",
+            )
+
+    config = {"configurable": {"thread_id": project_id}}
+    r = main_graph.update_state(
+        config,
+        values={
+            "current_step": len(STEP_LIST),
+        }
+    )
+    r = main_graph.invoke(
+            None,
+            config,
+        )
+    generated_readme = r.get("generated_readme", None)
+    print(f"==>> generated_readme: {generated_readme}")
+    r = update_readme_content(project_id, generated_readme)
+    if r:
+        return RedirectResponse(url=f"/result/{project_id}", status_code=303)
+    else:
+        return Div(
+            "Error: Something went wrong. Please try again later.",
+            cls="error-message",
+        )
+
+def result_view(project_id: str):
+    readme_data = db.t.readmes.get(project_id)
+    print(f"==>> readme_data: {readme_data}")
+    return Main(id="step")(
+        Titled("AI README Generator"),
+        Div(cls="container")(
+            H4("Congratulations! You have completed the README generation process."),
+            H5("Here is the generated README:"),
+            P(readme_data.content),
+        )
+    )

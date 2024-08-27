@@ -1,7 +1,7 @@
 from fasthtml.common import *
 
 
-def Step(feedback_question, answer, retrieved_chunks, project_id, next_step):
+def Step(feedback_question, answer, retrieved_chunks, project_id, next_step, is_last_step=False):
     """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
 
     return Div(cls="container bordered-container")(
@@ -20,13 +20,25 @@ def Step(feedback_question, answer, retrieved_chunks, project_id, next_step):
             Textarea(name="user_feedback", placeholder="Enter your feedback here"),
             Button("Apply Feedback", type="submit", cls="outline"),
         ),
-        Button(
-            "Next Step",
-            type="submit",
-            cls="outline",
-            post=uri("step_handler", project_id=project_id, step=next_step),
-            hx_swap="outerHTML",
-            hx_target="#step",
-            hx_replace_url="true",
+        (
+            Button(
+                "Next Step",
+                type="submit",
+                cls="outline",
+                post=uri("step_handler", project_id=project_id, step=next_step),
+                hx_swap="outerHTML",
+                hx_target="#step",
+                hx_replace_url="true",
+            )
+            if not is_last_step
+            else Button(
+                "Finish",
+                type="submit",
+                cls="outline",
+                post=uri("generate_readme", project_id=project_id),
+                hx_swap="outerHTML",
+                hx_target="#step",
+                hx_replace_url="true",
+            )
         ),
     )

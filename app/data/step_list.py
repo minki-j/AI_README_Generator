@@ -1,4 +1,4 @@
-step_list = [
+STEP_LIST = [
     {
         "prompt": "What is the entry point of the codebase?",
         "queries": ["Entry point of the codebase", "How to run the codebase"],

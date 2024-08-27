@@ -12,6 +12,12 @@ from app.utils.converters import to_path_map
 from app.agents.subgraphs.middle_step.graph import subGraph_middle_step
 from app.agents.subgraphs.generate_readme.graph import subGraph_generate_readme
 
+def check_if_last_step(state):
+    print(f"current_step: {state["current_step"]} out of {state["total_number_of_steps"]}")
+    if state["current_step"] >= state["total_number_of_steps"]:
+        return n(subGraph_generate_readme)
+    return n(subGraph_middle_step)
+
 
 g = StateGraph(State)
 g.set_entry_point("entry")
@@ -22,27 +28,23 @@ g.add_node(
         "retrieval_count": 0,
     },
 )
-g.add_edge("entry", n(subGraph_middle_step))
-
-g.add_node(n(subGraph_middle_step), subGraph_middle_step)
-g.add_edge(n(subGraph_middle_step), "check if last step")
+g.add_edge("entry", "check if last step")
 
 g.add_node("check if last step", RunnablePassthrough())
 g.add_conditional_edges(
     "check if last step",
-    lambda state: (
-        n(subGraph_generate_readme)
-        if state["current_step"] >= state["total_number_of_steps"]
-        else "human_in_the_loop"
-    ),
+    check_if_last_step,
     to_path_map(
         [n(subGraph_generate_readme),
-         "human_in_the_loop"]
+         n(subGraph_middle_step)]
     ),
 )
 
+g.add_node(n(subGraph_middle_step), subGraph_middle_step)
+g.add_edge(n(subGraph_middle_step), "human_in_the_loop")
+
 g.add_node("human_in_the_loop", lambda state: print(f"Got feedback from the user: {state["user_feedback_list"]}"))
-g.add_edge("human_in_the_loop", n(subGraph_middle_step))
+g.add_edge("human_in_the_loop", "check if last step")
 
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
 g.add_edge(n(subGraph_generate_readme), END)

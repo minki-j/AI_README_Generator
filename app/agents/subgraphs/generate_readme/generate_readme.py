@@ -20,4 +20,4 @@ from typing import List
 
 
 def generate_readme(state: State):
-    return {"generated_readme": "placeholder"}
+    return {"generated_readme": "placeholder for generated readme"}

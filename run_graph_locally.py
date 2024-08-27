@@ -6,7 +6,7 @@ import os
 from app.agents.main_graph import main_graph
 from app.utils.get_repo_info import get_repo_info
 
-from app.data.step_list import step_list
+from app.data.step_list import STEP_LIST
 
 CLONE_URL = "https://github.com/minki-j/AI_README_Generator.git"
 
@@ -17,14 +17,14 @@ config = {"configurable": {"thread_id": "3"}, "recursion_limit": 100}
 result = main_graph.invoke(
     {
         **repo_info,
-        "middle_step": step_list[0],
+        "middle_step": STEP_LIST[0],
         "current_step": 0,
-        "total_number_of_steps": len(step_list),
+        "total_number_of_steps": len(STEP_LIST),
     },
     config,
 )
 
-for i in range(len(step_list) - 1):
+for i in range(len(STEP_LIST) - 1):
     print(f"--------{i+1}---------")
     user_feedback = input("Enter a feedback:")
     for state in main_graph.get_state_history(config):
@@ -36,7 +36,7 @@ for i in range(len(step_list) - 1):
         {
             "user_feedback_list": [user_feedback],  # Must be a list
             "current_step": int(i + 1),
-            "middle_step": step_list[i + 1],
+            "middle_step": STEP_LIST[i + 1],
         },
     )
     result = main_graph.invoke(None, config)

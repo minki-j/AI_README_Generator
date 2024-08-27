@@ -74,3 +74,11 @@ def insert_step_db(step, project_id, feedback_question, answer, retrieved_chunks
     except Exception as e:
         print(f"Error: {e}")
         raise e
+
+def update_readme_content(project_id:str, content:str):
+    try:
+        db.t.readmes.update(pk_values= project_id, updates={"content": content})
+        return True
+    except Exception as e:
+        print(f"Error: {e}")
+        raise e
