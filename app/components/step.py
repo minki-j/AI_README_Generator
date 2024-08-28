@@ -7,9 +7,7 @@ def Step(feedback_question, answer, retrieved_chunks, project_id, next_step, is_
     return Div(cls="container bordered-container")(
         H4(f"Step {str(int(next_step)-1)}. {feedback_question}"),
         Form(
-            post=uri(
-                "step_handler", project_id=project_id, step=str(int(next_step) - 1)
-            ),
+            hx_post=f"step?step_num={str(int(next_step) - 1)}&project_id={project_id}",
             hx_swap="outerHTML",
             hx_target="#step",
         )(
@@ -25,7 +23,7 @@ def Step(feedback_question, answer, retrieved_chunks, project_id, next_step, is_
                 "Next Step",
                 type="submit",
                 cls="outline",
-                post=uri("step_handler", project_id=project_id, step=next_step),
+                hx_post=f"step?step_num={next_step}&project_id={project_id}",
                 hx_swap="outerHTML",
                 hx_target="#step",
                 hx_replace_url="true",
@@ -35,7 +33,7 @@ def Step(feedback_question, answer, retrieved_chunks, project_id, next_step, is_
                 "Finish",
                 type="submit",
                 cls="outline",
-                post=uri("generate_readme", project_id=project_id),
+                hx_post=f"step/final?project_id={project_id}",
                 hx_swap="outerHTML",
                 hx_target="#step",
                 hx_replace_url="true",

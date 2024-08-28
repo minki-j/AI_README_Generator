@@ -1,8 +1,12 @@
 from fasthtml.common import *
 
-import app.views.gen as gen_views
 from app.css import loader_css, gridlink
-from app.db import db
+
+import app.views.main as main_views
+import app.views.step as step_views
+import app.views.history as history_views
+import app.handlers.init as init_handlers
+import app.handlers.step as step_handlers
 
 def user_auth_before(req, sess):
     # The `auth` key in the request scope is automatically provided
@@ -21,6 +25,7 @@ beforeware = Beforeware(
 
 app, _ = fast_app(
     live=True,
+    debug=True,
     hdrs=(
         picolink,
         gridlink,
@@ -39,9 +44,11 @@ app, _ = fast_app(
 
 setup_toasts(app)
 
-app.get("/")(gen_views.home_view)
-app.post("/init/{project_id}")(gen_views.step_initializer)
-app.get("/step/{step}/{project_id}")(gen_views.step_view)
-app.post("/step/{step}/{project_id}")(gen_views.step_handler)
-app.post("/generate_readme/{project_id}")(gen_views.generate_readme)
-app.get("/result/{project_id}")(gen_views.result_view)
+app.get("/")(main_views.home_view)
+app.get("/step")(step_views.step_view)
+app.get("/step/final")(step_views.result_view)
+app.get("/history")(history_views.history_view)
+
+app.post("/init")(init_handlers.step_initializer)
+app.post("/step")(step_handlers.step_handler)
+app.post("/step/final")(step_handlers.generate_readme)
