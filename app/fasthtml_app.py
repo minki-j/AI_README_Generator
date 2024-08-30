@@ -31,6 +31,8 @@ app, _ = fast_app(
         gridlink,
         loader_css,
         HighlightJS(langs=["python"]),
+        Link(href="/assets/styles.css", rel="stylesheet"),
+        # Link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css", rel="stylesheet")
     ),
     exception_handlers={
         404: lambda req, exc: Main(

@@ -5,11 +5,11 @@ import requests
 
 from fasthtml.common import *
 
-from app.components.step import Step
+from app.components.step import StepDiv
 
 from app.utils.get_repo_info import get_repo_info
 from app.utils.db_functions import initialize_db, insert_step_db, update_readme_content
-from app.data.step_list import STEP_LIST
+from app.assets.step_list import STEP_LIST
 from app.agents.main_graph import main_graph
 from app.global_vars import DEBUG
 from app.db import db
@@ -22,16 +22,6 @@ async def step_initializer(
 ):
     print("==>> step_initializer")
     print(f"==>> project_id: {project_id}")
-    if DEBUG:
-        print("DEBUG MODE. SKIP GRAPH")  
-        r = initialize_db(session["session_id"], project_id, "test_answer", "test_feedback_question", ["test_retrieved_chunks"])
-        if r:
-            return RedirectResponse(url=f"/step?step_num=0&project_id={project_id}", status_code=303)
-        else:
-            return Div(
-                "Error: Something went wrong. Please try again later.",
-                cls="error-message",
-            )
 
     form = await request.form()
     clone_url = form.get("clone_url")
@@ -78,6 +68,7 @@ async def step_initializer(
 
     r = initialize_db(session["session_id"], project_id, answered_middle_steps[0]["answer"], STEP_LIST[0]["feedback_question"], retrieved_chunks)
     if r:
-        return RedirectResponse(
-            url=f"/step?step_num=0&project_id={project_id}", status_code=303
-        )
+        full_route = str(request.url_for("step_view"))
+        route = full_route.replace(str(request.base_url), '')
+        print(f"==>> route: {route}")
+        return RedirectResponse(url=f"/{route}?step_num=0&project_id={project_id}", status_code=303)

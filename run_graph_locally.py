@@ -6,7 +6,7 @@ import os
 from app.agents.main_graph import main_graph
 from app.utils.get_repo_info import get_repo_info
 
-from app.data.step_list import STEP_LIST
+from app.assets.step_list import STEP_LIST
 
 CLONE_URL = "https://github.com/minki-j/AI_README_Generator.git"
 
