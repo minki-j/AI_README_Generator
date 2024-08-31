@@ -59,17 +59,38 @@ def StepDiv(
     total_step_num,
     is_last_step=False,
 ):
-    def make_page_list(total_step_num):
+    def make_page_list(total_step_num, current_step):
         page_list = []
         for i in range(1, total_step_num + 1):
-            page_list.append(
-                Li(cls="col-xs-2", style="list-style-type:none; margin-bottom:0;")(
-                    A(href=f"/step?step_num={i}&project_id={project_id}")(
-                        P(i, style="margin-bottom:0;"),
+            common_style = "margin-bottom:0;"
+            if i <= current_step:
+                page_list.append(
+                    Li(cls="col-xs-2", style="list-style-type:none; margin-bottom:0;")(
+                        A(
+                            href=f"/step?step_num={i}&project_id={project_id}",
+                            style="text-decoration: none;"
+                        )(
+                            P(i, style=f"{common_style} color: #007bff;"),
+                        ),
                     ),
-                ),
-            )
+                )
+            else:
+                page_list.append(
+                    Li(cls="col-xs-2", style="list-style-type:none; margin-bottom:0;")(
+                        A(
+                            href="#",
+                            cls="disabled",
+                            style="text-decoration: none; pointer-events: none;"
+                        )(
+                            P(i, style=f"{common_style} color: #c0c0c0;"),
+                        ),
+                    ),
+                )
         return page_list
+
+    # Convert next_step to an integer and subtract 1 to get the current step
+    
+    current_step = int(next_step) - 1
 
     return Div(id="step", cls="")(
         Step(
@@ -82,7 +103,7 @@ def StepDiv(
         ),
         Div(
             Ol(cls="row center-xs middle-xs", style="padding-inline-start:0;")(
-                *make_page_list(total_step_num)
+                *make_page_list(total_step_num, current_step)
             )
         ),
     )
