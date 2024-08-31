@@ -25,6 +25,8 @@ async def step_handler(
 
     form = await request.form()
     answer = form.get("answer")
+    directory_tree = form.get("directory_tree")
+    print(f"==>> directory_tree: {directory_tree}")
     user_feedback = form.get("user_feedback")
 
     if os.path.exists(f"/vol"):
@@ -75,6 +77,7 @@ async def step_handler(
             project_id,
             str(int(step_num) + 1),
             len(STEP_LIST),
+            directory_tree,
             is_last_step=True if int(step_num) == len(STEP_LIST) - 1 else False,
         )
     else:

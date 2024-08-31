@@ -1,17 +1,5 @@
 import uuid
-import os
-import re
-import requests
-
 from fasthtml.common import *
-
-from app.components.step import StepDiv
-
-from app.utils.get_repo_info import get_repo_info
-from app.utils.db_functions import initialize_db, insert_step_db, update_readme_content
-from app.assets.step_list import STEP_LIST
-from app.agents.main_graph import main_graph
-from app.global_vars import DEBUG
 from app.db import db
 
 
@@ -61,50 +49,5 @@ def home_view(session):
                     cls="",
                 ),
             ),
-        ),
-    )
-
-
-def step_view(step: str, project_id: str):
-    print("==>> step_view:", step, project_id)
-
-    step_data = next(
-        db.t.steps.rows_where("step = ? AND readme_id= ?", [step, project_id]), None
-    )
-
-    if step_data:
-        retrieved_chunks = []
-        for chunk in db.t.retrieved_chunks.rows_where("step_id = ?", [step_data["id"]]):
-            retrieved_chunks.append(chunk["content"])
-        return Main(id="step")(
-            A(href="/")(H1("AI README Generator")),
-            Step(
-                step_data["feedback_question"],
-                step_data["answer"],
-                retrieved_chunks,
-                project_id,
-                next_step=str(int(step) + 1),
-                is_last_step=True if int(step) == len(STEP_LIST) - 1 else False,
-            ),
-        )
-    else:
-        return Main(id="step")(
-            A(href="/")(H1("AI README Generator")),
-            Div(
-                f"Error happended while retrieving information from the DB.",
-                cls="error-message",
-            ),
-        )
-
-
-def result_view(project_id: str):
-    readme_data = db.t.readmes.get(project_id)
-    print(f"==>> readme_data: {readme_data}")
-    return Main(id="step")(
-        A(href="/")(H1("AI README Generator")),
-        Div(cls="container")(
-            H2("Congratulations! You have completed the README generation process."),
-            H3("Here is the generated README:"),
-            P(readme_data.content),
         ),
     )

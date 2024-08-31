@@ -14,9 +14,9 @@ from app.agents.subgraphs.generate_readme.graph import subGraph_generate_readme
 
 def check_if_last_step(state):
     print(f"current_step: {state["current_step"]} out of {state["total_number_of_steps"]}")
+    if not state["total_number_of_steps"]: #! Fix this bug and remove this if statement
+        state["total_number_of_steps"] = 4
     if state["current_step"] is None or state["total_number_of_steps"] is None:
-        print("current_step: ", state["current_step"])
-        print("total_number_of_steps: ", state["total_number_of_steps"])
         raise(ValueError("current_step or total_number_of_steps is None"))
     if state["current_step"] >= state["total_number_of_steps"]:
         return n(subGraph_generate_readme)

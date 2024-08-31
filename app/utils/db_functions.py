@@ -1,12 +1,15 @@
 from app.db import db
 import uuid
 
-def initialize_db(session_id:str, project_id:str, answer:str, feedback_question:str, retrieved_chunks: list):
+from app.utils.converters import directory_tree_str_to_json
+
+def initialize_db(session_id:str, project_id:str, answer:str, feedback_question:str, retrieved_chunks: list, directory_tree:str):
     try:
         db.t.readmes.insert(
             id=project_id,
             user_id=session_id, #TODO: Change to user_id once user authentication is implemented
             content="",
+            directory_tree=directory_tree_str_to_json(directory_tree),
         )
 
         step_id = str(uuid.uuid4())

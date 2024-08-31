@@ -66,7 +66,7 @@ async def step_initializer(
     except Exception as e:
         raise e
 
-    r = initialize_db(session["session_id"], project_id, answered_middle_steps[0]["answer"], STEP_LIST[0]["feedback_question"], retrieved_chunks)
+    r = initialize_db(session["session_id"], project_id, answered_middle_steps[0]["answer"], STEP_LIST[0]["feedback_question"], retrieved_chunks, repo_info["directory_tree"])
     if r:
         full_route = str(request.url_for("step_view"))
         route = full_route.replace(str(request.base_url), '')

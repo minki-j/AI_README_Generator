@@ -3,7 +3,7 @@ from fasthtml.common import *
 from app.components.step import StepDiv
 
 
-def StepPage(step_num, total_step_num, step_data):
+def StepPage(step_num, total_step_num, step_data, directory_tree):
 
     return (
         Title("AI README Generator"),
@@ -16,6 +16,7 @@ def StepPage(step_num, total_step_num, step_data):
                 step_data["project_id"],
                 step_data["next_step"],
                 total_step_num,
+                directory_tree,
                 is_last_step=True if int(step_num) == total_step_num else False,
             ),
         ),

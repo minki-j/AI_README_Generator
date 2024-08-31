@@ -26,6 +26,7 @@ if readmes not in db.t or steps not in db.t or retrieved_chunks not in db.t:
         id=str,
         user_id=str,
         content=str,
+        directory_tree=str,
         pk="id",
         foreign_keys=(("user_id", "users")),
         if_not_exists=True,
