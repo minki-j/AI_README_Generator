@@ -1,6 +1,7 @@
 from fasthtml.common import *
 import json
 
+
 def Step(
     feedback_question,
     answer,
@@ -14,17 +15,18 @@ def Step(
 
     def FileExplorer(directory_tree_str):
         """Render a simple file explorer with checkable items for files only."""
-        print(f"==>> directory_tree_str: {1}")
-        print(f"==>> type: {type(directory_tree_str)}")
-
         try:
             directory_tree_obj = json.loads(directory_tree_str)
         except json.JSONDecodeError:
-            print(f"Error: Unable to parse directory_tree_str as JSON. Value: {directory_tree_str}")
+            print(
+                f"Error: Unable to parse directory_tree_str as JSON. Value: {directory_tree_str}"
+            )
             directory_tree_obj = {}  # Fallback to an empty dictionary
 
         if not isinstance(directory_tree_obj, dict):
-            print(f"Error: directory_tree_obj is not a dictionary. Value: {directory_tree_obj}")
+            print(
+                f"Error: directory_tree_obj is not a dictionary. Value: {directory_tree_obj}"
+            )
             raise ValueError("directory_tree is not properly formatted in JSON")
 
         def render_tree(directory_tree_obj):
@@ -44,7 +46,9 @@ def Step(
                     )
                 else:
                     items.append(
-                        Li(style="list-style-type: none; margin-left: 0;margin-bottom: 0;")(
+                        Li(
+                            style="list-style-type: none; margin-left: 0;margin-bottom: 0;"
+                        )(
                             Label(
                                 Input(
                                     type="checkbox",
@@ -58,13 +62,14 @@ def Step(
                     )
             return items
 
-        return Div(style="margin-bottom: 1rem;")(
+        return Div(
+            cls="file-explorer",
+            style="margin-bottom: 1rem; background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;",
+        )(
             H4("File Explorer"),
             Ul(style="padding-left: 0; margin-bottom: 0;")(
                 *render_tree(directory_tree_obj)
             ),
-            cls="file-explorer",
-            style="background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;",
         )
 
     return (

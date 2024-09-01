@@ -1,7 +1,6 @@
 from app.db import db
 import uuid
-
-from app.utils.converters import directory_tree_str_to_json
+import json
 
 
 def initialize_db(
@@ -10,15 +9,15 @@ def initialize_db(
     answer: str,
     feedback_question: str,
     retrieved_chunks: list,
-    directory_tree: str,
+    directory_tree_dict: dict,
 ):
     try:
-        directory_tree_json = directory_tree_str_to_json(directory_tree)
+        directory_tree_str = json.dumps(directory_tree_dict)
         db.t.readmes.insert(
             id=project_id,
             user_id=session_id,  # TODO: Change to user_id once user authentication is implemented
             content="",
-            directory_tree=directory_tree_json,
+            directory_tree_str=directory_tree_str,
         )
 
         step_id = str(uuid.uuid4())
@@ -28,7 +27,7 @@ def initialize_db(
             step=0,
             feedback_question=feedback_question,
             answer=answer,
-            directory_tree=directory_tree_json,
+            directory_tree_str=directory_tree_str,
         )
 
         for chunk in retrieved_chunks:
@@ -45,7 +44,7 @@ def initialize_db(
 
 
 def insert_step_db(
-    step, project_id, feedback_question, answer, retrieved_chunks, directory_tree
+    step, project_id, feedback_question, answer, retrieved_chunks, directory_tree_str
 ):
     try:
         # check if row exists with project_id and step
@@ -59,7 +58,7 @@ def insert_step_db(
                 updates={
                     "feedback_question": feedback_question,
                     "answer": answer,
-                    "directory_tree": directory_tree,
+                    "directory_tree_str": directory_tree_str,
                 },
             )
             # delete all retrieved_chunks with the step_id, then insert the new ones
@@ -79,7 +78,7 @@ def insert_step_db(
                 step=step,
                 feedback_question=feedback_question,
                 answer=answer,
-                directory_tree=directory_tree,
+                directory_tree_str=directory_tree_str,
             )
             for chunk in retrieved_chunks:
                 db.t.retrieved_chunks.insert(

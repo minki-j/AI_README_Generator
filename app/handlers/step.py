@@ -24,17 +24,15 @@ async def step_handler(
     print("==>> step_handler for step: ", step_num)
 
     form = await request.form()
-    answer = form.get("answer")
-    directory_tree_str = form.get("directory_tree_str")
-    user_feedback = form.get("user_feedback")
-
-    if os.path.exists(f"/vol"):
-        cache_dir = f"/vol/cache"
-        os.makedirs(cache_dir, exist_ok=True)
-    else:
-        print("using cache in local machine instead of the one in Modal's storage")
-        cache_dir = "./cache"
-        os.makedirs("./cache", exist_ok=True)
+    if len(form) == 0: # when "next step" button is clicked
+        user_feedback = None
+        directory_tree_str = db.t.readmes.get(project_id).directory_tree_str
+        directory_tree_dict = None
+    else: # when "apply feedback" button is clicked
+        print("==>> form: ", form)
+        user_feedback = form.get("user_feedback")
+        directory_tree_str = form.get("directory_tree_str")
+        directory_tree_dict = json.loads(directory_tree_str)
 
     try:
         config = {"configurable": {"thread_id": project_id}}
@@ -43,19 +41,17 @@ async def step_handler(
             values={
                 # **(last_state.values if last_state is not None else {}),
                 "user_feedback_list": [user_feedback],
+                "directory_tree_dict": directory_tree_dict,
                 "current_step": step_num,
                 "middle_step": STEP_LIST[int(step_num)],
             },
         )
-        r = main_graph.invoke(
-            None,
-            config,
-        )
+        r = main_graph.invoke(None, config)
         answered_middle_steps = r.get("answered_middle_steps", None)
         retrieved_chunks = r.get("retrieved_chunks", None)
-
     except Exception as e:
         raise e
+
 
     r = insert_step_db(
         step_num,
@@ -94,8 +90,10 @@ async def generate_readme(project_id: str, request: Request):
         r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
         if r:
             full_route = str(request.url_for("generate_readme"))
-            route = full_route.replace(str(request.base_url), '')
-            return RedirectResponse(url=f"/{route}?project_id={project_id}", status_code=303)
+            route = full_route.replace(str(request.base_url), "")
+            return RedirectResponse(
+                url=f"/{route}?project_id={project_id}", status_code=303
+            )
         else:
             return Div(
                 "Error: Something went wrong. Please try again later.",
@@ -118,8 +116,10 @@ async def generate_readme(project_id: str, request: Request):
     r = update_readme_content(project_id, generated_readme)
     if r:
         full_route = str(request.url_for("generate_readme"))
-        route = full_route.replace(str(request.base_url), '')
-        return RedirectResponse(url=f"/{route}?project_id={project_id}", status_code=303)
+        route = full_route.replace(str(request.base_url), "")
+        return RedirectResponse(
+            url=f"/{route}?project_id={project_id}", status_code=303
+        )
     else:
         return Div(
             "Error: Something went wrong. Please try again later.",

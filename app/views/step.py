@@ -12,7 +12,7 @@ def step_view(step_num: int, project_id: str):
     step_data = next(
         db.t.steps.rows_where("step = ? AND readme_id= ?", [step_num, project_id]), None
     )
-    print(f"==>> step_data: {step_data}")
+
     if step_data:
         retrieved_chunks = []
         for chunk in db.t.retrieved_chunks.rows_where("step_id = ?", [step_data["id"]]):
@@ -27,7 +27,7 @@ def step_view(step_num: int, project_id: str):
                 "project_id": project_id,
                 "next_step": str(int(step_num) + 1),
             },
-            step_data["directory_tree"],
+            step_data["directory_tree_str"],
         )
     else:
         return A(href="/")(H1("AI README Generator")), Main(id="step")(

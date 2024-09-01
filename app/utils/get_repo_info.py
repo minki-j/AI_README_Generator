@@ -5,6 +5,7 @@ import subprocess
 from app.utils.github_api_call import fetch_commits
 from app.utils.request import github_api_request
 from app.utils.generate_tree import generate_tree
+from app.utils.converters import convert_tree2dict
 
 
 def get_repo_info(clone_url, cache_dir):
@@ -27,7 +28,8 @@ def get_repo_info(clone_url, cache_dir):
         params={"recursive": "true"},
     )
     data = response.json()
-    tree = data["tree"]
+    tree = data["tree"]    
+    repo_info["directory_tree_dict"] = convert_tree2dict(tree)
     repo_info["directory_tree"] = generate_tree([item["path"] for item in tree])
 
     # clone the repository

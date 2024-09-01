@@ -8,28 +8,22 @@ def to_path_map(node_names):
     return dict
 
 
-def directory_tree_str_to_json(directory_tree):
-    lines = directory_tree.strip().split("\n")
-    result = {}
-    path = []
+def convert_tree2dict(tree):
+    """
+    convert to dictionary in a format of {"path": False, "path": {"path": False}}
+    where the value is False if it is a file, and a dictionary if it is a directory
+    """
+    tree_dict = {}
 
-    for line in lines:
-        level = line.count("│") + line.count("├")
-        name = line.split("─")[-1].strip()
+    def add_to_dict(path_parts, current_dict, item_type):
+        if len(path_parts) == 1:
+            current_dict[path_parts[0]] = {} if item_type == "tree" else False
+        else:
+            current_dict.setdefault(path_parts[0], {})
+            add_to_dict(path_parts[1:], current_dict[path_parts[0]], item_type)
 
-        while len(path) >= level:
-            path.pop()
+    for item in tree:
+        path_parts = item["path"].split("/")
+        add_to_dict(path_parts, tree_dict, item["type"])
 
-        if (
-            name.count('.') == 1 and not name.startswith('.') and name.split('.')[-1].isalnum()
-            or name.startswith('.') and name in {'.env', '.env.example', '.DS_Store', '.gitignore', '.dockerignore', '.editorconfig', '.npmrc', '.babelrc', '.eslintrc'}
-            or name in {'Dockerfile', 'dockerfile', 'Makefile', 'README', 'LICENSE', 'CHANGELOG', 'Procfile', 'Gemfile', 'Rakefile'}
-        ):
-            current = result
-            for dir in path:
-                current = current.setdefault(dir, {})
-            current[name] = False
-        else:  # It's a directory
-            path.append(name)
-
-    return json.dumps(result)
+    return tree_dict

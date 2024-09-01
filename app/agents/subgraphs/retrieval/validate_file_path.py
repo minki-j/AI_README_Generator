@@ -24,7 +24,6 @@ def validate_file_paths_from_LLM(state: State):
             return {
                 "invalid_paths": [],
                 "valid_paths": [],
-                "validate_count": state["validate_count"] + 1,
             }
         full_paths = [os.path.join(root_path, path) for path in file_paths]
 
@@ -44,7 +43,6 @@ def validate_file_paths_from_LLM(state: State):
     return {
         "invalid_paths": invalid_paths,
         "valid_paths": valid_paths,
-        "validate_count": state["validate_count"] + 1,
     }
 
 

@@ -20,11 +20,11 @@ from .colbert import index_documents_with_colbert
 from app.global_vars import SKIP_COLBERT
 
 
-def retrieve_code_by_hybrid_search_with_queries(state: State):
+def retrieve_with_colbert(state: State):
     print("Retrieving code snippets for ", state["title"])
     if SKIP_COLBERT:
         print("ColBERT is disabled")
-        return {"retrieved_chunks": []}
+        return {"retrieved_chunks": ["ColBERT is disabled"]}
 
     cache_dir = state["cache_dir"]
     queries = state["middle_step"]["queries"]

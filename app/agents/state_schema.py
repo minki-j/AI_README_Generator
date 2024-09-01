@@ -49,6 +49,7 @@ class State(TypedDict):
     middle_step: MiddleStep
     user_feedback_list: Annotated[list[str], merge_lists]
     scatch_pad: str
+    directory_tree_dict: dict
 
     # Long Term Memory
     messages: Annotated[Sequence[BaseMessage], add_messages]
