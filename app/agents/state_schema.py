@@ -43,6 +43,7 @@ class State(TypedDict):
 
     # Short Term Memory
     # Will be updated after each step
+    previous_step: int
     current_step: int
     retrieval_count: int
     retrieved_chunks: Annotated[list[MiddleStep], merge_lists]

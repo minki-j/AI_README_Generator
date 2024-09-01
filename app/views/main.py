@@ -14,15 +14,17 @@ def home_view(session):
         )
         add_toast(session, f"Session ID created: {session['session_id']}", "info")
 
-    return A(href="/")(H1("AI README Generator")), Main(id="step")(
-        Form(
-            hx_post="init/?project_id=" + str(uuid.uuid4()),
-            hx_swap="innerHTML",
-            hx_target="body",
-            hx_indicator="#loader",
-            hx_replace_url="true",
-        )(
-            Div(cls="container row", style="gap:1rem;")(
+    return (
+        Title("AI README Generator"),
+        Main(id="step", cls="container")(
+            A(href="/")(H1("AI README Generator")),
+            Form(
+                hx_post="init/?project_id=" + str(uuid.uuid4()),
+                hx_swap="innerHTML",
+                hx_target="body",
+                hx_indicator="#loader",
+                hx_replace_url="true",
+            )(
                 P(
                     "Having trouble writing a killer README? No worries, I’ve got your back! 💪 Share your project with me, and together we’ll create a README that stands out. 🚀 Let’s get started!",
                 ),
@@ -36,17 +38,17 @@ def home_view(session):
                     Button("Start", cls="btn-primary"),
                 ),
             ),
-        ),
-        Div(
-            id="loader",
-            cls="my-indicator row center-xs",
-        )(
             Div(
-                cls="col-xs-6",
+                id="loader",
+                cls="my-indicator row center-xs",
             )(
-                P(
-                    "Loading...",
-                    cls="",
+                Div(
+                    cls="col-xs-6",
+                )(
+                    P(
+                        "Loading...",
+                        cls="",
+                    ),
                 ),
             ),
         ),

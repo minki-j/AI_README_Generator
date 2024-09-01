@@ -55,7 +55,8 @@ async def step_initializer(
         r = main_graph.invoke(
             {
                 **initial_state,
-                "current_step": 0
+                "previous_step": 0,
+                "current_step": 1
             },
             {"configurable": {"thread_id": project_id}},
         )
@@ -70,4 +71,4 @@ async def step_initializer(
         full_route = str(request.url_for("step_view"))
         route = full_route.replace(str(request.base_url), '')
         print(f"==>> route: {route}")
-        return RedirectResponse(url=f"/{route}?step_num=0&project_id={project_id}", status_code=303)
+        return RedirectResponse(url=f"/{route}?step_num=1&project_id={project_id}", status_code=303)

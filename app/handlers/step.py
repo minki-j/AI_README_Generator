@@ -27,9 +27,8 @@ async def step_handler(
     if len(form) == 0: # when "next step" button is clicked
         user_feedback = None
         directory_tree_str = db.t.readmes.get(project_id).directory_tree_str
-        directory_tree_dict = None
+        directory_tree_dict = json.loads(directory_tree_str)
     else: # when "apply feedback" button is clicked
-        print("==>> form: ", form)
         user_feedback = form.get("user_feedback")
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)

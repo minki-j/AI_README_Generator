@@ -13,6 +13,8 @@ def Step(
 ):
     """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
 
+    common_style = "margin-bottom:1rem; background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;"
+
     def FileExplorer(directory_tree_str):
         """Render a simple file explorer with checkable items for files only."""
         try:
@@ -64,7 +66,7 @@ def Step(
 
         return Div(
             cls="file-explorer",
-            style="margin-bottom: 1rem; background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;",
+            style=common_style,
         )(
             H4("File Explorer"),
             Ul(style="padding-left: 0; margin-bottom: 0;")(
@@ -80,9 +82,18 @@ def Step(
             hx_target="#step",
             cls="",
         )(
-            Textarea(id="answer", name="answer", rows="15"),
-            Div(cls="container")(
-                *[Code(chunk) for chunk in retrieved_chunks],
+            Textarea(id="answer", name="answer", style=common_style),
+            Div(
+                cls="container",
+                style=common_style,
+            )(
+                *[
+                    Code(
+                        chunk,
+                        style="margin-bottom:1rem; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+                    )
+                    for chunk in retrieved_chunks
+                ],
             ),
             FileExplorer(directory_tree),
             Input(
@@ -95,6 +106,7 @@ def Step(
                 id="user_feedback",
                 name="user_feedback",
                 placeholder="Enter your feedback here",
+                style=common_style,
             ),
             Button("Apply Feedback", type="submit", cls="outline"),
         ),

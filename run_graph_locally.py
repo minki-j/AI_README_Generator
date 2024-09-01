@@ -18,7 +18,7 @@ result = main_graph.invoke(
     {
         **repo_info,
         "middle_step": STEP_LIST[0],
-        "current_step": 0,
+        "current_step": 1,
         "total_number_of_steps": len(STEP_LIST),
     },
     config,
@@ -35,7 +35,7 @@ for i in range(len(STEP_LIST) - 1):
         config,
         {
             "user_feedback_list": [user_feedback],  # Must be a list
-            "current_step": int(i + 1),
+            "current_step": int(i + 2),
             "middle_step": STEP_LIST[i + 1],
         },
     )

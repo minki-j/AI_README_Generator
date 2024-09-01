@@ -24,7 +24,7 @@ def initialize_db(
         db.t.steps.insert(
             id=step_id,
             readme_id=project_id,
-            step=0,
+            step=1,
             feedback_question=feedback_question,
             answer=answer,
             directory_tree_str=directory_tree_str,
