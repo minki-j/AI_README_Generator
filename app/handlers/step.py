@@ -2,7 +2,7 @@ import uuid
 import os
 import re
 import requests
-
+import json
 from fasthtml.common import *
 
 from app.components.step import StepDiv
@@ -25,8 +25,7 @@ async def step_handler(
 
     form = await request.form()
     answer = form.get("answer")
-    directory_tree = form.get("directory_tree")
-    print(f"==>> directory_tree: {directory_tree}")
+    directory_tree_str = form.get("directory_tree_str")
     user_feedback = form.get("user_feedback")
 
     if os.path.exists(f"/vol"):
@@ -64,6 +63,7 @@ async def step_handler(
         STEP_LIST[int(step_num)]["feedback_question"],
         answered_middle_steps[-1]["answer"],
         retrieved_chunks,
+        directory_tree_str,
     )
 
     if r:
@@ -77,7 +77,7 @@ async def step_handler(
             project_id,
             str(int(step_num) + 1),
             len(STEP_LIST),
-            directory_tree,
+            directory_tree_str,
             is_last_step=True if int(step_num) == len(STEP_LIST) - 1 else False,
         )
     else:

@@ -36,6 +36,7 @@ if readmes not in db.t or steps not in db.t or retrieved_chunks not in db.t:
         readme_id=str,
         step=int,
         feedback_question=str,
+        directory_tree=str,
         answer=str,
         pk="id",
         foreign_keys=(("readme_id", "readmes")),
