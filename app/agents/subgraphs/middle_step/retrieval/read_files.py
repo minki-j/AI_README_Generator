@@ -1,7 +1,7 @@
 import os
-from app.agents.state_schema import State
-import json
 from pathlib import Path
+
+from app.agents.state_schema import State
 
 
 def validate_user_chosen_files(state: State):

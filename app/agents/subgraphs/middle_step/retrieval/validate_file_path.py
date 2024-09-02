@@ -1,13 +1,11 @@
 import os
-import json
 from pathlib import Path
-
 
 from app.agents.state_schema import State
 
 from app.agents.common import chat_model
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+from langchain_core.pydantic_v1 import BaseModel
+from langchain_core.prompts import ChatPromptTemplate
 
 
 def validate_file_paths_from_LLM(state: State):
@@ -19,7 +17,7 @@ def validate_file_paths_from_LLM(state: State):
         raise ValueError("No cache_dir or title")
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
 
-    if state["corrected_paths"]:
+    if state.get("corrected_paths", None):
         # If this node is recursively called, use corrected paths from correct_file_paths node
         full_paths = state["corrected_paths"]
     else:

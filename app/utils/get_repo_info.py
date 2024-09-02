@@ -10,10 +10,19 @@ from app.utils.converters import convert_tree2dict
 
 def get_repo_info(clone_url, cache_dir):
     repo_info = {}
-    repo_info["clone_url"] = clone_url
+    repo_info["cache_dir"] = cache_dir
     repo_info["user"] = clone_url.split("/")[-2]
     repo_info["title"] = clone_url.split("/")[-1].replace(".git", "")
-    repo_info["cache_dir"] = cache_dir
+
+    # get the repo description
+    response = github_api_request(
+        "GET",
+        f'https://api.github.com/repos/{repo_info["user"]}/{repo_info["title"]}',
+        last_fetch_at=None,
+        params={"per_page": 1},
+    )
+    data = response.json()
+    repo_info["repo_description_by_user"] = data["description"]
 
     # get the directory tree
     commits, _, _, _, _ = fetch_commits(

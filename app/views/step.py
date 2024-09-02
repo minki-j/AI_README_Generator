@@ -1,5 +1,4 @@
 from fasthtml.common import *
-import json
 from app.components.pages import StepPage
 
 from app.assets.step_list import STEP_LIST
@@ -39,12 +38,17 @@ def step_view(step_num: int, project_id: str):
 
 
 def result_view(project_id: str):
+    print("==>> result_view")
     readme_data = db.t.readmes.get(project_id)
-    print(f"==>> readme_data: {readme_data}")
-    return A(href="/")(H1("AI README Generator")), Main(id="step")(
-        Div(cls="container")(
-            H2("Congratulations! You have completed the README generation process."),
-            H3("Here is the generated README:"),
-            P(readme_data.content),
+    print("==>> readme_data.content:", readme_data.content)
+    return (
+        Title("AI README Generator"),
+        Main(cls="container", style="")(
+            A(href="/", style="text-decoration: none; color: inherit;")(
+                H1("AI README Generator")
+            ),
+            P("Congratulations! You have completed the README generation process."),
+            P(B("Here is the generated README:")),
+            P(readme_data.content if readme_data.content else "No content generated."),
         ),
     )

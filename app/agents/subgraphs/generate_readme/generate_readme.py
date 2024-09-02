@@ -3,7 +3,7 @@ from enum import Enum
 import pendulum
 import json
 
-from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import (
     AIMessage,
     BaseMessage,

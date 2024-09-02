@@ -17,7 +17,7 @@ config = {"configurable": {"thread_id": "3"}, "recursion_limit": 100}
 result = main_graph.invoke(
     {
         **repo_info,
-        "middle_step": STEP_LIST[0],
+        "step_question": STEP_LIST[0],
         "current_step": 1,
         "total_number_of_steps": len(STEP_LIST),
     },
@@ -31,9 +31,9 @@ for i in range(len(STEP_LIST) - 1):
     main_graph.update_state(
         config,
         {
-            "user_feedback_list": [user_feedback],  # Must be a list
+            "user_feedback": user_feedback,
             "current_step": int(i + 2),
-            "middle_step": STEP_LIST[i + 1],
+            "step_question": STEP_LIST[i + 1],
         },
     )
     result = main_graph.invoke(None, config)

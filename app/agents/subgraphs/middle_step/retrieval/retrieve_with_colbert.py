@@ -1,14 +1,6 @@
 import os
-import json
 import pickle
-from varname import nameof as n
 from pathlib import Path
-
-from langchain_openai import OpenAIEmbeddings
-from langchain_openai.embeddings import OpenAIEmbeddings
-from langchain.retrievers import EnsembleRetriever
-from langchain_community.retrievers import BM25Retriever
-from langchain_community.vectorstores import FAISS
 
 from ragatouille import RAGPretrainedModel
 
@@ -26,7 +18,7 @@ def retrieve_with_colbert(state: State):
         return {"retrieved_chunks": ["No documents from ColBERT since it is disabled"]}
 
     cache_dir = state["cache_dir"]
-    queries = state["middle_step"]["queries"]
+    queries = state["step_question"]["queries"]
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
 
     doc_path = f"{cache_dir}/{state['title']}/documents.pkl"

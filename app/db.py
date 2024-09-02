@@ -1,7 +1,7 @@
 import threading
 from fasthtml.common import *
 
-db = database("data/main.db")
+db = database("data/main_database/main.db")
 
 users, steps, retrieved_chunks, readmes = (
     db.t.users,

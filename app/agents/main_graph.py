@@ -1,9 +1,7 @@
 from varname import nameof as n
 
-import sqlite3
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, StateGraph
-from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.runnables import RunnablePassthrough
 
 from app.agents.state_schema import State
@@ -16,9 +14,6 @@ import os
 
 def check_if_last_step(state):
     print(f"current_step: {state["current_step"]} out of {state["total_number_of_steps"]}")
-    if not state["total_number_of_steps"]: #! Fix this bug and remove this if statement
-        print("Temp solution: setting total_number_of_steps to 4")
-        state["total_number_of_steps"] = 4
     if state["current_step"] is None or state["total_number_of_steps"] is None:
         raise(ValueError("current_step or total_number_of_steps is None"))
     if state["current_step"] > state["total_number_of_steps"]:
@@ -38,13 +33,7 @@ def check_if_regenerate_with_feedback(state):
 g = StateGraph(State)
 g.set_entry_point("entry")
 
-g.add_node(
-    "entry",
-    lambda _: {
-        "retrieval_count": 0,
-        "corrected_paths": [],
-    },
-)
+g.add_node("entry", RunnablePassthrough())
 g.add_edge("entry", "check_if_last_step")
 
 g.add_node("check_if_last_step", RunnablePassthrough())
@@ -64,14 +53,14 @@ g.add_edge(n(check_if_regenerate_with_feedback), n(subGraph_middle_step))
 g.add_node(n(subGraph_middle_step), subGraph_middle_step)
 g.add_edge(n(subGraph_middle_step), "human_in_the_loop")
 
-g.add_node("human_in_the_loop", lambda state: print(f"Got feedback from the user: {state["user_feedback_list"]}"))
+g.add_node("human_in_the_loop", lambda state: print(f"Got feedback from the user: {state.get("user_feedback", "None")}"))
 g.add_edge("human_in_the_loop", "check_if_last_step")
 
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
 g.add_edge(n(subGraph_generate_readme), END)
 
-os.makedirs("./cache", exist_ok=True)
-db_path = os.path.join(".", "cache", "checkpoints.sqlite")
+os.makedirs("./data/graph_checkpoints", exist_ok=True)
+db_path = os.path.join(".", "data", "graph_checkpoints", "checkpoints.sqlite")
 with SqliteSaver.from_conn_string(db_path) as memory:
     main_graph = g.compile(
         checkpointer=memory, interrupt_before=["human_in_the_loop"]
