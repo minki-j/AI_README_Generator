@@ -23,8 +23,7 @@ from app.global_vars import SKIP_COLBERT
 def retrieve_with_colbert(state: State):
     print("Retrieving code snippets for ", state["title"])
     if SKIP_COLBERT:
-        print("ColBERT is disabled")
-        return {"retrieved_chunks": ["ColBERT is disabled"]}
+        return {"retrieved_chunks": ["No documents from ColBERT since it is disabled"]}
 
     cache_dir = state["cache_dir"]
     queries = state["middle_step"]["queries"]

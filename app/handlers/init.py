@@ -2,7 +2,6 @@ import uuid
 import os
 import re
 import requests
-
 from fasthtml.common import *
 
 from app.components.step import StepDiv

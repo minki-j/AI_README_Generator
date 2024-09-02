@@ -8,7 +8,7 @@ def StepPage(step_num, total_step_num, step_data, directory_tree_str):
     return (
         Title("AI README Generator"),
         Main(cls="container", style="")(
-            A(href="/")(H1("AI README Generator")),
+            A(href="/", style="text-decoration: none; color: inherit;")(H1("AI README Generator")),
             StepDiv(
                 step_data["feedback_question"],
                 step_data["answer"],

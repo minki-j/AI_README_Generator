@@ -68,7 +68,6 @@ def Step(
             cls="file-explorer",
             style=common_style,
         )(
-            H4("File Explorer"),
             Ul(style="padding-left: 0; margin-bottom: 0;")(
                 *render_tree(directory_tree_obj)
             ),
@@ -82,7 +81,9 @@ def Step(
             hx_target="#step",
             cls="",
         )(
+            H5("Answer"),
             Textarea(id="answer", name="answer", style=common_style),
+            H5("Retrieved Code Snippets"),
             Div(
                 cls="container",
                 style=common_style,
@@ -95,6 +96,7 @@ def Step(
                     for chunk in retrieved_chunks
                 ],
             ),
+            H5("File Explorer"),
             FileExplorer(directory_tree),
             Input(
                 type="hidden",
@@ -102,6 +104,7 @@ def Step(
                 name="directory_tree_str",
                 value=directory_tree,
             ),
+            H5("Feedback"),
             Textarea(
                 id="user_feedback",
                 name="user_feedback",

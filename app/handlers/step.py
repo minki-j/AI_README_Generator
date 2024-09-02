@@ -42,7 +42,7 @@ async def step_handler(
                 "user_feedback_list": [user_feedback],
                 "directory_tree_dict": directory_tree_dict,
                 "current_step": step_num,
-                "middle_step": STEP_LIST[int(step_num)],
+                "middle_step": STEP_LIST[int(step_num)-1],
             },
         )
         r = main_graph.invoke(None, config)
@@ -55,7 +55,7 @@ async def step_handler(
     r = insert_step_db(
         step_num,
         project_id,
-        STEP_LIST[int(step_num)]["feedback_question"],
+        STEP_LIST[int(step_num)-1]["feedback_question"],
         answered_middle_steps[-1]["answer"],
         retrieved_chunks,
         directory_tree_str,
@@ -66,7 +66,7 @@ async def step_handler(
         # route = full_route.replace(str(request.base_url), '')
         # return RedirectResponse(url=f"/{route}?step_num={step_num}&project_id={project_id}", status_code=303)
         return StepDiv(
-            STEP_LIST[int(step_num)]["feedback_question"],
+            STEP_LIST[int(step_num)-1]["feedback_question"],
             answered_middle_steps[-1]["answer"],
             retrieved_chunks,
             project_id,

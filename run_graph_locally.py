@@ -27,9 +27,6 @@ result = main_graph.invoke(
 for i in range(len(STEP_LIST) - 1):
     print(f"--------{i+1}---------")
     user_feedback = input("Enter a feedback:")
-    for state in main_graph.get_state_history(config):
-        last_state = state
-        break
 
     main_graph.update_state(
         config,

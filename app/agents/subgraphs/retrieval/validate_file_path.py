@@ -12,6 +12,11 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 
 def validate_file_paths_from_LLM(state: State):
     print("==>> file_path_validation node started")
+    if not state["cache_dir"] or not state["title"]:
+        print(f"==>> cache_dir: {state['cache_dir']}")
+        print(f"==>> title: {state['title']}")
+        print(f"==>> state: {state}")
+        raise ValueError("No cache_dir or title")
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
 
     if state["corrected_paths"]:

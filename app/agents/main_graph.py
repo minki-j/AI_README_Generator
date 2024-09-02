@@ -12,6 +12,8 @@ from app.utils.converters import to_path_map
 from app.agents.subgraphs.middle_step.graph import subGraph_middle_step
 from app.agents.subgraphs.generate_readme.graph import subGraph_generate_readme
 
+import os
+
 def check_if_last_step(state):
     print(f"current_step: {state["current_step"]} out of {state["total_number_of_steps"]}")
     if not state["total_number_of_steps"]: #! Fix this bug and remove this if statement
@@ -40,6 +42,7 @@ g.add_node(
     "entry",
     lambda _: {
         "retrieval_count": 0,
+        "corrected_paths": [],
     },
 )
 g.add_edge("entry", "check_if_last_step")
@@ -67,13 +70,12 @@ g.add_edge("human_in_the_loop", "check_if_last_step")
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
 g.add_edge(n(subGraph_generate_readme), END)
 
-# conn = sqlite3.connect("./cache/checkpoints.sqlite")
-# memory = SqliteSaver(conn)
-memory = MemorySaver()
-main_graph = g.compile(
-    checkpointer=memory, interrupt_before=["human_in_the_loop"]
-)
-
+os.makedirs("./cache", exist_ok=True)
+db_path = os.path.join(".", "cache", "checkpoints.sqlite")
+with SqliteSaver.from_conn_string(db_path) as memory:
+    main_graph = g.compile(
+        checkpointer=memory, interrupt_before=["human_in_the_loop"]
+    )
 
 with open("./app/agents/graph_diagrams/main_graph.png", "wb") as f:
     f.write(main_graph.get_graph().draw_mermaid_png())

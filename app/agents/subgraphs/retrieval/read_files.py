@@ -54,7 +54,7 @@ def read_files(state: State):
     # TODO: Add an intelligent way to shorten the code snippets
 
     if not opened_files:
-        formatted_snippets = ["No valid files found"]
+        formatted_snippets = ["No documents from read_files"]
     else:
         formatted_snippets = [
             f"{path}:\n\n{content}" for path, content in opened_files.items()

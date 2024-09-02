@@ -17,7 +17,7 @@ def home_view(session):
     return (
         Title("AI README Generator"),
         Main(id="step", cls="container")(
-            A(href="/")(H1("AI README Generator")),
+            A(href="/", style="text-decoration: none; color: inherit;")(H1("AI README Generator")),
             Form(
                 hx_post="init/?project_id=" + str(uuid.uuid4()),
                 hx_swap="innerHTML",
