@@ -1,18 +1,59 @@
-# WriteMeReadMe
+# AI_README_Generator
 
-To build the Docker image (terminal at the workdir):
+AI_README_Generator is an AI-powered tool that automates GitHub repository analysis to create comprehensive README documentation.
+
+This project leverages various technologies such as LangChain, LangGraph, ColBERT, tree-sitter parsers, and advanced semantic analysis to provide meaningful insights into repository contents. By orchestrating multi-step processes that seek confirmation from users, it not only refines results iteratively but also collects a self-evaluation dataset used to improve the system.
+
+Currently, the system only supports Python projects, but there are plans to expand support to other languages.
+
+## Features
+
+### 1. **Intelligent Code Retrieval**
+
+- The system utilizes **ColBERT**, a neural information retrieval model based on cross encoder, to perform context-aware retrieval of documents and code snippets within the repository. This ensures that the most relevant information is identified and utilized for analysis and README generation.
+
+### 2. **Modular, Graph-Based Architecture**
+
+- The system is designed using a modular, graph-based architecture using LangGraph. Each distinct processing stage is represented as a subgraph.
+
+### 3. Smart Chunking
+
+- By using **tree-sitter** parsers, the system chunk codes into semantically meaningful parts. Also, it implements “smart chunking” which includes relevant part of code such as class definition or function arguments to parts of code that doesn’t include them.
+
+### 4. **Human-in-the-Loop Feedback System**
+
+- A key feature of AI_README_Generator is the integration of human feedback. Users can refine the system's output iteratively, improving the relevance and accuracy of the generated documentation.
+
+### 5. **Web Interface for User Interaction**
+
+- A user-friendly web interface built with FastHTML allows users to input GitHub repository URLs for analysis. The system then analyzes the repository and presents the results, potentially generating a README file or other types of documentation. The feedback system enables an iterative process where users can provide feedback on the analysis, guiding the system to refine and improve its results over time.
+
+## How It Works
+
+1. **User Inputs GitHub Repository URL**: The user provides a GitHub repository URL via the web interface.
+2. **Clone the repository and generate metadata:** The system creates project metadata, including the directory tree and a list of packages used in the project.
+3. **Smart chunking and indexing with ColBERT:** The system chunks codes and index them for ColBERT analysis. 
+4. **Feedback and Refinement**:The system analyzes the repository using predefined steps of instruction. For instance, the first instruction might be "What are the core Python packages?" The system then retrieves relevant code snippets and generates an answer to the question. Using the web application, the user can confirm or correct this analysis.
+5. **README Generation**: Based on the analyzed content, the system may generate a README content that explain the repository's purpose, usage, and key components.
+
+## Technologies Used
+
+- **LangChain/LangGraph**: Orchestrates the agentic flow for code retrieval, analysis, and documentation generation.
+- **ColBERT(RAGatouille)**: A neural information retrieval model that enhances context-aware code retrieval.
+- **Tree-sitter**: Provides language-specific parsing capabilities for multi-language support.
+
+## How to run
+Build the Docker image (terminal at the workdir):
 ```bash
 docker build -t readmegen .
 ```
 
-To run the container:
+Run the container:
 ```bash
 docker run -p 8000:8000 readmegen
 ```
 
-<br>You can access to the web server at http://localhost:8000/ </br>
-
-To run locally:
+Run locally:
 ```bash
 export $(grep -v '^#' .env | xargs)
 uvicorn app.fasthtml_app:app --reload
