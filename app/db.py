@@ -1,7 +1,15 @@
+import os
 import threading
 from fasthtml.common import *
 
-db = database("data/main_database/main.db")
+if os.path.exists(f"/vol"):
+    os.makedirs("/vol/data/main_database", exist_ok=True)
+    db_path = os.path.join("/vol", "data", "main_database", "main.db")
+else:
+    os.makedirs("./data/main_database", exist_ok=True)
+    db_path = os.path.join(".", "data", "main_database", "main.db")
+
+db = database(db_path)
 
 users, steps, retrieved_chunks, readmes = (
     db.t.users,

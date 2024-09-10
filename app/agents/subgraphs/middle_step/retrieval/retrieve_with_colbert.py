@@ -21,7 +21,7 @@ def retrieve_with_colbert(state: State):
     queries = state["step_question"]["queries"]
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
 
-    doc_path = f"{cache_dir}/{state['title']}/documents.pkl"
+    doc_path = f"{cache_dir}/chunked_doc/{state['title']}/documents.pkl"
     index_path = f"{cache_dir}/colbert/indexes/{state['title']}"
 
     if os.path.exists(doc_path) and os.path.exists(index_path):
@@ -31,7 +31,7 @@ def retrieve_with_colbert(state: State):
 
     else:
         print("Embedidngs does not exist")
-        os.makedirs(f"{cache_dir}/{state['title']}", exist_ok=True)
+        os.makedirs(f"{cache_dir}/chunked_doc/{state['title']}", exist_ok=True)
 
         documents = chunk_with_AST_parser(root_path, language="python")
         if not documents:
@@ -52,7 +52,16 @@ def retrieve_with_colbert(state: State):
             query,
             k=5,
         )
-        retrieved_code_snippets.extend([result["content"] for result in results])
+        for result in results:
+            print("-----"*10)
+            print("-----"*10)
+            print("score", result["score"])
+            print("-----"*10)
+            print("content", result["content"])
+            print()
+            print()
+
+        retrieved_code_snippets.extend([result["content"] for result in results if result["score"] > state['colbert_threshold']])
 
     print(f"Retrieved {len(retrieved_code_snippets)} code snippets")
 

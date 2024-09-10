@@ -15,6 +15,7 @@ async def step_initializer(
     project_id: str,
 ):
     print("==>> step_initializer")
+    print("session: ", session)
 
     form = await request.form()
     clone_url = form.get("clone_url")
@@ -45,6 +46,7 @@ async def step_initializer(
         "previous_step": 0,
         "current_step": 1,
         "step_question": STEP_LIST[0],
+        "colbert_threshold": 10,
     }
 
     try:
@@ -52,16 +54,22 @@ async def step_initializer(
             initial_state,
             {"configurable": {"thread_id": project_id}},
         )
+        print(f"==>> r: {r}")
         results = r.get("results", {})
+        print(f"==>> results: {results}")
         retrieved_chunks = r.get("retrieved_chunks", None)
 
     except Exception as e:
         raise e
+    
+    answer = results.get(1, [{}])[0].get("answer")
+    if not answer:
+        raise Exception("No answer found")
 
     r = initialize_db(
         session["session_id"],
         project_id,
-        results.get(0, [{}])[0].get("answer"),
+        answer,
         STEP_LIST[0]["feedback_question"],
         retrieved_chunks,
         repo_info["directory_tree_dict"],

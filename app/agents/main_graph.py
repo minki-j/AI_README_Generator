@@ -53,14 +53,19 @@ g.add_edge(n(check_if_regenerate_with_feedback), n(subGraph_middle_step))
 g.add_node(n(subGraph_middle_step), subGraph_middle_step)
 g.add_edge(n(subGraph_middle_step), "human_in_the_loop")
 
-g.add_node("human_in_the_loop", lambda state: print(f"Got feedback from the user: {state.get("user_feedback", "None")}"))
+g.add_node("human_in_the_loop", lambda state: print(f"Got feedback from the user: {state.get('user_feedback', 'None')}"))
 g.add_edge("human_in_the_loop", "check_if_last_step")
 
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
 g.add_edge(n(subGraph_generate_readme), END)
 
-os.makedirs("./data/graph_checkpoints", exist_ok=True)
-db_path = os.path.join(".", "data", "graph_checkpoints", "checkpoints.sqlite")
+if os.path.exists(f"/vol"):
+    os.makedirs("/vol/data/graph_checkpoints", exist_ok=True)
+    db_path = os.path.join("/vol", "data", "graph_checkpoints", "checkpoints.sqlite")
+else:
+    os.makedirs("./data/graph_checkpoints", exist_ok=True)
+    db_path = os.path.join(".", "data", "graph_checkpoints", "checkpoints.sqlite")
+
 with SqliteSaver.from_conn_string(db_path) as memory:
     main_graph = g.compile(
         checkpointer=memory, interrupt_before=["human_in_the_loop"]

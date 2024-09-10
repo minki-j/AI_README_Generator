@@ -1,7 +1,8 @@
 import json
 from fasthtml.common import *
+from pprint import pprint
 
-from app.components.step import StepDiv
+from app.components.step import Step
 from app.utils.db_functions import insert_step_db, update_readme_content
 
 from app.agents.main_graph import main_graph
@@ -36,7 +37,7 @@ async def step_handler(
                 "user_feedback": user_feedback,
                 "directory_tree_dict": directory_tree_dict,
                 "current_step": step_num,
-                "step_question": STEP_LIST[int(step_num) - 1],
+                "step_question": STEP_LIST[step_num - 1],
             },
         )
         r = main_graph.invoke(None, config)
@@ -48,22 +49,22 @@ async def step_handler(
     r = insert_step_db(
         step_num,
         project_id,
-        STEP_LIST[int(step_num) - 1]["feedback_question"],
-        results.get(0, [{}])[0].get("answer"),
+        STEP_LIST[step_num - 1]["feedback_question"],
+        results.get(step_num, [{}])[0].get("answer"),
         retrieved_chunks,
         directory_tree_str,
     )
 
     if r:
-        return StepDiv(
-            STEP_LIST[int(step_num) - 1]["feedback_question"],
+        return Step(
+            STEP_LIST[step_num - 1]["feedback_question"],
             results.get(0, [{}])[0].get("answer"),
             retrieved_chunks,
             project_id,
-            str(int(step_num) + 1),
+            step_num + 1,
             len(STEP_LIST),
             directory_tree_str,
-            is_last_step=True if int(step_num) == len(STEP_LIST) - 1 else False,
+            is_last_step=True if step_num == len(STEP_LIST) - 1 else False,
         )
     else:
         return Div(

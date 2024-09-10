@@ -41,8 +41,7 @@ class State(TypedDict):
                 for result in step_results:
                     # Check if an equivalent result already exists
                     if not any(
-                        r["answer"] == result["answer"]
-                        and r["opened_files"] == result["opened_files"]
+                        all(r.get(attr) == result.get(attr) for attr in StepResult.__annotations__)
                         for r in original[step]
                     ):
                         original[step].append(result)
@@ -57,7 +56,8 @@ class State(TypedDict):
     directory_tree: str
     packages_used: List[str]
     total_number_of_steps: int
-
+    colbert_threshold: float
+    
     # Ephemeral Variables
     # Will be reset after each step
     invalid_paths: List[str]

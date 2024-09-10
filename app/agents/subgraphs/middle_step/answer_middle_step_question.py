@@ -52,15 +52,13 @@ Based on the retrieved code snippets, answer the following question.
         }
     )
 
-    print("response: ", response)
-    answer = response.answer
-    print(f"==>> answer: {answer}")
-
     return {
         "results": {
-            state["current_step"]: [{
-                "answer": answer,
-                "opened_files": [],
-            }]
+            state["current_step"]: [
+                {
+                    "answer": response.answer,
+                    "opened_files": [],
+                }
+            ]
         }
     }

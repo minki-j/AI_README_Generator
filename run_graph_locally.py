@@ -20,6 +20,7 @@ result = main_graph.invoke(
         "step_question": STEP_LIST[0],
         "current_step": 1,
         "total_number_of_steps": len(STEP_LIST),
+        "previous_step": 0,
     },
     config,
 )
@@ -32,7 +33,7 @@ for i in range(len(STEP_LIST) - 1):
         config,
         {
             "user_feedback": user_feedback,
-            "current_step": int(i + 2),
+            "current_step": i + 2,
             "step_question": STEP_LIST[i + 1],
         },
     )

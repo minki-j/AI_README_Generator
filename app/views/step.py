@@ -24,7 +24,7 @@ def step_view(step_num: int, project_id: str):
                 "answer": step_data["answer"],
                 "retrieved_chunks": retrieved_chunks,
                 "project_id": project_id,
-                "next_step": str(int(step_num) + 1),
+                "next_step": step_num + 1,
             },
             step_data["directory_tree_str"],
         )

@@ -8,6 +8,7 @@ def chunk_with_AST_parser(directory_path: str, language: str = "python"):
         input_dir=directory_path,
         required_exts=[".py"],
         recursive=True,
+        exclude=["cache", "testing", "data", "assets"],
     ).load_data()
 
     code_splitter = CodeSplitter.from_defaults(

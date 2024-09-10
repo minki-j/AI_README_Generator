@@ -1,15 +1,19 @@
 from fasthtml.common import *
 
-from app.components.step import StepDiv
+from app.components.step import Step
 
 
 def StepPage(step_num, total_step_num, step_data, directory_tree_str):
-
+    print("STEP PAGE component ------------------")
+    print(
+        "==>> answer: ",
+        step_data["answer"],
+    )
     return (
         Title("AI README Generator"),
         Main(cls="container", style="")(
             A(href="/", style="text-decoration: none; color: inherit;")(H1("AI README Generator")),
-            StepDiv(
+            Step(
                 step_data["feedback_question"],
                 step_data["answer"],
                 step_data["retrieved_chunks"],

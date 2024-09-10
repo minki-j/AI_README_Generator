@@ -1,6 +1,6 @@
 from fasthtml.common import *
 
-from app.components.step import StepDiv
+from app.components.step import Step
 
 from app.assets.step_list import STEP_LIST
 from app.db import db

@@ -43,19 +43,18 @@ def get_repo_info(clone_url, cache_dir):
 
     # clone the repository
     clone_dir = os.path.join(cache_dir, "cloned_repositories", repo_info["title"])
-    try:
-        subprocess.run(
-            "git clone " + clone_url + " " + clone_dir,
-            capture_output=True,
-            check=True,
-            text=True,
-            shell=True,
-        ) # this will throw an error if the directory is already there
-        print("Cloned the repository ", clone_url)
-    except subprocess.CalledProcessError as e:
-        if e.returncode == 128:
-            print("Skipping cloning since the directory is already there")
-        else:
+    if os.path.exists(clone_dir):
+        print(f"Repository already exists at {clone_dir}")
+    else:
+        try:
+            subprocess.run(
+                ["git", "clone", clone_url, clone_dir],
+                capture_output=True,
+                check=True,
+                text=True,
+            )
+            print(f"Cloned the repository {clone_url}")
+        except subprocess.CalledProcessError as e:
             print(f"Error cloning repository: {e}")
             print(f"Return code: {e.returncode}")
             print(f"Output: {e.output}")
