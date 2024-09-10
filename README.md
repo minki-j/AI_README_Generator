@@ -42,6 +42,10 @@ Currently, the system only supports Python projects, but there are plans to expa
 - **ColBERT(RAGatouille)**: A neural information retrieval model that enhances context-aware code retrieval.
 - **Tree-sitter**: Provides language-specific parsing capabilities for multi-language support.
 
+## System Architecture Flow
+
+![System Architecture Flow](./architecture_flow.png)
+
 ## How to run
 Build the Docker image (terminal at the workdir):
 ```bash
