@@ -6,6 +6,10 @@ This project leverages various technologies such as LangChain, LangGraph, ColBER
 
 Currently, the system only supports Python projects, but there are plans to expand support to other languages.
 
+## System Architecture Flow
+
+![System Architecture Flow](./architecture_flow.png)
+
 ## Features
 
 ### 1. **Intelligent Code Retrieval**
@@ -41,10 +45,6 @@ Currently, the system only supports Python projects, but there are plans to expa
 - **LangChain/LangGraph**: Orchestrates the agentic flow for code retrieval, analysis, and documentation generation.
 - **ColBERT(RAGatouille)**: A neural information retrieval model that enhances context-aware code retrieval.
 - **Tree-sitter**: Provides language-specific parsing capabilities for multi-language support.
-
-## System Architecture Flow
-
-![System Architecture Flow](./architecture_flow.png)
 
 ## How to run
 Build the Docker image (terminal at the workdir):
