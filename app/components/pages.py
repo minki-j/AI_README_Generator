@@ -4,11 +4,6 @@ from app.components.step import Step
 
 
 def StepPage(step_num, total_step_num, step_data, directory_tree_str):
-    print("STEP PAGE component ------------------")
-    print(
-        "==>> answer: ",
-        step_data["answer"],
-    )
     return (
         Title("AI README Generator"),
         Main(cls="container", style="")(

@@ -26,6 +26,12 @@ Based on the retrieved code snippets, answer the following question.
 {question}
 </questions>
 
+Refer to user feedback if it is provided.
+
+<user_feedback>
+{user_feedback}
+</user_feedback>
+
 <code_snippets>
 {retrieved_chunks}
 </code_snippets>
@@ -49,6 +55,7 @@ Based on the retrieved code snippets, answer the following question.
         {
             "question": middle_step["prompt"],
             "retrieved_chunks": state["retrieved_chunks"],
+            "user_feedback": state["user_feedback"],
         }
     )
 
@@ -58,6 +65,8 @@ Based on the retrieved code snippets, answer the following question.
                 {
                     "answer": response.answer,
                     "opened_files": [],
+                    "user_feedback": state["user_feedback"],
+                    "user_selected_files": [], #TODO
                 }
             ]
         }

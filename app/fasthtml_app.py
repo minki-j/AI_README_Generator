@@ -5,8 +5,8 @@ from app.css import loader_css, gridlink
 import app.views.main as main_views
 import app.views.step as step_views
 import app.views.history as history_views
-import app.handlers.init as init_handlers
-import app.handlers.step as step_handlers
+import app.controllers.init as init_handlers
+import app.controllers.step as step_handlers
 
 def user_auth_before(req, sess):
     # The `auth` key in the request scope is automatically provided

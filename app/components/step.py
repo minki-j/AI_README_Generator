@@ -20,8 +20,6 @@ def Step(
     scrollable_style = common_style + " max-height: 300px; overflow-y: auto;"
     textarea_style = common_style + " min-height: 50px; max-height: 300px; overflow-y: auto; resize: vertical;"
 
-    print("STEP component ------------------")
-    print("==>> answer: ", answer)
     def make_page_list(total_step_num, current_step):
         page_list = []
         for i in range(1, total_step_num + 1):

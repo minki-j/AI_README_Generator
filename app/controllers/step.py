@@ -46,11 +46,15 @@ async def step_handler(
     except Exception as e:
         raise e
 
+    answer = results.get(step_num, [{}])[0].get("answer")
+    if answer is None:
+        raise Exception("Answer is None")
+
     r = insert_step_db(
         step_num,
         project_id,
         STEP_LIST[step_num - 1]["feedback_question"],
-        results.get(step_num, [{}])[0].get("answer"),
+        answer,
         retrieved_chunks,
         directory_tree_str,
     )
@@ -58,7 +62,7 @@ async def step_handler(
     if r:
         return Step(
             STEP_LIST[step_num - 1]["feedback_question"],
-            results.get(0, [{}])[0].get("answer"),
+            results.get(step_num, [{}])[0].get("answer"),
             retrieved_chunks,
             project_id,
             step_num + 1,
@@ -103,8 +107,14 @@ async def generate_readme(project_id: str, request: Request):
     )
     generated_readme = r.get("generated_readme", None)
     print(f"==>> generated_readme: {generated_readme}")
-    r = update_readme_content(project_id, generated_readme)
-    if r:
+    db_res = update_readme_content(project_id, generated_readme)
+
+    #TODO: update the eval dataset
+    print("-----------results: ")
+    pprint(r.get("results", None))
+    print("-----------")
+    
+    if db_res:
         full_route = str(request.url_for("generate_readme"))
         route = full_route.replace(str(request.base_url), "")
         return RedirectResponse(
