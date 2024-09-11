@@ -37,12 +37,12 @@ def get_repo_info(clone_url, cache_dir):
         params={"recursive": "true"},
     )
     data = response.json()
-    tree = data["tree"]    
+    tree = data["tree"]
     repo_info["directory_tree_dict"] = convert_tree2dict(tree)
     repo_info["directory_tree"] = generate_tree([item["path"] for item in tree])
 
     # clone the repository
-    clone_dir = os.path.join(cache_dir, "cloned_repositories", repo_info["title"])
+    clone_dir = os.path.join(cache_dir, repo_info["title"], "cloned_repositories")
     if os.path.exists(clone_dir):
         print(f"Repository already exists at {clone_dir}")
     else:
@@ -60,7 +60,7 @@ def get_repo_info(clone_url, cache_dir):
             print(f"Output: {e.output}")
 
     # get the list of packages used
-    requirement_dir = os.path.join(cache_dir, "packages_used", repo_info["title"])
+    requirement_dir = os.path.join(cache_dir, repo_info["title"], "packages_used")
     os.makedirs(requirement_dir, exist_ok=True)
     save_path = os.path.join(requirement_dir, "requirements.txt")
     subprocess.run(

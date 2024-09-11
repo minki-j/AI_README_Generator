@@ -2,6 +2,7 @@ from fasthtml.common import *
 import json
 
 from .file_explorer import FileExplorer
+from app.agents.state_schema import RetrievalMethod
 
 
 def Step(
@@ -18,7 +19,10 @@ def Step(
 
     common_style = "margin-bottom:1rem; background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px;"
     scrollable_style = common_style + " max-height: 300px; overflow-y: auto;"
-    textarea_style = common_style + " min-height: 50px; max-height: 300px; overflow-y: auto; resize: vertical;"
+    textarea_style = (
+        common_style
+        + " min-height: 100px; max-height: 300px; overflow-y: auto; resize: vertical;"
+    )
 
     def make_page_list(total_step_num, current_step):
         page_list = []
@@ -75,6 +79,17 @@ def Step(
                     for chunk in retrieved_chunks
                 ],
             ),
+            H5("Retrieval Method"),
+            Select(
+                id="retrieval_method",
+                name="retrieval_method",
+                cls="form-select",
+            )(
+                *[
+                    Option(method.value, value=method.name)
+                    for _, method in enumerate(RetrievalMethod)
+                ]
+            ),
             H5("File Explorer"),
             FileExplorer(directory_tree_str, scrollable_style),
             Input(
@@ -92,46 +107,6 @@ def Step(
                 style=textarea_style,
             ),
             Button("Apply Feedback", type="submit", cls="outline"),
-        ),
-        Script(
-            """
-            function adjustHeight(textarea) {
-                textarea.style.height = 'auto';
-                textarea.style.height = `${Math.min(textarea.scrollHeight, 300)}px`;
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                const textareas = document.querySelectorAll('.dynamic-textarea');
-                textareas.forEach(textarea => {
-                    adjustHeight(textarea);
-                    textarea.addEventListener('input', () => adjustHeight(textarea));
-                });
-            });
-            document.addEventListener('change', function(e) {
-                if (e.target.matches('.file-explorer input[type="checkbox"]')) {
-                    let tree = JSON.parse(document.getElementById('directory_tree_str').value);
-                    updateTree(tree, e.target.value, e.target.checked);
-                    document.getElementById('directory_tree_str').value = JSON.stringify(tree);
-                }
-            });
-
-            function updateTree(tree, fileName, value) {                
-                function recursiveUpdate(obj) {
-                    for (let key in obj) {
-                        if (key === fileName) {
-                            obj[key] = value;
-                            return true;
-                        } else if (typeof obj[key] === 'object') {
-                            if (recursiveUpdate(obj[key])) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
-                recursiveUpdate(tree);
-            }
-        """
         ),
         (
             Button(
@@ -158,5 +133,40 @@ def Step(
             Ol(cls="row center-xs middle-xs", style="padding-inline-start:0;")(
                 *make_page_list(total_step_num, current_step)
             )
+        ),
+        Script(
+            """
+            (function() {
+                const textareas = document.querySelectorAll('.dynamic-textarea');
+                textareas.forEach(textarea => {
+                    textarea.style.height = 'auto';
+                    textarea.style.height = `${Math.min(textarea.scrollHeight, 600)}px`;
+                });
+            })();
+
+            function updateTree(tree, fileName, value) {                
+                function recursiveUpdate(obj) {
+                    for (let key in obj) {
+                        if (key === fileName) {
+                            obj[key] = value;
+                            return true;
+                        } else if (typeof obj[key] === 'object') {
+                            if (recursiveUpdate(obj[key])) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+                recursiveUpdate(tree);
+            }
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('.file-explorer input[type="checkbox"]')) {
+                    let tree = JSON.parse(document.getElementById('directory_tree_str').value);
+                    updateTree(tree, e.target.value, e.target.checked);
+                    document.getElementById('directory_tree_str').value = JSON.stringify(tree);
+                }
+            });
+            """
         ),
     )

@@ -7,7 +7,7 @@ from langchain_core.runnables import RunnablePassthrough
 from app.agents.state_schema import State
 from app.utils.converters import to_path_map
 
-from app.agents.subgraphs.middle_step.graph import subGraph_middle_step
+from app.agents.subgraphs.steps.graph import subGraph_steps
 from app.agents.subgraphs.generate_readme.graph import subGraph_generate_readme
 
 import os
@@ -47,11 +47,11 @@ g.add_conditional_edges(
 )
 
 g.add_node(n(check_if_regenerate_with_feedback), check_if_regenerate_with_feedback)
-g.add_edge(n(check_if_regenerate_with_feedback), n(subGraph_middle_step))
+g.add_edge(n(check_if_regenerate_with_feedback), n(subGraph_steps))
 
 
-g.add_node(n(subGraph_middle_step), subGraph_middle_step)
-g.add_edge(n(subGraph_middle_step), "human_in_the_loop")
+g.add_node(n(subGraph_steps), subGraph_steps)
+g.add_edge(n(subGraph_steps), "human_in_the_loop")
 
 g.add_node("human_in_the_loop", lambda state: print(f"Got feedback from the user: {state.get('user_feedback', 'None')}"))
 g.add_edge("human_in_the_loop", "check_if_last_step")

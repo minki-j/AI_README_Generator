@@ -28,6 +28,8 @@ async def step_handler(
         user_feedback = form.get("user_feedback")
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)
+        retrieval_method = form.get("retrieval_method")
+        print(f"==>> retrieval_method: {retrieval_method}")
 
     try:
         config = {"configurable": {"thread_id": project_id}}
@@ -38,6 +40,7 @@ async def step_handler(
                 "directory_tree_dict": directory_tree_dict,
                 "current_step": step_num,
                 "step_question": STEP_LIST[step_num - 1],
+                "retrieval_method": retrieval_method,
             },
         )
         r = main_graph.invoke(None, config)

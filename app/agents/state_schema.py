@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Annotated, TypedDict, Dict, List
 
 
@@ -19,6 +20,11 @@ class StepResult(TypedDict):
     opened_files: List[str]
     user_feedback: str
     user_selected_files: List[str]
+
+
+class RetrievalMethod(Enum):
+    FAISS = "Faiss"
+    COLBERT = "ColBERT"
 
 
 class State(TypedDict):
@@ -54,7 +60,7 @@ class State(TypedDict):
 
     def update_step_question(original: StepQ, next_step_question: dict) -> StepQ:
         for key, value in next_step_question.items():
-            if key in original:
+            if key in StepQ.__annotations__:
                 original[key] = value
             else:
                 raise ValueError(f"Key {key} not found in StepQ")
@@ -85,6 +91,7 @@ class State(TypedDict):
     step_question: Annotated[StepQ, update_step_question]
     user_feedback: str
     directory_tree_dict: dict  # For indicating which files are retrieved
+    retrieval_method: RetrievalMethod
 
     # Long Term Memory
     results: Annotated[Dict[int, List[StepResult]], merge_results]

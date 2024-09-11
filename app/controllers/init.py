@@ -8,6 +8,8 @@ from app.agents.main_graph import main_graph
 
 from app.assets.step_list import STEP_LIST
 
+from app.agents.state_schema import RetrievalMethod
+
 
 async def step_initializer(
     session,
@@ -15,7 +17,6 @@ async def step_initializer(
     project_id: str,
 ):
     print("==>> step_initializer")
-    print("session: ", session)
 
     form = await request.form()
     clone_url = form.get("clone_url")
@@ -47,6 +48,7 @@ async def step_initializer(
         "current_step": 1,
         "step_question": STEP_LIST[0],
         "colbert_threshold": 10,
+        "retrieval_method": RetrievalMethod.FAISS,
     }
 
     try:
@@ -54,9 +56,7 @@ async def step_initializer(
             initial_state,
             {"configurable": {"thread_id": project_id}},
         )
-        print(f"==>> r: {r}")
         results = r.get("results", {})
-        print(f"==>> results: {results}")
         retrieved_chunks = r.get("retrieved_chunks", None)
 
     except Exception as e:
@@ -77,7 +77,6 @@ async def step_initializer(
     if r:
         full_route = str(request.url_for("step_view"))
         route = full_route.replace(str(request.base_url), "")
-        print(f"==>> route: {route}")
         return RedirectResponse(
             url=f"/{route}?step_num=1&project_id={project_id}", status_code=303
         )

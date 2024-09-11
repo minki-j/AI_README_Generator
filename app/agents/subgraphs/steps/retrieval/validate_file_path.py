@@ -25,7 +25,7 @@ def validate_file_paths_from_LLM(state: State):
         if len(file_paths) == 0:
             print("No file paths to validate")
             return {
-                "invalid_paths": [],
+                # "invalid_paths": [],
                 "valid_paths": [],
             }
         full_paths = [os.path.join(root_path, path) for path in file_paths]

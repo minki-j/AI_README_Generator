@@ -4,9 +4,11 @@
 .DS_Store
 .sesskey
 __pycache__/
+.vscode/
 
 cache/
 data/
 scatch_pad.ipynb
 
 .ragatouille
+testing/

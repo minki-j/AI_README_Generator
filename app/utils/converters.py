@@ -1,4 +1,5 @@
 import json
+from langchain_core.documents.base import Document
 
 
 def to_path_map(node_names):
@@ -27,3 +28,19 @@ def convert_tree2dict(tree):
         add_to_dict(path_parts, tree_dict, item["type"])
 
     return tree_dict
+
+
+def convert_docs_from_llamaindex_to_langchain(docs):
+    lc_docs = []
+    for doc in docs:
+        llmaindex_doc_dict = doc.dict()
+        langchain_doc_dict = {
+            "page_content": llmaindex_doc_dict["text"],
+            "metadata": {
+                "source": llmaindex_doc_dict["metadata"]["file_path"],
+            }
+        }
+        lc_docs.append(Document(**langchain_doc_dict))
+    return lc_docs
+
+    

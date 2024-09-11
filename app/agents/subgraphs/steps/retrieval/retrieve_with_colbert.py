@@ -9,20 +9,15 @@ from app.agents.state_schema import State
 from .chunking import chunk_with_AST_parser
 from .colbert import index_documents_with_colbert
 
-from app.global_vars import SKIP_COLBERT
-
-
 def retrieve_with_colbert(state: State):
-    print("Retrieving code snippets for ", state["title"])
-    if SKIP_COLBERT:
-        return {"retrieved_chunks": ["No documents from ColBERT since it is disabled"]}
+    print("retrieve_with_colbert for ", state["title"])
 
     cache_dir = state["cache_dir"]
     queries = state["step_question"]["queries"]
-    root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
+    root_path = str(Path(state["cache_dir"]) / state["title"] / "cloned_repositories")
 
-    doc_path = f"{cache_dir}/chunked_doc/{state['title']}/documents.pkl"
-    index_path = f"{cache_dir}/colbert/indexes/{state['title']}"
+    doc_path = f"{cache_dir}/{state['title']}/chunked_doc_llamaindex/documents.pkl"
+    index_path = f"{cache_dir}/{state['title']}/colbert/indexes/1"
 
     if os.path.exists(doc_path) and os.path.exists(index_path):
         print("Loading cached documents and embeddings")
@@ -31,7 +26,9 @@ def retrieve_with_colbert(state: State):
 
     else:
         print("Embedidngs does not exist")
-        os.makedirs(f"{cache_dir}/chunked_doc/{state['title']}", exist_ok=True)
+        os.makedirs(
+            f"{cache_dir}/{state['title']}/chunked_doc_llamaindex", exist_ok=True
+        )
 
         documents = chunk_with_AST_parser(root_path, language="python")
         if not documents:
@@ -41,27 +38,32 @@ def retrieve_with_colbert(state: State):
         with open(doc_path, "wb") as f:
             pickle.dump(documents, f)
 
-        index_documents_with_colbert(documents, cache_dir, state["title"])
+        index_documents_with_colbert(documents, f"{cache_dir}/{state['title']}", "1")
 
     RAG = RAGPretrainedModel.from_index(index_path, verbose=0)
 
     retrieved_code_snippets = []
     for query in queries:  # TODO parallelize this
-        print(f"--------Searching for query: {query}")
+        print(f"\n\n>>>>>>Searching for query: \n{query}<<<<<\n\n")
         results = RAG.search(
             query,
             k=5,
         )
-        for result in results:
-            print("-----"*10)
-            print("-----"*10)
-            print("score", result["score"])
-            print("-----"*10)
-            print("content", result["content"])
-            print()
-            print()
-
-        retrieved_code_snippets.extend([result["content"] for result in results if result["score"] > state['colbert_threshold']])
+        # for result in results:
+        #     print("-----"*10)
+        #     print("-----"*10)
+        #     print("score", result["score"])
+        #     print("-----"*10)
+        #     print("content", result["content"])
+        #     print()
+        #     print()
+        retrieved_code_snippets.extend(
+            [
+                result["content"]
+                for result in results
+                if result["score"] > state["colbert_threshold"]
+            ]
+        )
 
     print(f"Retrieved {len(retrieved_code_snippets)} code snippets")
 

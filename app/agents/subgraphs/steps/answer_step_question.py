@@ -15,8 +15,8 @@ class Answer(BaseModel):
     answer: str = Field(description="The answer to the question")
 
 
-def answer_middle_step_question(state: State) -> State:
-    print("==>> answer_middle_step_question node started")
+def answer_step_question(state: State) -> State:
+    print("==>> answer_step_question node started")
     middle_step = state["step_question"]
 
     prompt = ChatPromptTemplate.from_template(
@@ -44,18 +44,21 @@ Refer to user feedback if it is provided.
         print("DEBUG MODE. SKIP answer_middle_step_question")
         return {
             "results": {
-                state["current_step"]: [{
-                    "answer": "DEBUG MODE",
-                    "opened_files": [],
-                }]
+                state["current_step"]: [
+                    {
+                        "answer": "This is a placeholder answer for debugging mode. " *20,
+                        "opened_files": [],
+                    }
+                ]
             }
         }
+
 
     response = chain.invoke(
         {
             "question": middle_step["prompt"],
             "retrieved_chunks": state["retrieved_chunks"],
-            "user_feedback": state["user_feedback"],
+            "user_feedback": state.get("user_feedback", ""),
         }
     )
 
@@ -65,7 +68,7 @@ Refer to user feedback if it is provided.
                 {
                     "answer": response.answer,
                     "opened_files": [],
-                    "user_feedback": state["user_feedback"],
+                    "user_feedback": state.get("user_feedback", ""),
                     "user_selected_files": [], #TODO
                 }
             ]

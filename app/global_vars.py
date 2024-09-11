@@ -1,3 +1,4 @@
 DEBUG = False
-SKIP_COLBERT = False
-SKIP_LLM_CALLINGS = False
+RETRIEVAL = "faiss"
+# RETRIEVAL = "colbert"
+SKIP_LLM_CALLINGS = True

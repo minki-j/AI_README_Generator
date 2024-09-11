@@ -2,7 +2,7 @@ from ragatouille import RAGPretrainedModel
 import time
 
 
-def index_documents_with_colbert(documents, cache_dir, title):
+def index_documents_with_colbert(documents, cache_dir, index_name):
     start_time = time.time()
 
     RAG = RAGPretrainedModel.from_pretrained(
@@ -10,7 +10,7 @@ def index_documents_with_colbert(documents, cache_dir, title):
     )
 
     RAG.index(
-        index_name=title,
+        index_name=index_name,
         collection=[document.text for document in documents],
         split_documents=False,
     )
@@ -18,4 +18,4 @@ def index_documents_with_colbert(documents, cache_dir, title):
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    print(f"Indexing with ColBERT is done in {elapsed_time:.2f} seconds")
+    print(f"\n\n>>>>>>>Indexing with ColBERT is done in {elapsed_time:.2f} seconds<<<<<<<\n\n")
