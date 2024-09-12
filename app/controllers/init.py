@@ -6,7 +6,7 @@ from app.utils.get_repo_info import get_repo_info
 from app.utils.db_functions import initialize_db
 from app.agents.main_graph import main_graph
 
-from app.assets.step_list import STEP_LIST
+from app.step_list import STEP_LIST
 
 from app.agents.state_schema import RetrievalMethod
 

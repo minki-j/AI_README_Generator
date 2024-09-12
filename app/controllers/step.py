@@ -8,7 +8,7 @@ from app.utils.db_functions import insert_step_db, update_readme_content
 from app.agents.main_graph import main_graph
 from app.db import db
 
-from app.assets.step_list import STEP_LIST
+from app.step_list import STEP_LIST
 from app.global_vars import DEBUG
 
 

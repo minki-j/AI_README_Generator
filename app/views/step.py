@@ -1,7 +1,7 @@
 from fasthtml.common import *
 from app.components.pages import StepPage
 
-from app.assets.step_list import STEP_LIST
+from app.step_list import STEP_LIST
 from app.db import db
 
 
