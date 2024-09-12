@@ -13,21 +13,20 @@ from app.agents.subgraphs.generate_readme.graph import subGraph_generate_readme
 import os
 
 def check_if_last_step(state):
-    print(f"current_step: {state["current_step"]} out of {state["total_number_of_steps"]}")
     if state["current_step"] is None or state["total_number_of_steps"] is None:
         raise(ValueError("current_step or total_number_of_steps is None"))
-    if state["current_step"] > state["total_number_of_steps"]:
+    if int(state["current_step"]) > int(state["total_number_of_steps"]):
         return n(subGraph_generate_readme)
     return n(check_if_regenerate_with_feedback)
 
 def check_if_regenerate_with_feedback(state):
-    if state["current_step"] == state["previous_step"]:
+    if int(state["current_step"]) == int(state["previous_step"]):
         return {
             "retrieved_chunks": "RESET",
         }
     else:
         return{
-            "previous_step": state["current_step"],
+            "previous_step": int(state["current_step"]),
         }
 
 g = StateGraph(State)
@@ -53,7 +52,7 @@ g.add_edge(n(check_if_regenerate_with_feedback), n(subGraph_steps))
 g.add_node(n(subGraph_steps), subGraph_steps)
 g.add_edge(n(subGraph_steps), "human_in_the_loop")
 
-g.add_node("human_in_the_loop", lambda state: print(f"Got feedback from the user: {state.get('user_feedback', 'None')}"))
+g.add_node("human_in_the_loop", RunnablePassthrough())
 g.add_edge("human_in_the_loop", "check_if_last_step")
 
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)

@@ -28,7 +28,7 @@ def Step(
         page_list = []
         for i in range(1, total_step_num + 1):
             common_style = "margin-bottom:0;"
-            if i <= current_step:
+            if i <= int(current_step):
                 page_list.append(
                     Li(cls="col-xs-2", style="list-style-type:none; margin-bottom:0;")(
                         A(
@@ -71,13 +71,13 @@ def Step(
                 cls="container",
                 style=scrollable_style,
             )(
-                *[
+                *( [P("No code snippets are retrieved")] if not retrieved_chunks else [
                     Code(
                         chunk,
                         style="margin-bottom:1rem; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
                     )
                     for chunk in retrieved_chunks
-                ],
+                ])
             ),
             H5("Retrieval Method"),
             Select(
@@ -141,6 +141,10 @@ def Step(
                 textareas.forEach(textarea => {
                     textarea.style.height = 'auto';
                     textarea.style.height = `${Math.min(textarea.scrollHeight, 600)}px`;
+                    textarea.addEventListener('input', function() {
+                        this.style.height = 'auto';
+                        this.style.height = `${Math.min(this.scrollHeight, 600)}px`;
+                    });
                 });
             })();
 

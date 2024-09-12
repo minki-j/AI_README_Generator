@@ -18,6 +18,7 @@ async def step_handler(
     step_num: int,
 ):
     print("==>> step_handler for step: ", step_num)
+    assert isinstance(step_num, int)
 
     form = await request.form()
     if len(form) == 0:  # when "next step" button is clicked
@@ -29,8 +30,6 @@ async def step_handler(
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)
         retrieval_method = form.get("retrieval_method")
-        print(f"==>> retrieval_method: {retrieval_method}")
-
     try:
         config = {"configurable": {"thread_id": project_id}}
         main_graph.update_state(
@@ -38,7 +37,7 @@ async def step_handler(
             {
                 "user_feedback": user_feedback,
                 "directory_tree_dict": directory_tree_dict,
-                "current_step": step_num,
+                "current_step": int(step_num),
                 "step_question": STEP_LIST[step_num - 1],
                 "retrieval_method": retrieval_method,
             },
@@ -49,7 +48,7 @@ async def step_handler(
     except Exception as e:
         raise e
 
-    answer = results.get(step_num, [{}])[0].get("answer")
+    answer = results.get(str(step_num), [{}])[-1].get("answer")
     if answer is None:
         raise Exception("Answer is None")
 
@@ -65,7 +64,7 @@ async def step_handler(
     if r:
         return Step(
             STEP_LIST[step_num - 1]["feedback_question"],
-            results.get(step_num, [{}])[0].get("answer"),
+            answer,
             retrieved_chunks,
             project_id,
             step_num + 1,

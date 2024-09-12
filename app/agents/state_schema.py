@@ -13,6 +13,8 @@ class StepQ(TypedDict):
     prompt: str
     queries: list[str]
     feedback_question: str
+    retrieval_needed: bool
+    repo_info_to_look_up: list[str]
 
 
 class StepResult(TypedDict):
@@ -37,12 +39,13 @@ class State(TypedDict):
         return original
 
     def merge_results(
-        original: Dict[int, List[StepResult]],
-        new_result: Dict[int, List[StepResult]],
-    ) -> Dict[int, List[StepResult]]:
+        original: Dict[str, List[StepResult]],
+        new_result: Dict[str, List[StepResult]],
+    ) -> Dict[str, List[StepResult]]:
         if new_result == "RESET":
             return {}
         for step, step_results in new_result.items():
+            step = str(step)
             if step not in original:
                 original[step] = step_results
             else:
@@ -94,7 +97,7 @@ class State(TypedDict):
     retrieval_method: RetrievalMethod
 
     # Long Term Memory
-    results: Annotated[Dict[int, List[StepResult]], merge_results]
+    results: Annotated[Dict[str, List[StepResult]], merge_results]
 
     # Outputs
     generated_readme: str

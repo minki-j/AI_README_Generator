@@ -62,7 +62,7 @@ async def step_initializer(
     except Exception as e:
         raise e
     
-    answer = results.get(1, [{}])[0].get("answer")
+    answer = results.get("1", [{}])[0].get("answer")
     if not answer:
         raise Exception("No answer found")
 
