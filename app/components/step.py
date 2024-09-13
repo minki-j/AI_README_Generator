@@ -13,6 +13,7 @@ def Step(
     next_step: int,
     total_step_num: int,
     directory_tree_str: str,
+    retrieval_method: RetrievalMethod,
     is_last_step=False,
 ):
     """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
@@ -89,7 +90,7 @@ def Step(
                     Option(
                         method.value,
                         value=method.name,
-                        selected=(method == list(RetrievalMethod)[0]) # TODO: Use Session State
+                        selected=(method == RetrievalMethod[retrieval_method]) # TODO: Use Session State
                     )
                     for method in RetrievalMethod
                 ]

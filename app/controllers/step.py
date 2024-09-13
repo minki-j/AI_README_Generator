@@ -80,6 +80,7 @@ async def step_handler(
             step_num + 1,
             len(STEP_LIST),
             directory_tree_str,
+            session["retrieval_method"],
             is_last_step=True if step_num == len(STEP_LIST) - 1 else False,
         )
     else:
@@ -118,7 +119,6 @@ async def generate_readme(project_id: str, request: Request):
         config,
     )
     generated_readme = r.get("generated_readme", None)
-    print(f"\n==>> final generated readme: {generated_readme}")
     db_res = update_readme_content(project_id, generated_readme)
 
     # Insert results into the database

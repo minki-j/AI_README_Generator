@@ -10,6 +10,8 @@ from app.global_vars import STEP_LIST
 
 from app.agents.state_schema import RetrievalMethod
 
+from app.views.main import MainComponent
+
 
 async def step_initializer(
     session,
@@ -17,26 +19,13 @@ async def step_initializer(
     project_id: str,
 ):
     print("\n==>>CTRL: step_initializer")
-    print(f"\n==>> session: {session}")
     form = await request.form()
     clone_url = form.get("clone_url")
-
-    github_url_pattern = r"^https://github\.com/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+\.git$"
-    if not re.match(github_url_pattern, clone_url):
-        print("Invalid Github clone URL")
-        print(f"\n==>> clone_url: {clone_url}")
-        add_toast(
-            session,
-            "Please enter a valid Github clone URL",
-            "error",
-        )  #! toast not working
-        return Div(Titled("Invalid Github clone URL"), cls="container")
 
     if os.path.exists(f"/vol"):
         cache_dir = f"/vol/cache"
         os.makedirs(cache_dir, exist_ok=True)
     else:
-        print("using local cache instead of Modal's storage")
         cache_dir = "./cache"
         os.makedirs("./cache", exist_ok=True)
 

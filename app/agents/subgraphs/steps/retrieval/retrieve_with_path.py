@@ -32,7 +32,6 @@ def read_files(state: State):
 
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
     valid_paths = state["valid_paths"]
-    print(f"\n==>> valid_paths: {valid_paths}")
 
     opened_files = {}
     for full_path in valid_paths:

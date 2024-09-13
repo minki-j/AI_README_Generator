@@ -5,7 +5,7 @@ from app.global_vars import STEP_LIST
 from app.utils.initialize_db import db
 
 
-def step_view(step_num: int, project_id: str):
+def step_view(session, step_num: int, project_id: str):
     print("\n==>>VIEW: step_view")
 
     step_data = next(
@@ -17,16 +17,17 @@ def step_view(step_num: int, project_id: str):
         for chunk in db.t.retrieved_chunks.rows_where("step_id = ?", [step_data["id"]]):
             retrieved_chunks.append(chunk["content"])
         return StepPage(
-            step_num,
-            len(STEP_LIST),
-            {
+            step_num=step_num,
+            total_step_num=len(STEP_LIST),
+            step_data={
                 "feedback_question": step_data["feedback_question"],
                 "answer": step_data["answer"],
                 "retrieved_chunks": retrieved_chunks,
                 "project_id": project_id,
                 "next_step": step_num + 1,
             },
-            step_data["directory_tree_str"],
+            directory_tree_str=step_data["directory_tree_str"],
+            retrieval_method=session["retrieval_method"],
         )
     else:
         return A(href="/")(H1("AI README Generator")), Main(id="step")(
@@ -40,7 +41,6 @@ def step_view(step_num: int, project_id: str):
 def result_view(project_id: str):
     print("\n==>>VIEW: result_view")
     readme_data = db.t.readmes.get(project_id)
-    print("\n==>> readme_data.content:", readme_data.content)
     return (
         Title("AI README Generator"),
         Main(cls="container", style="")(

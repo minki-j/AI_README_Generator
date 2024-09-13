@@ -43,7 +43,7 @@ def get_repo_info(clone_url, cache_dir):
     # clone the repository
     clone_dir = os.path.join(cache_dir, repo_info["title"], "cloned_repositories")
     if os.path.exists(clone_dir):
-        print(f"Repository already exists at {clone_dir}")
+        print(f"Skip cloning for {repo_info['title']} since it has already been cloned")
     else:
         try:
             subprocess.run(

@@ -18,4 +18,15 @@ loader_css = Style(
     }
     """
 )
-    
+
+input_pattern_error = Style(
+    """
+    input:valid {
+        background-color: #e8f5e9;  /* Light pastel green */
+    }
+
+    input:invalid {
+        background-color: #ffebee;  /* Light pastel red */
+    }
+    """
+)
