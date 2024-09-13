@@ -16,7 +16,7 @@ def StepPage(step_num, total_step_num, step_data, directory_tree_str):
                 step_data["next_step"],
                 total_step_num,
                 directory_tree_str,
-                is_last_step=True if int(step_num) == total_step_num else False,
+                is_last_step=True if int(step_num) > total_step_num else False,
             ),
         ),
     )

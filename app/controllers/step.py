@@ -3,33 +3,47 @@ from fasthtml.common import *
 from pprint import pprint
 
 from app.components.step import Step
-from app.utils.db_functions import insert_step_db, update_readme_content
+from app.utils.db_functions import (
+    insert_step_db,
+    update_readme_content,
+    insert_step_results,
+)
 
 from app.agents.main_graph import main_graph
 from app.db import db
 
-from app.step_list import STEP_LIST
+from app.global_vars import STEP_LIST
 from app.global_vars import DEBUG
+from app.agents.state_schema import State
 
 
 async def step_handler(
+    session,
     request: Request,
     project_id: str,
     step_num: int,
 ):
-    print("==>> step_handler for step: ", step_num)
+    print("==>>CTRL: step_handler")
     assert isinstance(step_num, int)
+
+    print(f"==>> session: {session}")
 
     form = await request.form()
     if len(form) == 0:  # when "next step" button is clicked
         user_feedback = None
         directory_tree_str = db.t.readmes.get(project_id).directory_tree_str
         directory_tree_dict = json.loads(directory_tree_str)
+        retrieval_method = form.get("retrieval_method")
     else:  # when "apply feedback" button is clicked
         user_feedback = form.get("user_feedback")
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)
         retrieval_method = form.get("retrieval_method")
+
+    session.setdefault("retrieval_method", "FAISS")
+    print(f"==>> retrieval_method: {retrieval_method}")
+    session["retrieval_method"] = retrieval_method
+
     try:
         config = {"configurable": {"thread_id": project_id}}
         main_graph.update_state(
@@ -39,7 +53,7 @@ async def step_handler(
                 "directory_tree_dict": directory_tree_dict,
                 "current_step": int(step_num),
                 "step_question": STEP_LIST[step_num - 1],
-                "retrieval_method": retrieval_method,
+                "retrieval_method": "FAISS",
             },
         )
         r = main_graph.invoke(None, config)
@@ -80,7 +94,7 @@ async def step_handler(
 
 
 async def generate_readme(project_id: str, request: Request):
-    print("==>> generate_readme")
+    print("==>>CTRL: generate_readme")
     if DEBUG:
         print("DEBUG MODE. SKIP GRAPH")
         r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
@@ -108,14 +122,16 @@ async def generate_readme(project_id: str, request: Request):
         config,
     )
     generated_readme = r.get("generated_readme", None)
-    print(f"==>> generated_readme: {generated_readme}")
+    print(f"==>> final generated readme: {generated_readme}")
     db_res = update_readme_content(project_id, generated_readme)
 
-    #TODO: update the eval dataset
-    print("-----------results: ")
-    pprint(r.get("results", None))
-    print("-----------")
-    
+    # Insert results into the database
+    results = r.get("results", None)
+
+    if results:
+        results_json = json.dumps(results, ensure_ascii=False)
+        insert_step_results(project_id, results_json)
+
     if db_res:
         full_route = str(request.url_for("generate_readme"))
         route = full_route.replace(str(request.base_url), "")

@@ -1,6 +1,6 @@
-from app.db import db
 import uuid
 import json
+from app.db import db, StepResults
 
 
 def initialize_db(
@@ -11,6 +11,7 @@ def initialize_db(
     retrieved_chunks: list,
     directory_tree_dict: dict,
 ):
+    print(f"DB: initialize_db")
     try:
         directory_tree_str = json.dumps(directory_tree_dict)
         db.t.readmes.insert(
@@ -46,6 +47,7 @@ def initialize_db(
 def insert_step_db(
     step, project_id, feedback_question, answer, retrieved_chunks, directory_tree_str
 ):
+    print(f"DB: insert_step_db")
     try:
         # check if row exists with project_id and step
         step_data = next(
@@ -93,9 +95,23 @@ def insert_step_db(
 
 
 def update_readme_content(project_id: str, content: str):
+    print(f"DB: update_readme_content")
     try:
         db.t.readmes.update(pk_values=project_id, updates={"content": content})
         return True
     except Exception as e:
         print(f"Error: {e}")
         raise e
+
+
+def insert_step_results(project_id: str, results_json: str) -> bool:
+    print(f"DB: insert_step_results")
+    try:
+        step_result = StepResults(
+            id=str(uuid.uuid4()), readme_id=project_id, content=results_json
+        )
+        db.t.step_results.insert(step_result)
+        return True
+    except Exception as e:
+        print(f"Error inserting step results: {e}")
+        return False

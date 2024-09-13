@@ -1,12 +1,12 @@
 from fasthtml.common import *
 from app.components.pages import StepPage
 
-from app.step_list import STEP_LIST
+from app.global_vars import STEP_LIST
 from app.db import db
 
 
 def step_view(step_num: int, project_id: str):
-    print("==>> step_view:", step_num, project_id)
+    print("==>>VIEW: step_view")
 
     step_data = next(
         db.t.steps.rows_where("step = ? AND readme_id= ?", [step_num, project_id]), None
@@ -38,7 +38,7 @@ def step_view(step_num: int, project_id: str):
 
 
 def result_view(project_id: str):
-    print("==>> result_view")
+    print("==>>VIEW: result_view")
     readme_data = db.t.readmes.get(project_id)
     print("==>> readme_data.content:", readme_data.content)
     return (

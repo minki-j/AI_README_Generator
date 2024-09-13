@@ -4,6 +4,7 @@ from app.db import db
 
 
 def home_view(session):
+    print("==>>VIEW: home_view")
     if "session_id" not in session:
         session["session_id"] = str(uuid.uuid4())
         db.t.users.insert(

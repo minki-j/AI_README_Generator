@@ -6,7 +6,7 @@ from langchain_core.runnables import RunnablePassthrough
 from app.utils.converters import to_path_map
 from app.agents.state_schema import State
 
-from .read_files import read_files, validate_user_chosen_files
+from .retrieve_with_path import read_files, validate_user_chosen_files
 from .validate_file_path import validate_file_paths_from_LLM, correct_file_paths
 from .retrieve_with_colbert import retrieve_with_colbert
 from .retrieve_with_faiss import retrieve_with_faiss
@@ -17,12 +17,20 @@ from app.agents.state_schema import RetrievalMethod
 g = StateGraph(State)
 g.set_entry_point("entry")
 
-g.add_node("entry", lambda state: {"retrieved_chunks": "RESET", "valid_paths": "RESET"})
+g.add_node(
+    "entry",
+    lambda _: {
+        "retrieved_chunks": "RESET",
+        "valid_paths": "RESET",
+    },
+)
 g.add_edge("entry", n(validate_user_chosen_files))
 g.add_edge("entry", n(validate_file_paths_from_LLM))
 g.add_edge("entry", "choose_retrieval_method")
 
 g.add_node("choose_retrieval_method", RunnablePassthrough())
+
+
 def choose_retrieval_method(state):
     retrieval_method = RetrievalMethod[state["retrieval_method"]]
     if retrieval_method == RetrievalMethod.COLBERT:
@@ -30,7 +38,10 @@ def choose_retrieval_method(state):
     elif retrieval_method == RetrievalMethod.FAISS:
         return n(retrieve_with_faiss)
     else:
-        raise ValueError(f"Invalid retrieval method: {retrieval_method} / type: {type(retrieval_method)}")
+        raise ValueError(
+            f"Invalid retrieval method: {retrieval_method} / type: {type(retrieval_method)}"
+        )
+
 
 g.add_conditional_edges(
     "choose_retrieval_method",
@@ -66,8 +77,14 @@ g.add_edge(n(correct_file_paths), n(validate_file_paths_from_LLM))
 g.add_node(n(read_files), read_files)
 
 g.add_node("rendezvous", RunnablePassthrough())
-#! To merge two parallel nodes, must use this single edge instead of adding an edges separately from each node
-g.add_edge([n(read_files), n(retrieve_with_colbert), n(retrieve_with_faiss)], "rendezvous")
+g.add_edge(
+    [
+        n(read_files),
+        n(retrieve_with_colbert),
+        n(retrieve_with_faiss),
+    ],
+    "rendezvous",
+)  # To merge two parallel nodes, must use this single edge with list of nodes instead of mutiple edges for each nodes
 
 g.add_edge("rendezvous", END)
 

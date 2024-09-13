@@ -6,7 +6,7 @@ from app.utils.get_repo_info import get_repo_info
 from app.utils.db_functions import initialize_db
 from app.agents.main_graph import main_graph
 
-from app.step_list import STEP_LIST
+from app.global_vars import STEP_LIST
 
 from app.agents.state_schema import RetrievalMethod
 
@@ -16,8 +16,8 @@ async def step_initializer(
     request: Request,
     project_id: str,
 ):
-    print("==>> step_initializer")
-
+    print("==>>CTRL: step_initializer")
+    print(f"==>> session: {session}")
     form = await request.form()
     clone_url = form.get("clone_url")
 
@@ -49,6 +49,7 @@ async def step_initializer(
         "step_question": STEP_LIST[0],
         "colbert_threshold": 10,
         "retrieval_method": RetrievalMethod.FAISS,
+        "invalid_paths": [],
     }
 
     try:
@@ -61,7 +62,7 @@ async def step_initializer(
 
     except Exception as e:
         raise e
-    
+
     answer = results.get("1", [{}])[0].get("answer")
     if not answer:
         raise Exception("No answer found")

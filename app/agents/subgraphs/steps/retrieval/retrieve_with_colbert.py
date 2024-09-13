@@ -6,11 +6,11 @@ from ragatouille import RAGPretrainedModel
 
 from app.agents.state_schema import State
 
-from .chunking import chunk_with_AST_parser
-from .colbert import index_documents_with_colbert
+from .utils.chunking import chunk_with_AST_parser
+from .utils.index_for_colbert import index_documents_with_colbert
 
 def retrieve_with_colbert(state: State):
-    print("retrieve_with_colbert for ", state["title"])
+    print("==>>NODE: retrieve_with_colbert")
 
     cache_dir = state["cache_dir"]
     queries = state["step_question"]["queries"]

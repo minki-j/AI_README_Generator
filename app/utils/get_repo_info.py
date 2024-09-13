@@ -2,8 +2,7 @@ import os
 import re
 import subprocess
 
-from app.utils.github_api_call import fetch_commits
-from app.utils.request import github_api_request
+from app.utils.github_api_call import fetch_commits, github_api_request
 from app.utils.generate_tree import generate_tree
 from app.utils.converters import convert_tree2dict
 

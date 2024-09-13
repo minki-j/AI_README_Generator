@@ -10,11 +10,11 @@ from langchain_community.vectorstores import FAISS
 
 from app.agents.state_schema import State
 
-from .chunking import chunk_with_AST_parser
+from .utils.chunking import chunk_with_AST_parser
 
 
 def retrieve_with_faiss(state: State):
-    print("retrieve_with_faiss for ", state["title"])
+    print("==>>NODE: retrieve_with_faiss")
 
     cache_dir = state["cache_dir"]
     queries = state["step_question"]["queries"]

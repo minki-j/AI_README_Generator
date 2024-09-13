@@ -3,6 +3,7 @@ import time
 
 
 def index_documents_with_colbert(documents, cache_dir, index_name):
+    print("==>>NODE: index_documents_with_colbert")
     start_time = time.time()
 
     RAG = RAGPretrainedModel.from_pretrained(

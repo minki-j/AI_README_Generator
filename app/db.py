@@ -1,5 +1,4 @@
 import os
-import threading
 from fasthtml.common import *
 
 if os.path.exists(f"/vol"):
@@ -11,15 +10,16 @@ else:
 
 db = database(db_path)
 
-users, steps, retrieved_chunks, readmes = (
+users, steps, retrieved_chunks, readmes, step_results = (
     db.t.users,
     db.t.steps,
     db.t.retrieved_chunks,
     db.t.readmes,
+    db.t.step_results,
 )
 
 if users not in db.t:
-    print("==>> Creating users tables")
+    print("==>> Creating users table")
     users.create(
         id=str,
         name=str,
@@ -59,13 +59,24 @@ if readmes not in db.t or steps not in db.t or retrieved_chunks not in db.t:
         if_not_exists=True,
     )
 
-Users, Readmes, Steps, RetrievedChunks = (
+if step_results not in db.t:
+    print("==>> Creating step_results table")
+    step_results.create(
+        id=str,
+        readme_id=str,
+        content=str,  # This will store the JSON format of results variable
+        pk="id",
+        foreign_keys=(("readme_id", "readmes")),
+        if_not_exists=True,
+    )
+
+Users, Readmes, Steps, RetrievedChunks, StepResults = (
     users.dataclass(),
     readmes.dataclass(),
     steps.dataclass(),
     retrieved_chunks.dataclass(),
+    step_results.dataclass(),
 )
-db_lock = threading.Lock()  # Since we're multi-threading here
 
 try:
     main_db_diagram = diagram(db.tables)    

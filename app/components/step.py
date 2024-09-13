@@ -86,8 +86,12 @@ def Step(
                 cls="form-select",
             )(
                 *[
-                    Option(method.value, value=method.name)
-                    for _, method in enumerate(RetrievalMethod)
+                    Option(
+                        method.value,
+                        value=method.name,
+                        selected=(method == list(RetrievalMethod)[0]) # TODO: Use Session State
+                    )
+                    for method in RetrievalMethod
                 ]
             ),
             H5("File Explorer"),

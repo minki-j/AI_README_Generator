@@ -3,7 +3,57 @@ import time
 import requests
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
-from .request import github_api_request
+import os
+import requests
+import pendulum
+
+
+def github_api_request(type, url, last_fetch_at, params=None):
+
+    token = os.getenv("GITHUB_TOKEN")
+    if not token:
+        raise ValueError("Github token is not set")
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    if last_fetch_at:
+        headers["if-modified-since"] = last_fetch_at.strftime(
+            "%a, %d %b %Y %H:%M:%S GMT"
+        )
+
+    if type == "GET":
+        response = requests.get(url, headers=headers, params=params)
+    elif type == "POST":
+        response = requests.post(url, headers=headers, json=params)
+    elif type == "PATCH":
+        response = requests.patch(url, headers=headers, json=params)
+    elif type == "PUT":
+        response = requests.put(url, headers=headers, json=params)
+    elif type == "DELETE":
+        response = requests.delete(url, headers=headers)
+    else:
+        raise ValueError(f"Unsupported type: {type}")
+
+    if response.status_code == 200:
+        # print(f"==> 200 OK for {url}")
+        pass
+    elif response.status_code == 304:
+        print(f"==> 304 Not Modified since the last fetch: {url}")
+        pass
+    elif response.status_code == 403:
+        print(f"403 Forbidden Error for {url} / Message: {response.text}")
+        print(
+            f"remaining rate limit: {response.headers['X-RateLimit-Remaining']} reset: {pendulum.from_timestamp(int(response.headers['X-RateLimit-Reset'])).in_tz('America/Montreal')}"
+        )
+        pass
+    elif response.status_code == 404:
+        print(f"Not Found:{url}")
+        pass
+    else:
+        print(f"{response.status_code} Error for {url} / Message: {response.text}")
+        pass
+
+    return response
 
 
 def get_page_num(url):
@@ -46,45 +96,6 @@ def fetch_paginated_github_api_request(initial_url, params=None):
             break
 
     return results, response, is_overflowed
-
-
-def fetch_github_accounts_by_date_location(location: str, date: str):
-    print("date: ", date)
-    base_url = "https://api.github.com/search/users?"
-    total_users = []
-    overflowed_date = []
-
-    params = {
-        "q": f"location:{location} created:{date}",
-        "page": 1,
-        "per_page": 100,
-        "sort": "joined",
-        "order": "desc",
-    }
-
-    results, response, is_overflowed = fetch_paginated_github_api_request(
-        base_url, params
-    )
-
-    results = [result["items"] for result in results]
-
-    if is_overflowed:
-        overflowed_date.append(date)
-
-    # Add fetched_date_range key and value for each user
-    for user in results:
-        user["fetched_date_range"] = date
-    total_users.extend(results)
-
-    reached_rate_limit = int(response.headers.get("X-RateLimit-Remaining")) < 1
-    rate_limit_reset_time = int(response.headers.get("X-RateLimit-reset"))
-    print("users: ", [user["login"] for user in total_users])
-    return (
-        total_users,
-        overflowed_date,
-        reached_rate_limit,
-        rate_limit_reset_time,
-    )
 
 
 def fetch_commits(commit_url: str, params: dict):
