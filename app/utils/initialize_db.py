@@ -19,7 +19,7 @@ users, steps, retrieved_chunks, readmes, step_results = (
 )
 
 if users not in db.t:
-    print("==>> Creating users table")
+    print("\n==>> Creating users table")
     users.create(
         id=str,
         name=str,
@@ -29,7 +29,7 @@ if users not in db.t:
     )
 
 if readmes not in db.t or steps not in db.t or retrieved_chunks not in db.t:
-    print("==>> Creating readmes, steps, retrieved_chunks tables")
+    print("\n==>> Creating readmes, steps, retrieved_chunks tables")
     readmes.create(
         id=str,
         user_id=str,
@@ -60,7 +60,7 @@ if readmes not in db.t or steps not in db.t or retrieved_chunks not in db.t:
     )
 
 if step_results not in db.t:
-    print("==>> Creating step_results table")
+    print("\n==>> Creating step_results table")
     step_results.create(
         id=str,
         readme_id=str,

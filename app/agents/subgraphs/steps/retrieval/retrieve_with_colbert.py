@@ -10,7 +10,7 @@ from .utils.chunking import chunk_with_AST_parser
 from .utils.index_for_colbert import index_documents_with_colbert
 
 def retrieve_with_colbert(state: State):
-    print("==>>NODE: retrieve_with_colbert")
+    print("\n==>>NODE: retrieve_with_colbert")
 
     cache_dir = state["cache_dir"]
     queries = state["step_question"]["queries"]

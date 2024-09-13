@@ -14,7 +14,7 @@ from .utils.chunking import chunk_with_AST_parser
 
 
 def retrieve_with_faiss(state: State):
-    print("==>>NODE: retrieve_with_faiss")
+    print("\n==>>NODE: retrieve_with_faiss")
 
     cache_dir = state["cache_dir"]
     queries = state["step_question"]["queries"]

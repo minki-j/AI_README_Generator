@@ -2,11 +2,11 @@ from fasthtml.common import *
 from app.components.pages import StepPage
 
 from app.global_vars import STEP_LIST
-from app.db import db
+from app.utils.initialize_db import db
 
 
 def step_view(step_num: int, project_id: str):
-    print("==>>VIEW: step_view")
+    print("\n==>>VIEW: step_view")
 
     step_data = next(
         db.t.steps.rows_where("step = ? AND readme_id= ?", [step_num, project_id]), None
@@ -38,9 +38,9 @@ def step_view(step_num: int, project_id: str):
 
 
 def result_view(project_id: str):
-    print("==>>VIEW: result_view")
+    print("\n==>>VIEW: result_view")
     readme_data = db.t.readmes.get(project_id)
-    print("==>> readme_data.content:", readme_data.content)
+    print("\n==>> readme_data.content:", readme_data.content)
     return (
         Title("AI README Generator"),
         Main(cls="container", style="")(

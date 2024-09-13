@@ -10,7 +10,7 @@ from app.utils.db_functions import (
 )
 
 from app.agents.main_graph import main_graph
-from app.db import db
+from app.utils.initialize_db import db
 
 from app.global_vars import STEP_LIST
 from app.global_vars import DEBUG
@@ -23,26 +23,22 @@ async def step_handler(
     project_id: str,
     step_num: int,
 ):
-    print("==>>CTRL: step_handler")
+    print("\n==>>CTRL: step_handler")
     assert isinstance(step_num, int)
-
-    print(f"==>> session: {session}")
 
     form = await request.form()
     if len(form) == 0:  # when "next step" button is clicked
         user_feedback = None
         directory_tree_str = db.t.readmes.get(project_id).directory_tree_str
         directory_tree_dict = json.loads(directory_tree_str)
-        retrieval_method = form.get("retrieval_method")
+
     else:  # when "apply feedback" button is clicked
         user_feedback = form.get("user_feedback")
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)
         retrieval_method = form.get("retrieval_method")
-
-    session.setdefault("retrieval_method", "FAISS")
-    print(f"==>> retrieval_method: {retrieval_method}")
-    session["retrieval_method"] = retrieval_method
+        session.setdefault("retrieval_method", "FAISS")
+        session["retrieval_method"] = retrieval_method
 
     try:
         config = {"configurable": {"thread_id": project_id}}
@@ -53,7 +49,7 @@ async def step_handler(
                 "directory_tree_dict": directory_tree_dict,
                 "current_step": int(step_num),
                 "step_question": STEP_LIST[step_num - 1],
-                "retrieval_method": "FAISS",
+                "retrieval_method": session["retrieval_method"],
             },
         )
         r = main_graph.invoke(None, config)
@@ -94,7 +90,7 @@ async def step_handler(
 
 
 async def generate_readme(project_id: str, request: Request):
-    print("==>>CTRL: generate_readme")
+    print("\n==>>CTRL: generate_readme")
     if DEBUG:
         print("DEBUG MODE. SKIP GRAPH")
         r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
@@ -122,7 +118,7 @@ async def generate_readme(project_id: str, request: Request):
         config,
     )
     generated_readme = r.get("generated_readme", None)
-    print(f"==>> final generated readme: {generated_readme}")
+    print(f"\n==>> final generated readme: {generated_readme}")
     db_res = update_readme_content(project_id, generated_readme)
 
     # Insert results into the database

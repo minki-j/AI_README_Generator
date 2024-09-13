@@ -1,6 +1,6 @@
 from fasthtml.common import *
 
-from app.css import loader_css, gridlink
+from app.css import loader_css
 
 import app.views.main as main_views
 import app.views.step as step_views
@@ -28,10 +28,13 @@ app, _ = fast_app(
     debug=True,
     hdrs=(
         picolink,
-        gridlink,
+        Link(
+            rel="stylesheet",
+            href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css",
+            type="text/css",
+        ),
         loader_css,
         HighlightJS(langs=["python"]),
-        Link(href="/assets/styles.css", rel="stylesheet"),
     ),
     exception_handlers={
         404: lambda req, exc: Main(

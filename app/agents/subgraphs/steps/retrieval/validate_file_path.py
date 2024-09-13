@@ -9,11 +9,11 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 def validate_file_paths_from_LLM(state: State):
-    print("==>>NODE: validate_file_paths_from_LLM")
+    print("\n==>>NODE: validate_file_paths_from_LLM")
     if not state["cache_dir"] or not state["title"]:
-        print(f"==>> cache_dir: {state['cache_dir']}")
-        print(f"==>> title: {state['title']}")
-        print(f"==>> state: {state}")
+        print(f"\n==>> cache_dir: {state['cache_dir']}")
+        print(f"\n==>> title: {state['title']}")
+        print(f"\n==>> state: {state}")
         raise ValueError("No cache_dir or title")
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
 
@@ -50,7 +50,7 @@ def validate_file_paths_from_LLM(state: State):
 
 
 def correct_file_paths(state: State):
-    print("==>>NODE: correct_file_paths")
+    print("\n==>>NODE: correct_file_paths")
     invalid_paths = state["invalid_paths"]
     root_path = "/Users/minkijung/Documents/2PetProjects/ernest"
 

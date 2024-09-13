@@ -1,6 +1,6 @@
 import uuid
 import json
-from app.db import db, StepResults
+from app.utils.initialize_db import db, StepResults
 
 
 def initialize_db(

@@ -20,5 +20,5 @@ from typing import List
 
 
 def generate_readme(state: State):
-    print("==>>NODE: generate_readme")
+    print("\n==>>NODE: generate_readme")
     return {"generated_readme": "placeholder for generated readme"}

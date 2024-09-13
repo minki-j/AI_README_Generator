@@ -1,10 +1,10 @@
 import uuid
 from fasthtml.common import *
-from app.db import db
+from app.utils.initialize_db import db
 
 
 def home_view(session):
-    print("==>>VIEW: home_view")
+    print("\n==>>VIEW: home_view")
     if "session_id" not in session:
         session["session_id"] = str(uuid.uuid4())
         db.t.users.insert(
