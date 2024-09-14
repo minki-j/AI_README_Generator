@@ -10,21 +10,24 @@ def check_quota(session):
     if quota_left <= 0:
         remaining_time = quota_created_at + QUOTA_RESET_MINUTES * 60 - current_time
         if remaining_time <= 0:
-            print("Resetting quota")
             session["quota"] = (QUOTA_LIMIT, current_time)
+            add_toast(
+                session,
+                "Your quota has been reset.",
+                "info",
+            )
             return None
         else:
             add_toast(
                 session,
-                f"Please wait for {remaining_time} seconds to reset your quota",
+                f"Please wait for {remaining_time/60} minutes to reset your quota",
                 "info",
             )
-            print(f"Please wait for {remaining_time} seconds to reset your quota")
 
             return Response(
                 to_xml(
                     P(
-                        f"Please wait for {remaining_time} seconds to reset your quota"
+                        f"Please wait for {remaining_time/60} minutes to reset your quota"
                     )
                 ),
                 status_code=429,

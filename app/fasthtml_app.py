@@ -20,7 +20,7 @@ def user_auth_before(req, session):
 
 beforeware = Beforeware(
     user_auth_before,
-    skip=[r"/favicon\.ico", r"/static/.*", r".*\.css", r".*\.js", "/login", "/"],
+    skip=[r"/favicon\.ico", r"/static/.*", r".*\.css", r".*\.js", "/login"],
 )
 
 app, _ = fast_app(

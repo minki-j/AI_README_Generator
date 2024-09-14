@@ -1,8 +1,8 @@
 DEBUG = False
 RETRIEVAL = "faiss"
 SKIP_LLM_CALLINGS = False
-QUOTA_LIMIT = 0
-QUOTA_RESET_MINUTES = 10000
+QUOTA_LIMIT = 10
+QUOTA_RESET_MINUTES = 5
 STEP_LIST = [
     {
         "prompt": "What are the core packages used in this project?",

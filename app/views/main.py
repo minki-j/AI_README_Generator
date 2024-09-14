@@ -5,6 +5,7 @@ from app.utils.initialize_db import db
 from app.global_vars import QUOTA_LIMIT
 from app.agents.state_schema import RetrievalMethod
 
+
 def home_view(session):
     print("\n>>>> VIEW: home_view")
     if "session_id" not in session:
@@ -20,7 +21,7 @@ def home_view(session):
             email="",
             password="",
         )
-        add_toast(session, f"Session ID created: {session['session_id']}", "info")
+        # add_toast(session, f"Session ID created: {session['session_id']}", "info")
 
     return (
         Title("AI README Generator"),
@@ -28,12 +29,11 @@ def home_view(session):
             A(href="/", style="text-decoration: none; color: inherit;")(
                 H1("AI README Generator")
             ),
-            Div(id="quota_msg"),
             Form(
-                hx_post="init/?project_id=" + str(uuid.uuid4()),
-                hx_swap="innerHTML",
-                hx_target="body",
-                hx_target_429="#quota_msg",
+                hx_post="init?project_id=" + str(uuid.uuid4()),
+                hx_swap="outerHTML",
+                hx_target="#step",
+                hx_target_429="#quota_msg",  #! Not working
                 hx_indicator="#loader",
                 hx_replace_url="true",
             )(
@@ -90,4 +90,5 @@ def home_view(session):
                 ),
             ),
         ),
+        Div(id="quota_msg"),
     )
