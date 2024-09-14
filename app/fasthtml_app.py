@@ -1,3 +1,4 @@
+import time
 from fasthtml.common import *
 
 from app.css import loader_css, input_pattern_error
@@ -8,6 +9,19 @@ import app.views.history as history_views
 import app.controllers.init as init_handlers
 import app.controllers.step as step_handlers
 
+from app.global_vars import QUOTA_LIMIT
+
+
+def user_auth_before(req, session):
+    quota = session.get("quota", None)
+    if quota is None:
+        print("Initializing quota")
+        session["quota"] = (QUOTA_LIMIT, int(time.time()))
+
+beforeware = Beforeware(
+    user_auth_before,
+    skip=[r"/favicon\.ico", r"/static/.*", r".*\.css", r".*\.js", "/login", "/"],
+)
 
 app, _ = fast_app(
     live=True,
@@ -22,6 +36,9 @@ app, _ = fast_app(
         loader_css,
         input_pattern_error,
         HighlightJS(langs=["python"]),
+        Script(
+            src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"
+        ),
     ),
     exception_handlers={
         404: lambda req, exc: Main(
@@ -30,7 +47,7 @@ app, _ = fast_app(
             cls="container",
         ),
     },
-    # before=beforeware,
+    before=beforeware,
 )
 
 setup_toasts(app)
@@ -43,20 +60,3 @@ app.get("/history")(history_views.history_view)
 app.post("/init")(init_handlers.step_initializer)
 app.post("/step")(step_handlers.step_handler)
 app.post("/step/final")(step_handlers.generate_readme)
-
-
-# def user_auth_before(req, sess):
-#     # The `auth` key in the request scope is automatically provided
-#     # to any handler which requests it, and can not be injected
-#     # by the user using query params, cookies, etc, so it should
-#     # be secure to use.
-#     auth = req.scope["auth"] = sess.get("auth", None)
-#     # If the session key is not there, it redirects to the login page.
-#     if not auth:
-#         return RedirectResponse("/login", status_code=303)
-
-
-# beforeware = Beforeware(
-#     user_auth_before,
-#     skip=[r"/favicon\.ico", r"/static/.*", r".*\.css", r".*\.js", "/login", "/"],
-# )

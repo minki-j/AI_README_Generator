@@ -7,5 +7,5 @@ from app.utils.initialize_db import db
 
 
 def history_view(user_id: str):
-    print("\n==>>VIEW: history_view")
+    print("\n>>>> VIEW: history_view")
     return None

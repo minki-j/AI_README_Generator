@@ -55,13 +55,13 @@ def Step(
         return page_list
 
     current_step = next_step - 1
-    return Div(id="step", cls="")(
+    return Div(id="step", hx_ext="response-targets")(
         H4(f"Step {next_step-1}. {feedback_question}"),
         Form(
             hx_post=f"step?step_num={next_step - 1}&project_id={project_id}",
             hx_swap="outerHTML",
             hx_target="#step",
-            cls="",
+            hx_target_429="#quota_msg",
         )(
             H5("Answer"),
             Textarea(
@@ -72,13 +72,17 @@ def Step(
                 cls="container",
                 style=scrollable_style,
             )(
-                *( [P("No code snippets are retrieved")] if not retrieved_chunks else [
-                    Code(
-                        chunk,
-                        style="margin-bottom:1rem; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
-                    )
-                    for chunk in retrieved_chunks
-                ])
+                *(
+                    [P("No code snippets are retrieved")]
+                    if not retrieved_chunks
+                    else [
+                        Code(
+                            chunk,
+                            style="margin-bottom:1rem; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+                        )
+                        for chunk in retrieved_chunks
+                    ]
+                )
             ),
             H5("Retrieval Method"),
             Select(
@@ -90,7 +94,9 @@ def Step(
                     Option(
                         method.value,
                         value=method.name,
-                        selected=(method == RetrievalMethod[retrieval_method]) # TODO: Use Session State
+                        selected=(
+                            method == RetrievalMethod[retrieval_method]
+                        ),  # TODO: Use Session State
                     )
                     for method in RetrievalMethod
                 ]
@@ -113,11 +119,13 @@ def Step(
             ),
             Button("Apply Feedback", type="submit", cls="outline"),
         ),
+        Div(id="quota_msg"),
         (
             Button(
                 "Next Step",
                 type="submit",
                 cls="outline",
+                id="next_step_button",
                 hx_post=f"step?step_num={next_step}&project_id={project_id}",
                 hx_swap="outerHTML",
                 hx_target="#step",

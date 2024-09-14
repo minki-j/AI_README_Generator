@@ -1,16 +1,16 @@
 import os
 import re
+import time
 from fasthtml.common import *
 
 from app.utils.get_repo_info import get_repo_info
 from app.utils.db_functions import initialize_db
+from app.utils.check_quota import check_quota
 from app.agents.main_graph import main_graph
 
 from app.global_vars import STEP_LIST
 
 from app.agents.state_schema import RetrievalMethod
-
-from app.views.main import MainComponent
 
 
 async def step_initializer(
@@ -18,7 +18,11 @@ async def step_initializer(
     request: Request,
     project_id: str,
 ):
-    print("\n==>>CTRL: step_initializer")
+    print("\n>>>> CTRL: step_initializer")
+    check_quota_response = check_quota(session)
+    if check_quota_response is not None:
+        return check_quota_response
+
     form = await request.form()
     clone_url = form.get("clone_url")
 
@@ -46,6 +50,7 @@ async def step_initializer(
             initial_state,
             {"configurable": {"thread_id": project_id}},
         )
+        session["quota"] = (session["quota"][0] - 1, session["quota"][1])
         results = r.get("results", {})
         retrieved_chunks = r.get("retrieved_chunks", None)
 

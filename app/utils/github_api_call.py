@@ -35,10 +35,10 @@ def github_api_request(type, url, last_fetch_at, params=None):
         raise ValueError(f"Unsupported type: {type}")
 
     if response.status_code == 200:
-        # print(f"==> 200 OK for {url}")
+        # print(f">>> 200 OK for {url}")
         pass
     elif response.status_code == 304:
-        print(f"==> 304 Not Modified since the last fetch: {url}")
+        print(f">>> 304 Not Modified since the last fetch: {url}")
         pass
     elif response.status_code == 403:
         print(f"403 Forbidden Error for {url} / Message: {response.text}")

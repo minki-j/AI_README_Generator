@@ -19,7 +19,7 @@ class Answer(BaseModel):
 
 
 def answer_step_question(state: State) -> State:
-    print("\n==>>NODE: answer_step_question")
+    print("\n>>>> NODE: answer_step_question")
     step_question = state["step_question"]
 
     repo_info_to_look_up = step_question["repo_info_to_look_up"]

@@ -5,7 +5,7 @@ from app.agents.state_schema import State
 
 
 def validate_user_chosen_files(state: State):
-    print("\n==>>NODE: validate_user_chosen_files")
+    print("\n>>>> NODE: validate_user_chosen_files")
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
     valid_paths = []
     directory_tree_dict = state["directory_tree_dict"]
@@ -28,7 +28,7 @@ def validate_user_chosen_files(state: State):
 
 
 def read_files(state: State):
-    print("\n==>>NODE: read_files")
+    print("\n>>>> NODE: read_files")
 
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
     valid_paths = state["valid_paths"]

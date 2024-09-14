@@ -1,4 +1,5 @@
 import json
+import time
 from fasthtml.common import *
 from pprint import pprint
 
@@ -8,7 +9,7 @@ from app.utils.db_functions import (
     update_readme_content,
     insert_step_results,
 )
-
+from app.utils.check_quota import check_quota
 from app.agents.main_graph import main_graph
 from app.utils.initialize_db import db
 
@@ -23,8 +24,10 @@ async def step_handler(
     project_id: str,
     step_num: int,
 ):
-    print("\n==>>CTRL: step_handler")
-    assert isinstance(step_num, int)
+    print("\n>>>> CTRL: step_handler")
+    check_quota_response = check_quota(session)
+    if check_quota_response is not None:
+        return check_quota_response
 
     form = await request.form()
     if len(form) == 0:  # when "next step" button is clicked
@@ -53,6 +56,7 @@ async def step_handler(
             },
         )
         r = main_graph.invoke(None, config)
+        session["quota"] = (session["quota"][0] - 1, session["quota"][1])
         results = r.get("results", {})
         retrieved_chunks = r.get("retrieved_chunks", None)
     except Exception as e:
@@ -90,8 +94,8 @@ async def step_handler(
         )
 
 
-async def generate_readme(project_id: str, request: Request):
-    print("\n==>>CTRL: generate_readme")
+async def generate_readme(session, project_id: str, request: Request):
+    print("\n>>>> CTRL: generate_readme")
     if DEBUG:
         print("DEBUG MODE. SKIP GRAPH")
         r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
@@ -118,6 +122,7 @@ async def generate_readme(project_id: str, request: Request):
         None,
         config,
     )
+    session["quota"] = (session["quota"][0] - 1, session["quota"][1])
     generated_readme = r.get("generated_readme", None)
     db_res = update_readme_content(project_id, generated_readme)
 

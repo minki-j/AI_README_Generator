@@ -6,7 +6,7 @@ from app.utils.initialize_db import db
 
 
 def step_view(session, step_num: int, project_id: str):
-    print("\n==>>VIEW: step_view")
+    print("\n>>>> VIEW: step_view")
 
     step_data = next(
         db.t.steps.rows_where("step = ? AND readme_id= ?", [step_num, project_id]), None
@@ -39,7 +39,7 @@ def step_view(session, step_num: int, project_id: str):
 
 
 def result_view(project_id: str):
-    print("\n==>>VIEW: result_view")
+    print("\n>>>> VIEW: result_view")
     readme_data = db.t.readmes.get(project_id)
     return (
         Title("AI README Generator"),
