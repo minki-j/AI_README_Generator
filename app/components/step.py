@@ -22,15 +22,15 @@ def Step(
     """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
 
     common_style = "margin-bottom:1rem; background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px;"
-    scrollable_style = common_style + " max-height: 300px; overflow-y: auto;"
+    scrollable_style = (
+        common_style + " height: 300px; max-height: 1000px; overflow-y: auto; resize: vertical"
+    )
     textarea_style = (
         common_style
         + " min-height: 100px; max-height: 300px; overflow-y: auto; resize: vertical;"
     )
 
     quota_reset_time = round((quota[1] + QUOTA_RESET_MINUTES * 60 - time.time()) / 60, 2)
-    print(f"==>> quota_reset_time: {quota_reset_time}")
-    print(f"==>> quota: {quota}")
 
     def make_page_list(total_step_num, current_step):
         page_list = []
@@ -141,9 +141,11 @@ def Step(
                             [P("No code snippets are retrieved")]
                             if not retrieved_chunks
                             else [
-                                Code(
-                                    chunk,
-                                    style="margin-bottom:1rem; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+                                Pre(style="background-color: transparent; padding: 0; margin: 0;")(
+                                    Code(
+                                        chunk,
+                                        style="background-color: #f0f0f0; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+                                    )
                                 )
                                 for chunk in retrieved_chunks
                             ]

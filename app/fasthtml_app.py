@@ -36,7 +36,8 @@ app, _ = fast_app(
         ),
         loader_css,
         input_pattern_error,
-        HighlightJS(langs=["python"]),
+        MarkdownJS(),
+        HighlightJS(langs=["python", "javascript", "html", "css"]),
         Script(
             src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"
         ),
