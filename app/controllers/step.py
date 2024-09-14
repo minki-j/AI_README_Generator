@@ -38,9 +38,8 @@ async def step_handler(
         user_feedback = form.get("user_feedback")
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)
-        retrieval_method = form.get("retrieval_method")
-        session.setdefault("retrieval_method", "FAISS")
-        session["retrieval_method"] = retrieval_method
+        retrieval_method = form.get("retrieval_method", None)
+        session.setdefault("retrieval_method", retrieval_method if retrieval_method else "FAISS")
     else:
         raise Exception(
             f"Invalid hx-trigger-name: {request.headers.get('hx-trigger-name')}"
@@ -92,7 +91,8 @@ async def step_handler(
                 if STEP_LIST[step_num - 1]["retrieval_needed"]
                 else RetrievalMethod.NONE.name
             ),
-            is_last_step=True if step_num == len(STEP_LIST) - 1 else False,
+            session.get("quota", (0, 0)),
+            is_last_step=True if step_num >= len(STEP_LIST) else False,
         )
     else:
         return Div(
@@ -124,6 +124,7 @@ async def generate_readme(session, project_id: str, request: Request):
         values={
             "current_step": len(STEP_LIST) + 1,
         },
+        as_node="human_in_the_loop",
     )
     r = main_graph.invoke(
         None,
