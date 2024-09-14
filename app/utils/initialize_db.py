@@ -65,6 +65,7 @@ if step_results not in db.t:
         id=str,
         readme_id=str,
         content=str,  # This will store the JSON format of results variable
+        created_at_utc=str,
         pk="id",
         foreign_keys=(("readme_id", "readmes")),
         if_not_exists=True,
@@ -80,7 +81,9 @@ Users, Readmes, Steps, RetrievedChunks, StepResults = (
 
 try:
     main_db_diagram = diagram(db.tables)    
-    main_db_diagram.render("data/main_db_diagram", format="png", cleanup=True)
+    main_db_diagram.render(
+        "data/main_database/main_db_diagram", format="png", cleanup=True
+    )
 except:
     print(
         "Error on generating DB visualization. Probably graphviz executables were not found. Please install Graphviz and add it to your system's PATH."

@@ -60,7 +60,7 @@ docker run -p 8000:8000 readmegen
 Run locally:
 ```bash
 export $(grep -v '^#' .env | xargs)
-uvicorn app.fasthtml_app:app --reload
+uvicorn app.fasthtml_app:app --reload --reload-dir ./app
 ```
 
 To deploy the web server:

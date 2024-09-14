@@ -1,8 +1,10 @@
 from fasthtml.common import *
-import json
+import time
 
 from .file_explorer import FileExplorer
 from app.agents.state_schema import RetrievalMethod
+
+from app.global_vars import QUOTA_LIMIT, QUOTA_RESET_MINUTES
 
 
 def Step(
@@ -14,6 +16,7 @@ def Step(
     total_step_num: int,
     directory_tree_str: str,
     retrieval_method: str,
+    quota: tuple[int, int],
     is_last_step=False,
 ):
     """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
@@ -24,6 +27,10 @@ def Step(
         common_style
         + " min-height: 100px; max-height: 300px; overflow-y: auto; resize: vertical;"
     )
+
+    quota_reset_time = round((quota[1] + QUOTA_RESET_MINUTES * 60 - time.time()) / 60, 2)
+    print(f"==>> quota_reset_time: {quota_reset_time}")
+    print(f"==>> quota: {quota}")
 
     def make_page_list(total_step_num, current_step):
         page_list = []
@@ -94,6 +101,15 @@ def Step(
                     ]
                 ),
             ),
+            Div(
+                id="quota_display",
+                style="flex-wrap: nowrap; display: flex; align-items: center;",
+            )(
+                P(
+                    f"Quota: {quota[0] if quota_reset_time > 0 else QUOTA_LIMIT} / Reset in {quota_reset_time if quota_reset_time > 0 else 0} mins",
+                    style="font-size: 0.75rem; margin: 0;",
+                ),
+            ),
         ),
         H4(f"Step {next_step-1}. {feedback_question}"),
         Form(
@@ -140,13 +156,16 @@ def Step(
                     H5("File Explorer", onclick="toggleSection(this)"),
                     Button(
                         "Collapse All",
+                        id="toggle-all-btn-file-explorer",
                         cls="toggle-all-btn",
+                        type="button",
                         onclick="toggleAllFileExplorer()",
                         style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
                     ),
                     Button(
                         "Uncheck All",
                         id="uncheck-all-btn",
+                        type="button",
                         onclick="uncheckAllFileExplorer()",
                         style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
                     ),
@@ -180,7 +199,6 @@ def Step(
                 cls="outline",
             ),
         ),
-        Div(id="quota_msg"),
         (
             Button(
                 "Next Step",
@@ -190,8 +208,8 @@ def Step(
                 hx_post=f"step?step_num={next_step}&project_id={project_id}",
                 hx_swap="outerHTML",
                 hx_target="#step",
+                hx_target_429="#quota_msg",
                 hx_replace_url="true",
-                hx_vals="js:{}",
             )
             if not is_last_step
             else Button(
@@ -199,8 +217,9 @@ def Step(
                 type="submit",
                 cls="outline",
                 hx_post=f"step/final?project_id={project_id}",
-                hx_swap="outerHTML",
-                hx_target="#step",
+                hx_swap="innerHTML",
+                hx_target="body",
+                hx_target_429="#quota_msg",
                 hx_replace_url="true",
             )
         ),
@@ -210,7 +229,7 @@ def Step(
             )
         ),
         Script(
-"""
+            """
 (function() {
     const textareas = document.querySelectorAll('.dynamic-textarea');
     textareas.forEach(textarea => {
@@ -303,7 +322,7 @@ function toggleDirectory(btn, dirName) {
 }
 
 function toggleAllFileExplorer() {
-    const btn = document.getElementsByClassName('toggle-all-btn');
+    const btn = document.getElementById('toggle-all-btn-file-explorer');
     const allDirs = document.querySelectorAll('.file-explorer ul[id^="dir-"]');
     const allToggleBtns = document.querySelectorAll('.file-explorer-collapse-btn');
     
@@ -336,7 +355,7 @@ function uncheckAllFileExplorer() {
 """
         ),
         Style(
-"""
+            """
 .collapsible-section {
     margin-bottom: 2rem;
 }
@@ -359,7 +378,6 @@ function uncheckAllFileExplorer() {
 .toggle-all-btn {
     background-color: #f0f0f0;
     border: 1px solid #ccc;
-    padding: 5px 10px;
     border-radius: 4px;
     padding: 0.125rem 0.5rem 0.125rem 0.5rem; 
     font-size: 0.75rem; 

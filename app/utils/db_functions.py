@@ -1,5 +1,6 @@
 import uuid
 import json
+from datetime import datetime
 from app.utils.initialize_db import db, StepResults
 
 
@@ -106,7 +107,7 @@ def insert_step_results(project_id: str, results_json: str) -> bool:
     print(f"\n>>>> DB: insert_step_results")
     try:
         step_result = StepResults(
-            id=str(uuid.uuid4()), readme_id=project_id, content=results_json
+            id=str(uuid.uuid4()), readme_id=project_id, content=results_json, created_at_utc=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
         db.t.step_results.insert(step_result)
         return True

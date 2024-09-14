@@ -19,9 +19,9 @@ async def step_initializer(
     project_id: str,
 ):
     print("\n>>>> CTRL: step_initializer")
-    # check_quota_response = check_quota(session)
-    # if check_quota_response is not None:
-    #     return check_quota_response
+    check_quota_response = check_quota(session)
+    if check_quota_response is not None:
+        return check_quota_response
 
     form = await request.form()
     clone_url = form.get("clone_url")

@@ -34,7 +34,7 @@ def retrieve_with_faiss(state: State):
             allow_dangerous_deserialization=True,
         )
     else:
-        print("Embedidngs or chunked_doc does not exist")
+        print(f"Parse and create embeddings for {state['title']}")
         os.makedirs(
             f"{cache_dir}/{state['title']}/chunked_doc_langchain", exist_ok=True
         )

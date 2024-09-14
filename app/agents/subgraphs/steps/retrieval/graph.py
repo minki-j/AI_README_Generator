@@ -12,7 +12,7 @@ from .retrieve_with_colbert import retrieve_with_colbert
 from .retrieve_with_faiss import retrieve_with_faiss
 
 from app.agents.state_schema import RetrievalMethod
-
+from app.global_vars import DEFAULT_RETRIEVAL
 
 g = StateGraph(State)
 g.set_entry_point("entry")
@@ -32,7 +32,7 @@ g.add_node("choose_retrieval_method", RunnablePassthrough())
 
 
 def choose_retrieval_method(state):
-    retrieval_method = RetrievalMethod[state["retrieval_method"]]
+    retrieval_method = RetrievalMethod[state.get("retrieval_method", DEFAULT_RETRIEVAL)]
     if retrieval_method == RetrievalMethod.COLBERT:
         return n(retrieve_with_colbert)
     elif retrieval_method == RetrievalMethod.FAISS:

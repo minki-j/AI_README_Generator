@@ -11,35 +11,30 @@ def step_view(session, step_num: int, project_id: str):
     step_data = next(
         db.t.steps.rows_where("step = ? AND readme_id= ?", [step_num, project_id]), None
     )
+    if not step_data:
+        raise Exception(f"Step data not found for step_num: {step_num} and project_id: {project_id}")
 
-    if step_data:
-        retrieved_chunks = []
-        for chunk in db.t.retrieved_chunks.rows_where("step_id = ?", [step_data["id"]]):
-            retrieved_chunks.append(chunk["content"])
-        return StepPage(
-            step_num=step_num,
-            total_step_num=len(STEP_LIST),
-            step_data={
-                "feedback_question": step_data["feedback_question"],
-                "answer": step_data["answer"],
-                "retrieved_chunks": retrieved_chunks,
-                "project_id": project_id,
-                "next_step": step_num + 1,
-            },
-            directory_tree_str=step_data["directory_tree_str"],
-            retrieval_method=(
-                session["retrieval_method"]
-                if STEP_LIST[step_num - 1]["retrieval_needed"]
-                else RetrievalMethod.NONE.name
-            ),
-        )
-    else:
-        return A(href="/")(H1("AI README Generator")), Main(id="step")(
-            Div(
-                f"Error happended while retrieving information from the DB.",
-                cls="error-message",
-            ),
-        )
+    retrieved_chunks = []
+    for chunk in db.t.retrieved_chunks.rows_where("step_id = ?", [step_data["id"]]):
+        retrieved_chunks.append(chunk["content"])
+    return StepPage(
+        step_num=step_num,
+        total_step_num=len(STEP_LIST),
+        step_data={
+            "feedback_question": step_data["feedback_question"],
+            "answer": step_data["answer"],
+            "retrieved_chunks": retrieved_chunks,
+            "project_id": project_id,
+            "next_step": step_num + 1,
+        },
+        directory_tree_str=step_data["directory_tree_str"],
+        retrieval_method=(
+            session["retrieval_method"]
+            if STEP_LIST[step_num - 1]["retrieval_needed"]
+            else RetrievalMethod.NONE.name
+        ),
+        quota=session.get("quota", (0, 0)),
+    )
 
 
 def result_view(project_id: str):
