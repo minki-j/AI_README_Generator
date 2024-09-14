@@ -28,7 +28,7 @@ STEP_LIST = [
             "What technologies are used in this repository?",
         ],
         "feedback_question": "Does this technology list look good to you?",
-        "retrieval_needed": False,
+        "retrieval_needed": True,
         "repo_info_to_look_up": [],
     },
     # {

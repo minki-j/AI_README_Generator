@@ -6,8 +6,9 @@ from app.css import loader_css, input_pattern_error
 import app.views.main as main_views
 import app.views.step as step_views
 import app.views.history as history_views
-import app.controllers.init as init_handlers
-import app.controllers.step as step_handlers
+import app.controllers.init as init_controller
+import app.controllers.step as step_controller
+
 
 from app.global_vars import QUOTA_LIMIT
 
@@ -57,6 +58,7 @@ app.get("/step")(step_views.step_view)
 app.get("/step/final")(step_views.result_view)
 app.get("/history")(history_views.history_view)
 
-app.post("/init")(init_handlers.step_initializer)
-app.post("/step")(step_handlers.step_handler)
-app.post("/step/final")(step_handlers.generate_readme)
+app.post("/init")(init_controller.step_initializer)
+app.post("/step")(step_controller.step_handler)
+app.post("/step/final")(step_controller.generate_readme)
+app.post("/update_retrieval_method")(step_controller.update_retrieval_method)

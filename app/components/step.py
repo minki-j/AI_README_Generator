@@ -63,11 +63,13 @@ def Step(
             Button(
                 "Collapse All",
                 id="collapse_all_button",
-                cls="outline",
                 onclick="toggleAll()",
-                style="padding: 0.25rem; font-size: 0.75rem;",
+                cls="toggle-all-btn",
+                style="",
             ),
-            Div(style="display: flex; align-items: center; flex-wrap: nowrap;")(
+            Div(
+                style="display: flex; align-items: center; flex-wrap: nowrap;",
+            )(
                 Label(
                     "Retrieval Method:",
                     for_="retrieval_method",
@@ -77,6 +79,9 @@ def Step(
                     id="retrieval_method",
                     name="retrieval_method",
                     cls="form-select",
+                    hx_post="/update_retrieval_method",
+                    hx_trigger="change",
+                    hx_swap="none",
                     style="margin-bottom: 0; font-size: 0.75rem; flex-grow: 1; padding-top: 0.25rem; padding-bottom: 0.25rem; padding-left: 0.75rem;",
                 )(
                     *[
@@ -135,7 +140,7 @@ def Step(
                     H5("File Explorer", onclick="toggleSection(this)"),
                     Button(
                         "Collapse All",
-                        id="toggle-all-btn",
+                        cls="toggle-all-btn",
                         onclick="toggleAllFileExplorer()",
                         style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
                     ),
@@ -205,172 +210,173 @@ def Step(
             )
         ),
         Script(
-            """
-            (function() {
-                const textareas = document.querySelectorAll('.dynamic-textarea');
-                textareas.forEach(textarea => {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = `${Math.min(textarea.scrollHeight, 600)}px`;
-                    textarea.addEventListener('input', function() {
-                        this.style.height = 'auto';
-                        this.style.height = `${Math.min(this.scrollHeight, 600)}px`;
-                    });
-                });
-            })();
+"""
+(function() {
+    const textareas = document.querySelectorAll('.dynamic-textarea');
+    textareas.forEach(textarea => {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${Math.min(textarea.scrollHeight, 600)}px`;
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = `${Math.min(this.scrollHeight, 600)}px`;
+        });
+    });
+})();
 
-            function updateTree(tree, fileName, value) {                
-                function recursiveUpdate(obj) {
-                    for (let key in obj) {
-                        if (key === fileName) {
-                            obj[key] = value;
-                            return true;
-                        } else if (typeof obj[key] === 'object') {
-                            if (recursiveUpdate(obj[key])) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
-                recursiveUpdate(tree);
-            }
-            document.addEventListener('change', function(e) {
-                if (e.target.matches('.file-explorer input[type="checkbox"]')) {
-                    let tree = JSON.parse(document.getElementById('directory_tree_str').value);
-                    updateTree(tree, e.target.value, e.target.checked);
-                    document.getElementById('directory_tree_str').value = JSON.stringify(tree);
-                }
-            });
-
-            function toggleSection(header) {
-                const content = header.nextElementSibling;
-                content.style.display = content.style.display === 'none' ? 'block' : 'none';
-                header.classList.toggle('collapsed');
-                updateCollapseAllButton();
-            }
-
-            function updateCollapseAllButton() {
-                const button = document.getElementById('collapse_all_button');
-                const sections = document.querySelectorAll('.collapsible-section');
-                const allCollapsed = Array.from(sections).every(section => 
-                    section.querySelector('.section-content').style.display === 'none'
-                );
-                button.textContent = allCollapsed ? 'Expand All' : 'Collapse All';
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                const sections = document.querySelectorAll('.collapsible-section');
-                sections.forEach(section => {
-                    const content = section.querySelector('.section-content');
-                    content.style.display = 'block';
-                    section.querySelector('h5').classList.remove('collapsed');
-                });
-                updateCollapseAllButton();
-            });
-
-            function toggleAll() {
-                const button = document.getElementById('collapse_all_button');
-                const sections = document.querySelectorAll('.collapsible-section');
-                const allCollapsed = Array.from(sections).every(section => 
-                    section.querySelector('.section-content').style.display === 'none'
-                );
-
-                sections.forEach(section => {
-                    const content = section.querySelector('.section-content');
-                    const header = section.querySelector('h5');
-                    content.style.display = allCollapsed ? 'block' : 'none';
-                    header.classList.toggle('collapsed', !allCollapsed);
-                });
-
-                button.textContent = allCollapsed ? 'Collapse All' : 'Expand All';
-            }
-
-            function toggleDirectory(btn, dirName) {
-                console.log('toggleDirectory called with btn:', btn, 'and dirName:', dirName);
-                const dir = document.getElementById('dir-' + dirName);
-                if (dir.style.display === 'none') {
-                    dir.style.display = 'block';
-                    btn.textContent = `▼ ${dirName}`;
-                } else {
-                    dir.style.display = 'none';
-                    btn.textContent = `▶ ${dirName}`;
+function updateTree(tree, fileName, value) {                
+    function recursiveUpdate(obj) {
+        for (let key in obj) {
+            if (key === fileName) {
+                obj[key] = value;
+                return true;
+            } else if (typeof obj[key] === 'object') {
+                if (recursiveUpdate(obj[key])) {
+                    return true;
                 }
             }
+        }
+        return false;
+    }
+    recursiveUpdate(tree);
+}
+document.addEventListener('change', function(e) {
+    if (e.target.matches('.file-explorer input[type="checkbox"]')) {
+        let tree = JSON.parse(document.getElementById('directory_tree_str').value);
+        updateTree(tree, e.target.value, e.target.checked);
+        document.getElementById('directory_tree_str').value = JSON.stringify(tree);
+    }
+});
 
-            function toggleAllFileExplorer() {
-                const btn = document.getElementById('toggle-all-btn');
-                const allDirs = document.querySelectorAll('.file-explorer ul[id^="dir-"]');
-                const allToggleBtns = document.querySelectorAll('.toggle-btn');
-                
-                if (btn.textContent === 'Collapse All') {
-                    allDirs.forEach(dir => dir.style.display = 'none');
-                    allToggleBtns.forEach(toggleBtn => {
-                        const dirName = toggleBtn.textContent.slice(2);
-                        toggleBtn.textContent = `▶ ${dirName}`;
-                    });
-                    btn.textContent = 'Expand All';
-                } else {
-                    allDirs.forEach(dir => dir.style.display = 'block');
-                    allToggleBtns.forEach(toggleBtn => {
-                        const dirName = toggleBtn.textContent.slice(2);
-                        toggleBtn.textContent = `▼ ${dirName}`;
-                    });
-                    btn.textContent = 'Collapse All';
-                }
-            }
+function toggleSection(header) {
+    const content = header.nextElementSibling;
+    content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    header.classList.toggle('collapsed');
+    updateCollapseAllButton();
+}
 
-            function uncheckAllFileExplorer() {
-                const checkboxes = document.querySelectorAll('.file-explorer input[type="checkbox"]');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                    checkbox.style.backgroundColor = '';
-                    updateTree(JSON.parse(document.getElementById('directory_tree_str').value), checkbox.value, false);
-                });
-                document.getElementById('directory_tree_str').value = JSON.stringify(tree);
-            }
+function updateCollapseAllButton() {
+    const button = document.getElementById('collapse_all_button');
+    const sections = document.querySelectorAll('.collapsible-section');
+    const allCollapsed = Array.from(sections).every(section => 
+        section.querySelector('.section-content').style.display === 'none'
+    );
+    button.textContent = allCollapsed ? 'Expand All' : 'Collapse All';
+}
 
-            // ... existing JavaScript ...
-            """
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('.collapsible-section');
+    sections.forEach(section => {
+        const content = section.querySelector('.section-content');
+        content.style.display = 'block';
+        section.querySelector('h5').classList.remove('collapsed');
+    });
+    updateCollapseAllButton();
+});
+
+function toggleAll() {
+    const button = document.getElementById('collapse_all_button');
+    const sections = document.querySelectorAll('.collapsible-section');
+    const allCollapsed = Array.from(sections).every(section => 
+        section.querySelector('.section-content').style.display === 'none'
+    );
+
+    sections.forEach(section => {
+        const content = section.querySelector('.section-content');
+        const header = section.querySelector('h5');
+        content.style.display = allCollapsed ? 'block' : 'none';
+        header.classList.toggle('collapsed', !allCollapsed);
+    });
+
+    button.textContent = allCollapsed ? 'Collapse All' : 'Expand All';
+}
+
+function toggleDirectory(btn, dirName) {
+    console.log('toggleDirectory called with btn:', btn, 'and dirName:', dirName);
+    const dir = document.getElementById('dir-' + dirName);
+    if (dir.style.display === 'none') {
+        dir.style.display = 'block';
+        btn.textContent = `▼ ${dirName}`;
+    } else {
+        dir.style.display = 'none';
+        btn.textContent = `▶ ${dirName}`;
+    }
+}
+
+function toggleAllFileExplorer() {
+    const btn = document.getElementsByClassName('toggle-all-btn');
+    const allDirs = document.querySelectorAll('.file-explorer ul[id^="dir-"]');
+    const allToggleBtns = document.querySelectorAll('.file-explorer-collapse-btn');
+    
+    if (btn.textContent === 'Collapse All') {
+        allDirs.forEach(dir => dir.style.display = 'none');
+        allToggleBtns.forEach(toggleBtn => {
+            const dirName = toggleBtn.textContent.slice(2);
+            toggleBtn.textContent = `▶ ${dirName}`;
+        });
+        btn.textContent = 'Expand All';
+    } else {
+        allDirs.forEach(dir => dir.style.display = 'block');
+        allToggleBtns.forEach(toggleBtn => {
+            const dirName = toggleBtn.textContent.slice(2);
+            toggleBtn.textContent = `▼ ${dirName}`;
+        });
+        btn.textContent = 'Collapse All';
+    }
+}
+
+function uncheckAllFileExplorer() {
+    const checkboxes = document.querySelectorAll('.file-explorer input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        checkbox.style.backgroundColor = '';
+        updateTree(JSON.parse(document.getElementById('directory_tree_str').value), checkbox.value, false);
+    });
+    document.getElementById('directory_tree_str').value = JSON.stringify(tree);
+}
+"""
         ),
         Style(
-            """
-            .collapsible-section {
-                margin-bottom: 2rem;
-            }
-            .collapsible-section h5 {
-                cursor: pointer;
-                user-select: none;
-                margin-bottom: 0.5rem;
-            }
-            .collapsible-section h5::before {
-                content: '▼ ';
-                font-size: 0.8em;
-            }
-            .collapsible-section h5.collapsed::before {
-                content: '► ';
-            }
-            .toggle-btn:focus {
-                outline: none;
-                box-shadow: none;
-            }
-            #toggle-all-btn {
-                background-color: #f0f0f0;
-                border: 1px solid #ccc;
-                padding: 5px 10px;
-                border-radius: 4px;
-            }
-            #toggle-all-btn:hover {
-                background-color: #e0e0e0;
-            }
-            #uncheck-all-btn {
-                background-color: #f0f0f0;
-                border: 1px solid #ccc;
-                padding: 5px 10px;
-                border-radius: 4px;
-            }
-            #uncheck-all-btn:hover {
-                background-color: #e0e0e0;
-            }
-        """
+"""
+.collapsible-section {
+    margin-bottom: 2rem;
+}
+.collapsible-section h5 {
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0.5rem;
+}
+.collapsible-section h5::before {
+    content: '▼ ';
+    font-size: 0.8em;
+}
+.collapsible-section h5.collapsed::before {
+    content: '► ';
+}
+.file-explorer-collapse-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+.toggle-all-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 4px;
+    padding: 0.125rem 0.5rem 0.125rem 0.5rem; 
+    font-size: 0.75rem; 
+    color: black;
+}
+.toggle-all-btn:hover {
+    background-color: #e0e0e0;
+}
+#uncheck-all-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+#uncheck-all-btn:hover {
+    background-color: #e0e0e0;
+}
+"""
         ),
     )

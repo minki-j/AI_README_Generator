@@ -30,7 +30,7 @@ def FileExplorer(directory_tree_str, common_style):
                         Div(
                             Button(
                                 f"▼ {name}",
-                                cls="toggle-btn",
+                                cls="file-explorer-collapse-btn",
                                 onclick=f"toggleDirectory(this, '{name}')",
                                 style="background: none; border: none; cursor: pointer; padding: 0 5px; color: black; outline: none;",
                             ),

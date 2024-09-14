@@ -24,7 +24,7 @@ async def step_handler(
     project_id: str,
     step_num: int,
 ):
-    # print("\n>>>> CTRL: step_handler")
+    print("\n>>>> CTRL: step_handler")
     check_quota_response = check_quota(session)
     if check_quota_response is not None:
         return check_quota_response
@@ -102,7 +102,7 @@ async def step_handler(
 
 
 async def generate_readme(session, project_id: str, request: Request):
-    # print("\n>>>> CTRL: generate_readme")
+    print("\n>>>> CTRL: generate_readme")
     if DEBUG:
         # print("DEBUG MODE. SKIP GRAPH")
         r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
@@ -151,3 +151,9 @@ async def generate_readme(session, project_id: str, request: Request):
             "Error: Something went wrong. Please try again later.",
             cls="error-message",
         )
+
+
+async def update_retrieval_method(session, request: Request):
+    print("\n>>>> CTRL: update_retrieval_method")
+    form = await request.form()
+    session["retrieval_method"] = form.get("retrieval_method")
