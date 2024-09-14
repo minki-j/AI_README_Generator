@@ -1,8 +1,6 @@
 import time
 from fasthtml.common import *
 
-from app.css import loader_css, input_pattern_error
-
 import app.views.main as main_views
 import app.views.step as step_views
 import app.views.history as history_views
@@ -19,6 +17,7 @@ def user_auth_before(req, session):
         print("Initializing quota")
         session["quota"] = (QUOTA_LIMIT, int(time.time()))
 
+
 beforeware = Beforeware(
     user_auth_before,
     skip=[r"/favicon\.ico", r"/static/.*", r".*\.css", r".*\.js", "/login"],
@@ -34,8 +33,16 @@ app, _ = fast_app(
             href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css",
             type="text/css",
         ),
-        loader_css,
-        input_pattern_error,
+        Style(
+            """
+    .my-indicator{
+        display:none;
+    }
+    .htmx-request .my-indicator{
+        display:inline;
+    }
+    """
+        ),
         MarkdownJS(),
         HighlightJS(langs=["python", "javascript", "html", "css"]),
         Script(

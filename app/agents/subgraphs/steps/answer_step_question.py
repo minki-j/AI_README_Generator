@@ -11,6 +11,17 @@ from app.global_vars import SKIP_LLM_CALLINGS
 import json
 
 
+def get_true_file_paths(directory_tree_dict, current_path=""):
+    true_paths = []
+    for key, value in directory_tree_dict.items():
+        full_path = f"{current_path}/{key}" if current_path else key
+        if isinstance(value, dict):
+            true_paths.extend(get_true_file_paths(value, full_path))
+        elif value:
+            true_paths.append(full_path)
+    return true_paths
+
+
 class Answer(BaseModel):
     ratoionale: str = Field(
         description="Think out loud and step by step to answer the question"
@@ -20,6 +31,11 @@ class Answer(BaseModel):
 
 def answer_step_question(state: State) -> State:
     print("\n>>>> NODE: answer_step_question")
+
+    directory_tree_dict = state["directory_tree_dict"]
+    selected_file_paths = get_true_file_paths(directory_tree_dict)
+    print(f"true_file_paths: {selected_file_paths}")
+
     step_question = state["step_question"]
 
     repo_info_to_look_up = step_question["repo_info_to_look_up"]
@@ -86,7 +102,7 @@ def answer_step_question(state: State) -> State:
                     "answer": response.answer,
                     "opened_files": [],
                     "user_feedback": state.get("user_feedback", ""),
-                    "user_selected_files": [],  # TODO
+                    "user_selected_files": selected_file_paths,
                 }
             ]
         }

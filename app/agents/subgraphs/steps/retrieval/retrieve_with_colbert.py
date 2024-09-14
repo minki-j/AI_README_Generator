@@ -9,6 +9,7 @@ from app.agents.state_schema import State
 from .utils.chunking import chunk_with_AST_parser
 from .utils.index_for_colbert import index_documents_with_colbert
 
+
 def retrieve_with_colbert(state: State):
     print("\n>>>> NODE: retrieve_with_colbert")
 
@@ -49,14 +50,7 @@ def retrieve_with_colbert(state: State):
             query,
             k=5,
         )
-        # for result in results:
-        #     print("-----"*10)
-        #     print("-----"*10)
-        #     print("score", result["score"])
-        #     print("-----"*10)
-        #     print("content", result["content"])
-        #     print()
-        #     print()
+
         retrieved_code_snippets.extend(
             [
                 result["content"]
@@ -72,6 +66,11 @@ def retrieve_with_colbert(state: State):
     #     f"{document.metadata["source"]}:\n{document.page_content}"
     #     for document in retrieved_code_snippets
     # ]
+
+    formatted_snippets = {
+        "path_placeholder_for_colbert": document.page_content
+        for document in retrieved_code_snippets
+    }
 
     return {
         "retrieved_chunks": retrieved_code_snippets,

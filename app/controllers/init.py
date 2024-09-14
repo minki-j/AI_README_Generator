@@ -42,7 +42,6 @@ async def step_initializer(
         "step_question": STEP_LIST[0],
         "colbert_threshold": 10,
         "retrieval_method": RetrievalMethod.FAISS,
-        "invalid_paths": [],
     }
 
     try:

@@ -70,6 +70,19 @@ class State(TypedDict):
                 raise ValueError(f"Key {key} not found in StepQ")
         return original
 
+    def append_dict(original: dict, new_result: dict) -> dict:
+        if new_result == "RESET":
+            return {}
+        for key, value in new_result.items():
+            # TODO: Need to reorder when line number data is included
+            # TODO: In the meantime, just concatenate them
+            if key in original:
+                print(f"Appending to {key}")
+                original[key] += "\n\n" + value 
+            else:
+                original[key] = value
+        return original
+
     # Inputs
     # Can't be changed after initialization
     cache_dir: str
@@ -83,7 +96,6 @@ class State(TypedDict):
 
     # Ephemeral Variables
     # Will be reset after each step
-    invalid_paths: List[str]
     valid_paths: Annotated[List[str], merge_lists]
     corrected_paths: List[str]
 
@@ -91,7 +103,7 @@ class State(TypedDict):
     # Will be updated after each step
     previous_step: int
     current_step: int
-    retrieved_chunks: Annotated[List[str], merge_lists]
+    retrieved_chunks: Annotated[Dict[str, str], append_dict]
     step_question: Annotated[StepQ, update_step_question]
     user_feedback: str
     directory_tree_dict: dict  # For indicating which files are retrieved

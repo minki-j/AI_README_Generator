@@ -33,7 +33,7 @@ def home_view(session):
                 hx_post="init?project_id=" + str(uuid.uuid4()),
                 hx_swap="outerHTML",
                 hx_target="#step",
-                hx_target_429="#quota_msg",  #! Not working
+                hx_target_429="#quota_msg",
                 hx_indicator="#loader",
                 hx_replace_url="true",
             )(
@@ -58,23 +58,23 @@ def home_view(session):
                 ),
                 Script(
                     """
-                document.addEventListener('DOMContentLoaded', function() {
-                    const input = document.getElementById('clone_url_input');
-                    const button = document.getElementById('start_button');
-                    function validateInput() {
-                        button.disabled = !input.checkValidity();
-                    }
-                    
-                    const guideMsg = document.getElementById('clone_url_guide_msg');
-                    function showGuideMsg() {
-                        guideMsg.style.display = input.checkValidity() ? 'none' : 'block';
-                    }
-                    
-                    input.addEventListener('input', validateInput);
-                    input.addEventListener('input', showGuideMsg);
-                    validateInput(); // Initial check
-                });
-            """
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const input = document.getElementById('clone_url_input');
+                        const button = document.getElementById('start_button');
+                        function validateInput() {
+                            button.disabled = !input.checkValidity();
+                        }
+                        
+                        const guideMsg = document.getElementById('clone_url_guide_msg');
+                        function showGuideMsg() {
+                            guideMsg.style.display = input.checkValidity() ? 'none' : 'block';
+                        }
+                        
+                        input.addEventListener('input', validateInput);
+                        input.addEventListener('input', showGuideMsg);
+                        validateInput();
+                    });
+                    """
                 ),
             ),
             Div(
@@ -91,4 +91,14 @@ def home_view(session):
             ),
         ),
         Div(id="quota_msg"),
+        Style(
+            """
+            input:valid {
+                background-color: #e8f5e9;  /* Light pastel green */
+            }
+            input:invalid {
+                background-color: #ffebee;  /* Light pastel red */
+            }
+            """
+        ),
     )
