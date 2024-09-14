@@ -1,6 +1,7 @@
 from fasthtml.common import *
 import json
 
+
 def FileExplorer(directory_tree_str, common_style):
     """Render a simple file explorer with checkable items for files only."""
     try:
@@ -26,23 +27,31 @@ def FileExplorer(directory_tree_str, common_style):
             if isinstance(content, dict):
                 items.append(
                     Li(style="list-style-type: none; margin-left: 0;")(
-                        Span(name),
-                        Ul(style="padding-left: 1rem; margin-bottom: 0;")(
-                            *render_tree(content)
+                        Div(
+                            Button(
+                                f"▼ {name}",
+                                cls="toggle-btn",
+                                onclick=f"toggleDirectory(this, '{name}')",
+                                style="background: none; border: none; cursor: pointer; padding: 0 5px; color: black; outline: none;",
+                            ),
                         ),
+                        Ul(
+                            id=f"dir-{name}",
+                            style="padding-left: 1rem; margin-bottom: 0;",
+                        )(*render_tree(content)),
                     )
                 )
             else:
                 items.append(
-                    Li(
-                        style="list-style-type: none; margin-left: 0;margin-bottom: 0;"
-                    )(
+                    Li(style="list-style-type: none; margin-left: 0; margin-bottom: 0;")(
                         Label(
                             Input(
                                 type="checkbox",
                                 name="file",
                                 value=name,
                                 checked=content,
+                                style="accent-color: black; color: black;",
+                                onchange="this.style.backgroundColor = this.checked ? 'lightblue' : '';",
                             ),
                             Span(name),
                         )
@@ -53,8 +62,4 @@ def FileExplorer(directory_tree_str, common_style):
     return Div(
         cls="file-explorer",
         style=common_style,
-    )(
-        Ul(style="padding-left: 0; margin-bottom: 0;")(
-            *render_tree(directory_tree_obj)
-        ),
-    )
+    )(Ul(style="padding-left: 0; margin-bottom: 0;")(*render_tree(directory_tree_obj)))
