@@ -16,7 +16,7 @@ from app.utils.initialize_db import db
 from app.global_vars import STEP_LIST
 from app.global_vars import DEBUG
 from app.agents.state_schema import State
-
+from app.agents.state_schema import RetrievalMethod
 
 async def step_handler(
     session,
@@ -24,24 +24,27 @@ async def step_handler(
     project_id: str,
     step_num: int,
 ):
-    print("\n>>>> CTRL: step_handler")
+    # print("\n>>>> CTRL: step_handler")
     check_quota_response = check_quota(session)
     if check_quota_response is not None:
         return check_quota_response
 
-    form = await request.form()
-    if len(form) == 0:  # when "next step" button is clicked
+    if request.headers.get("hx-trigger-name") == "next_step_button":
         user_feedback = None
         directory_tree_str = db.t.readmes.get(project_id).directory_tree_str
         directory_tree_dict = json.loads(directory_tree_str)
-
-    else:  # when "apply feedback" button is clicked
+    elif request.headers.get("hx-trigger-name") == "step_form":
+        form = await request.form()
         user_feedback = form.get("user_feedback")
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)
         retrieval_method = form.get("retrieval_method")
         session.setdefault("retrieval_method", "FAISS")
         session["retrieval_method"] = retrieval_method
+    else:
+        raise Exception(
+            f"Invalid hx-trigger-name: {request.headers.get('hx-trigger-name')}"
+        )
 
     try:
         config = {"configurable": {"thread_id": project_id}}
@@ -84,7 +87,11 @@ async def step_handler(
             step_num + 1,
             len(STEP_LIST),
             directory_tree_str,
-            session["retrieval_method"],
+            (
+                session["retrieval_method"]
+                if STEP_LIST[step_num - 1]["retrieval_needed"]
+                else RetrievalMethod.NONE.name
+            ),
             is_last_step=True if step_num == len(STEP_LIST) - 1 else False,
         )
     else:
@@ -95,9 +102,9 @@ async def step_handler(
 
 
 async def generate_readme(session, project_id: str, request: Request):
-    print("\n>>>> CTRL: generate_readme")
+    # print("\n>>>> CTRL: generate_readme")
     if DEBUG:
-        print("DEBUG MODE. SKIP GRAPH")
+        # print("DEBUG MODE. SKIP GRAPH")
         r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
         if r:
             full_route = str(request.url_for("generate_readme"))

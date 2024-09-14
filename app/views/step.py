@@ -3,7 +3,7 @@ from app.components.pages import StepPage
 
 from app.global_vars import STEP_LIST
 from app.utils.initialize_db import db
-
+from app.agents.state_schema import RetrievalMethod
 
 def step_view(session, step_num: int, project_id: str):
     print("\n>>>> VIEW: step_view")
@@ -27,7 +27,11 @@ def step_view(session, step_num: int, project_id: str):
                 "next_step": step_num + 1,
             },
             directory_tree_str=step_data["directory_tree_str"],
-            retrieval_method=session["retrieval_method"],
+            retrieval_method=(
+                session["retrieval_method"]
+                if STEP_LIST[step_num - 1]["retrieval_needed"]
+                else RetrievalMethod.NONE.name
+            ),
         )
     else:
         return A(href="/")(H1("AI README Generator")), Main(id="step")(

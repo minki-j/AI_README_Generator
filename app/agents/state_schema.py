@@ -25,6 +25,7 @@ class StepResult(TypedDict):
 
 
 class RetrievalMethod(Enum):
+    NONE = "None"
     FAISS = "Faiss"
     COLBERT = "ColBERT"
 

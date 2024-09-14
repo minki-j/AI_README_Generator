@@ -13,7 +13,7 @@ def Step(
     next_step: int,
     total_step_num: int,
     directory_tree_str: str,
-    retrieval_method: RetrievalMethod,
+    retrieval_method: str,
     is_last_step=False,
 ):
     """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
@@ -58,6 +58,7 @@ def Step(
     return Div(id="step", hx_ext="response-targets")(
         H4(f"Step {next_step-1}. {feedback_question}"),
         Form(
+            id="step_form",
             hx_post=f"step?step_num={next_step - 1}&project_id={project_id}",
             hx_swap="outerHTML",
             hx_target="#step",
@@ -96,7 +97,7 @@ def Step(
                         value=method.name,
                         selected=(
                             method == RetrievalMethod[retrieval_method]
-                        ),  # TODO: Use Session State
+                        ),
                     )
                     for method in RetrievalMethod
                 ]
@@ -117,7 +118,7 @@ def Step(
                 cls="dynamic-textarea",
                 style=textarea_style,
             ),
-            Button("Apply Feedback", type="submit", cls="outline"),
+            Button("Apply Feedback", id="apply_feedback_button", type="submit", cls="outline"),
         ),
         Div(id="quota_msg"),
         (
@@ -130,6 +131,7 @@ def Step(
                 hx_swap="outerHTML",
                 hx_target="#step",
                 hx_replace_url="true",
+                hx_vals="js:{}",
             )
             if not is_last_step
             else Button(

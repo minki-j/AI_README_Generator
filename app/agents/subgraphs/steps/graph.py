@@ -11,6 +11,7 @@ from app.utils.converters import to_path_map
 
 
 def do_need_to_retrieve(state: State):
+    
     if state["step_question"]["retrieval_needed"]:
         return n(subGraph_retrieval)
     else:

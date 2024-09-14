@@ -11,11 +11,6 @@ def check_quota(session):
         remaining_time = quota_created_at + QUOTA_RESET_MINUTES * 60 - current_time
         if remaining_time <= 0:
             session["quota"] = (QUOTA_LIMIT, current_time)
-            add_toast(
-                session,
-                "Your quota has been reset.",
-                "info",
-            )
             return None
         else:
             add_toast(
