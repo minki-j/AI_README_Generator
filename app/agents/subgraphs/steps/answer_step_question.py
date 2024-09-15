@@ -65,7 +65,7 @@ def answer_step_question(state: State) -> State:
             *previous_answers_and_feedbacks,
             (
                 "human",
-                "Based on the provided information, answer the following question.\n{question}\n{user_feedback}\n{retrieved_chunks}\n{repo_info}",
+                "Based on the provided information, answer the following question.\n{question}\n{user_feedback}\n{retrieved_chunks}\n{repo_info}\n{previous_step_answers}",
             ),
         ]
     )
@@ -85,6 +85,11 @@ def answer_step_question(state: State) -> State:
                 ]
             }
         }
+    
+    previous_step_answers = []
+    for step_num, step_results in results.items():
+        if step_num < state["current_step"]:
+            previous_step_answers.append(step_results[-1]["answer"])
 
     response = chain.invoke(
         {
@@ -92,6 +97,7 @@ def answer_step_question(state: State) -> State:
             "retrieved_chunks": f"<code_snippets>\n{state['retrieved_chunks']}\n</code_snippets>\n",
             "user_feedback": f"<user_feedback>\n{state.get('user_feedback', '')}\n</user_feedback>\n",
             "repo_info": f"<repo_info>\n{repo_info_str}\n</repo_info>\n",
+            "previous_step_answers": f"<key_information>\n{"\n".join(previous_step_answers)}\n</key_information>\n",
         }
     )
 
