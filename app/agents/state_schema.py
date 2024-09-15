@@ -70,9 +70,12 @@ class State(TypedDict):
                 raise ValueError(f"Key {key} not found in StepQ")
         return original
 
-    def append_dict(original: dict, new_result: dict) -> dict:
+    def handle_retrieved_chunks(original: dict, new_result: dict) -> dict:
         if new_result == "RESET":
             return {}
+        if new_result.get("replace", False):
+            del new_result["replace"]
+            return new_result
         for key, value in new_result.items():
             # TODO: Need to reorder when line number data is included
             # TODO: In the meantime, just concatenate them
@@ -103,7 +106,7 @@ class State(TypedDict):
     # Will be updated after each step
     previous_step: int
     current_step: int
-    retrieved_chunks: Annotated[Dict[str, str], append_dict]
+    retrieved_chunks: Annotated[Dict[str, str], handle_retrieved_chunks]
     step_question: Annotated[StepQ, update_step_question]
     user_feedback: str
     directory_tree_dict: dict  # For indicating which files are retrieved

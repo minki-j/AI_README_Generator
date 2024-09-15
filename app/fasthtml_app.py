@@ -25,7 +25,7 @@ beforeware = Beforeware(
 
 app, _ = fast_app(
     live=True,
-    debug=True,
+    
     hdrs=(
         picolink,
         Link(

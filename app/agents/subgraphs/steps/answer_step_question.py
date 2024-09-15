@@ -1,26 +1,13 @@
-from app.agents.state_schema import State
+import json
 
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
 
-from app.agents.common import chat_model
-
 from app.global_vars import SKIP_LLM_CALLINGS
-
-import json
-
-
-def get_true_file_paths(directory_tree_dict, current_path=""):
-    true_paths = []
-    for key, value in directory_tree_dict.items():
-        full_path = f"{current_path}/{key}" if current_path else key
-        if isinstance(value, dict):
-            true_paths.extend(get_true_file_paths(value, full_path))
-        elif value:
-            true_paths.append(full_path)
-    return true_paths
-
+from app.agents.state_schema import State
+from app.agents.common import chat_model
+from app.utils.get_user_picked_file_paths import get_user_picked_file_paths
 
 class Answer(BaseModel):
     ratoionale: str = Field(
@@ -33,8 +20,7 @@ def answer_step_question(state: State) -> State:
     print("\n>>>> NODE: answer_step_question")
 
     directory_tree_dict = state["directory_tree_dict"]
-    selected_file_paths = get_true_file_paths(directory_tree_dict)
-    print(f"true_file_paths: {selected_file_paths}")
+    selected_file_paths = get_user_picked_file_paths(directory_tree_dict)
 
     step_question = state["step_question"]
 
@@ -65,7 +51,7 @@ def answer_step_question(state: State) -> State:
             *previous_answers_and_feedbacks,
             (
                 "human",
-                "Based on the provided information, answer the following question.\n{question}\n{user_feedback}\n{retrieved_chunks}\n{repo_info}\n{previous_step_answers}",
+                "Answer the question.\n{question}{user_feedback}{retrieved_chunks}{repo_info}{previous_step_answers}",
             ),
         ]
     )
@@ -88,16 +74,16 @@ def answer_step_question(state: State) -> State:
     
     previous_step_answers = []
     for step_num, step_results in results.items():
-        if step_num < state["current_step"]:
+        if int(step_num) < int(state["current_step"]):
             previous_step_answers.append(step_results[-1]["answer"])
 
     response = chain.invoke(
         {
-            "question": f"<question>\n{step_question['prompt']}\n</question>\n",
-            "retrieved_chunks": f"<code_snippets>\n{state['retrieved_chunks']}\n</code_snippets>\n",
-            "user_feedback": f"<user_feedback>\n{state.get('user_feedback', '')}\n</user_feedback>\n",
-            "repo_info": f"<repo_info>\n{repo_info_str}\n</repo_info>\n",
-            "previous_step_answers": f"<key_information>\n{"\n".join(previous_step_answers)}\n</key_information>\n",
+            "question": f"<question>\n{step_question['prompt']}\n</question>\n" if step_question["prompt"] else "",
+            "retrieved_chunks": f"<code_snippets>\n{json.dumps(state['retrieved_chunks'], ensure_ascii=False)}\n</code_snippets>\n" if state["retrieved_chunks"] else "",
+            "user_feedback": f"<extra_instruction>\n{state.get('user_feedback', '')}\n</extra_instruction>\n" if state.get("user_feedback", "") else "",
+            "repo_info": f"<repo_info>\n{repo_info_str}\n</repo_info>\n" if repo_info_str else "",
+            "previous_step_answers": f"<key_information>\n{"\n".join(previous_step_answers)}\n</key_information>\n" if previous_step_answers else "",
         }
     )
 

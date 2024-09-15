@@ -1,62 +1,50 @@
 import os
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from app.agents.state_schema import State
+from app.utils.get_user_picked_file_paths import get_user_picked_file_paths
 
 
 def add_user_chosen_files(state: State):
     print("\n>>>> NODE: add_user_chosen_files")
-    root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
-    user_chosen_files = []
-    directory_tree_dict = state["directory_tree_dict"]
-
-    # recursively find the files that are the keys of this dict where the value is True, and add them to the valid_paths list
-    def recursive_find(directory_tree_dict, current_path):
-        for path, value in directory_tree_dict.items():
-            if isinstance(value, dict):
-                recursive_find(value, current_path + "/" + path)
-            elif value == True:
-                user_chosen_files.append(current_path + "/" + path)
-            else:
-                continue
-
-    recursive_find(directory_tree_dict, root_path)
-
     return {
-        "valid_paths": user_chosen_files,
+        "valid_paths": get_user_picked_file_paths(state["directory_tree_dict"]),
     }
+
+
+def read_file(path, root_path):
+    full_path = os.path.join(root_path, path)
+    if full_path.endswith(".ipynb"):
+        print(f"Skipping jupyter notebook: {full_path}")
+        return None
+    if not os.path.exists(full_path):
+        raise ValueError(f"Does not exist: {full_path}")
+    try:
+        with open(full_path, "r", encoding="utf-8", errors="ignore") as f:
+            return full_path.replace(root_path, ""), f.read()
+    except UnicodeDecodeError:
+        print(f"Unable to read file due to encoding issues: {full_path}. Skipping this file.")
+        return None
 
 
 def read_files(state: State):
     print("\n>>>> NODE: read_files")
 
-    root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
+    root_path = str(Path(state["cache_dir"]) / state["title"] / "cloned_repositories")
     valid_paths = state["valid_paths"]
-    print("reading the following files: ", valid_paths)
+    retrieved_chunks = {}
+    with ThreadPoolExecutor() as executor:
+        future_to_path = {
+            executor.submit(read_file, path, root_path): (path, root_path) for path in valid_paths
+        }
+        for future in as_completed(future_to_path):
+            result = future.result()
+            if result:
+                key, content = result
+                retrieved_chunks[key] = content
 
-    opened_files = {}
-    for full_path in valid_paths:
-        #! Currently skipping jupyter notebooks
-        if full_path.endswith(".ipynb"):
-            print(f"Skipping jupyter notebook: {full_path}")
-            continue
-        if not os.path.exists(full_path):
-            raise ValueError(f"Does not exist: {full_path}")
-
-        try:
-            with open(full_path, "r", encoding="utf-8", errors="ignore") as f:
-                opened_files[full_path.replace(root_path, "")] = f.read()
-        except UnicodeDecodeError:
-            print(f"Skipping file due to encoding issues: {full_path}")
-
-        break  #! We are only reading the first file for now due to the limitation context lenght.
-
-    # TODO: Add an intelligent way to shorten the code snippets
-
-    if not opened_files:
-        opened_files = {}
-    
     return {
-        "retrieved_chunks": opened_files,
+        "retrieved_chunks": retrieved_chunks,
         "opened_files": valid_paths,
     }

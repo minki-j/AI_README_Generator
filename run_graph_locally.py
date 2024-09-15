@@ -36,6 +36,7 @@ for i in range(len(STEP_LIST) - 1):
             "current_step": i + 2,
             "step_question": STEP_LIST[i + 1],
         },
+        as_node="human_in_the_loop",
     )
     result = main_graph.invoke(None, config)
 

@@ -31,11 +31,7 @@ def step_view(session, step_num: int, project_id: str):
             "next_step": step_num + 1,
         },
         directory_tree_str=step_data["directory_tree_str"],
-        retrieval_method=(
-            session["retrieval_method"]
-            if STEP_LIST[step_num - 1]["retrieval_needed"]
-            else RetrievalMethod.NONE.name
-        ),
+        retrieval_method=session["retrieval_method"],
         quota=session.get("quota", (0, 0)),
     )
 

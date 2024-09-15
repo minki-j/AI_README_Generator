@@ -32,6 +32,7 @@ g.add_node("choose_retrieval_method", RunnablePassthrough())
 
 
 def choose_retrieval_method(state):
+    print("\n>>>> EDGE: choose_retrieval_method")
     retrieval_method = RetrievalMethod[state.get("retrieval_method", DEFAULT_RETRIEVAL)]
     if retrieval_method == RetrievalMethod.COLBERT:
         return n(retrieve_with_colbert)

@@ -13,6 +13,7 @@ from app.agents.subgraphs.generate_readme.graph import subGraph_generate_readme
 import os
 
 def check_if_last_step(state):
+    print("\n>>>> EDGE: check_if_last_step")
     if state["current_step"] is None or state["total_number_of_steps"] is None:
         raise(ValueError("current_step or total_number_of_steps is None"))
     if int(state["current_step"]) > int(state["total_number_of_steps"]):
@@ -20,6 +21,7 @@ def check_if_last_step(state):
     return n(check_if_regenerate_with_feedback)
 
 def check_if_regenerate_with_feedback(state):
+    print("\n>>>> EDGE: check_if_regenerate_with_feedback")
     if int(state["current_step"]) == int(state["previous_step"]):
         return {
             "retrieved_chunks": "RESET",

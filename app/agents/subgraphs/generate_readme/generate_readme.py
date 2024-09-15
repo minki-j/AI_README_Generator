@@ -46,8 +46,8 @@ def generate_readme(state: State):
 
     readme = chain.invoke(
         {
-            "step_answers": f"<step_answers>\n{"\n".join(step_answers)}\n</step_answers>\n",
-            "repo_info": f"<repo_info>\n{"\n".join(repo_info)}\n</repo_info>\n",
+            "step_answers": f"<step_answers>\n{"\n".join(step_answers)}\n</step_answers>\n" if step_answers else "",
+            "repo_info": f"<repo_info>\n{"\n".join(repo_info)}\n</repo_info>\n" if repo_info else "",
         }
     )
 

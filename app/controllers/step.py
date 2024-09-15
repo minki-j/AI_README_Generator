@@ -18,6 +18,7 @@ from app.global_vars import DEBUG
 from app.agents.state_schema import State
 from app.agents.state_schema import RetrievalMethod
 
+
 async def step_handler(
     session,
     request: Request,
@@ -38,8 +39,11 @@ async def step_handler(
         user_feedback = form.get("user_feedback")
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)
+        print(f"==>>directory_tree_dict: {directory_tree_dict}")
         retrieval_method = form.get("retrieval_method", None)
-        session.setdefault("retrieval_method", retrieval_method if retrieval_method else "FAISS")
+        session.setdefault(
+            "retrieval_method", retrieval_method if retrieval_method else "FAISS"
+        )
     else:
         raise Exception(
             f"Invalid hx-trigger-name: {request.headers.get('hx-trigger-name')}"
@@ -56,6 +60,7 @@ async def step_handler(
                 "step_question": STEP_LIST[step_num - 1],
                 "retrieval_method": session["retrieval_method"],
             },
+            as_node="human_in_the_loop",
         )
         r = main_graph.invoke(None, config)
         session["quota"] = (session["quota"][0] - 1, session["quota"][1])
@@ -86,11 +91,7 @@ async def step_handler(
             step_num + 1,
             len(STEP_LIST),
             directory_tree_str,
-            (
-                session["retrieval_method"]
-                if STEP_LIST[step_num - 1]["retrieval_needed"]
-                else RetrievalMethod.NONE.name
-            ),
+            session["retrieval_method"],
             session.get("quota", (0, 0)),
             is_last_step=True if step_num >= len(STEP_LIST) else False,
         )

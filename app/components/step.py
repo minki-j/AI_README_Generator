@@ -121,118 +121,121 @@ def Step(
             hx_swap="outerHTML",
             hx_target="#step",
             hx_target_429="#quota_msg",
-            # TODO: add responsive layout for left and right column
         )(
-            Div(cls="left-column")(
-                Div(cls="collapsible-section")(
-                    H5("Answer", onclick="toggleSection(this)"),
-                    Div(cls="section-content")(
-                        Textarea(
-                            id="answer",
-                            name="answer",
-                            cls="dynamic-textarea",
-                            style=textarea_style,
-                        )(answer),
+            Div(cls="horizontal-layout")(
+                Div(cls="left-column")(
+                    Div(cls="collapsible-section")(
+                        H5("Answer", onclick="toggleSection(this)"),
+                        Div(cls="section-content")(
+                            Textarea(
+                                id="answer",
+                                name="answer",
+                                cls="dynamic-textarea",
+                                style=textarea_style,
+                            )(answer),
+                        ),
                     ),
-                ),
-                Div(cls="collapsible-section")(
-                    H5("Feedback", onclick="toggleSection(this)"),
-                    Div(cls="section-content")(
-                        Textarea(
-                            id="user_feedback",
-                            name="user_feedback",
-                            placeholder="Enter your feedback here",
-                            cls="dynamic-textarea",
-                            style=textarea_style,
+                    Div(cls="collapsible-section")(
+                        H5("Feedback", onclick="toggleSection(this)"),
+                        Div(cls="section-content")(
+                            Textarea(
+                                id="user_feedback",
+                                name="user_feedback",
+                                placeholder="Enter your feedback here",
+                                cls="dynamic-textarea",
+                                style=textarea_style,
+                            ),
                         ),
                     ),
                 ),
-            ),
-            Div(cls="right-column")(
-                Div(cls="collapsible-section")(
-                    Div(style="display: flex; align-items: center;")(
-                        H5("Retrieved Code Snippets", onclick="toggleSection(this)"),
-                        Button(
-                            "Collapse All",
-                            id="collapse_all_button_code_snippets",
-                            onclick="toggleAllCodeSnippets()",
-                            cls="toggle-all-btn",
-                            type="button",
-                            style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                Div(cls="right-column")(
+                    Div(cls="collapsible-section")(
+                        Div(style="display: flex; align-items: center;")(
+                            H5(
+                                "Retrieved Code Snippets", onclick="toggleSection(this)"
+                            ),
+                            Button(
+                                "Collapse All",
+                                id="collapse_all_button_code_snippets",
+                                onclick="toggleAllCodeSnippets()",
+                                cls="toggle-all-btn",
+                                type="button",
+                                style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                            ),
                         ),
-                    ),
-                    Div(cls="section-content")(
-                        Div(
-                            style=scrollable_style,
-                        )(
-                            *(
-                                [P("No code snippets are retrieved")]
-                                if not retrieved_chunks
-                                else [
-                                    Div(
-                                        P(
-                                            f"▼ {path}",
-                                            style="font-weight: semi-bold; margin-bottom: 0; cursor: pointer;",
-                                            onclick=f"toggleCodeSnippet('snippet-{i}')",
-                                        ),
+                        Div(cls="section-content")(
+                            Div(
+                                style=scrollable_style,
+                            )(
+                                *(
+                                    [P("No code snippets are retrieved")]
+                                    if not retrieved_chunks
+                                    else [
                                         Div(
-                                            id=f"snippet-{i}",
-                                            style="",
-                                        )(
-                                            Pre(
-                                                style="background-color: transparent; padding: 0; margin: 0;"
+                                            P(
+                                                f"▼ {path}",
+                                                style="font-weight: semi-bold; margin-bottom: 0; cursor: pointer;",
+                                                onclick=f"toggleCodeSnippet('snippet-{i}')",
+                                            ),
+                                            Div(
+                                                id=f"snippet-{i}",
+                                                style="",
                                             )(
-                                                Code(
-                                                    chunk,
-                                                    style="background-color: #f0f0f0; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+                                                Pre(
+                                                    style="background-color: transparent; padding: 0; margin: 0;"
+                                                )(
+                                                    Code(
+                                                        chunk,
+                                                        style="background-color: #f0f0f0; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+                                                    )
                                                 )
-                                            )
-                                        ),
-                                    )
-                                    for i, (path, chunk) in enumerate(
-                                        retrieved_chunks.items()
-                                    )
-                                ]
-                            )
+                                            ),
+                                        )
+                                        for i, (path, chunk) in enumerate(
+                                            retrieved_chunks.items()
+                                        )
+                                    ]
+                                )
+                            ),
                         ),
                     ),
-                ),
-                Div(cls="collapsible-section")(
-                    Div(style="display: flex; align-items: center;")(
-                        H5("File Explorer", onclick="toggleSection(this)"),
-                        Button(
-                            "Collapse All",
-                            id="toggle-all-btn-file-explorer",
-                            cls="toggle-all-btn",
-                            type="button",
-                            onclick="toggleAllFileExplorer()",
-                            style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                    Div(cls="collapsible-section")(
+                        Div(style="display: flex; align-items: center;")(
+                            H5("File Explorer", onclick="toggleSection(this)"),
+                            Button(
+                                "Collapse All",
+                                id="toggle-all-btn-file-explorer",
+                                cls="toggle-all-btn",
+                                type="button",
+                                onclick="toggleAllFileExplorer()",
+                                style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                            ),
+                            Button(
+                                "Uncheck All",
+                                id="uncheck-all-btn",
+                                type="button",
+                                onclick="uncheckAllFileExplorer()",
+                                style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                            ),
                         ),
-                        Button(
-                            "Uncheck All",
-                            id="uncheck-all-btn",
-                            type="button",
-                            onclick="uncheckAllFileExplorer()",
-                            style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
-                        ),
-                    ),
-                    Div(cls="section-content")(
-                        FileExplorer(directory_tree_str, scrollable_style),
-                        Input(
-                            type="hidden",
-                            id="directory_tree_str",
-                            name="directory_tree_str",
-                            value=directory_tree_str,
+                        Div(cls="section-content")(
+                            FileExplorer(directory_tree_str, scrollable_style),
+                            Input(
+                                type="hidden",
+                                id="directory_tree_str",
+                                name="directory_tree_str",
+                                value=directory_tree_str,
+                            ),
                         ),
                     ),
                 ),
             ),
-        ),
-        Button(
-            "Apply Feedback",
-            id="apply_feedback_button",
-            type="submit",
-            cls="outline",
+            Button(
+                "Apply Feedback",
+                id="apply_feedback_button",
+                type="submit",
+                cls="outline",
+            ),
         ),
         (
             Button(
@@ -277,26 +280,22 @@ def Step(
     });
 })();
 
-function updateTree(tree, fileName, value) {                
-    function recursiveUpdate(obj) {
-        for (let key in obj) {
-            if (key === fileName) {
-                obj[key] = value;
-                return true;
-            } else if (typeof obj[key] === 'object') {
-                if (recursiveUpdate(obj[key])) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    recursiveUpdate(tree);
+function updateTree(tree, fullPath, value) {
+    const pathParts = fullPath.split('/');
+    const fileName = pathParts.pop();
+    let currentLevel = tree; // Pass by reference
+    pathParts.forEach(path => {
+        currentLevel = currentLevel[path]; // Pass by reference
+    });
+    currentLevel[fileName] = value;
 }
+
 document.addEventListener('change', function(e) {
     if (e.target.matches('.file-explorer input[type="checkbox"]')) {
+        console.log(`==>>${e.target.value} set to ${e.target.checked}`);
         let tree = JSON.parse(document.getElementById('directory_tree_str').value);
         updateTree(tree, e.target.value, e.target.checked);
+        console.log(`==>>tree: ${JSON.stringify(tree)}`);
         document.getElementById('directory_tree_str').value = JSON.stringify(tree);
     }
 });
@@ -364,7 +363,7 @@ function toggleAllFileExplorer() {
     if (btn.textContent === 'Collapse All') {
         allDirs.forEach(dir => dir.style.display = 'none');
         allToggleBtns.forEach(toggleBtn => {
-            const dirName = toggleBtn.textContent.slice(2);
+            const dirName = toggleBtn.textContent.trim().slice(2);
             toggleBtn.textContent = `▶ ${dirName}`;
         });
         btn.textContent = 'Expand All';
@@ -385,6 +384,7 @@ function uncheckAllFileExplorer() {
         checkbox.style.backgroundColor = '';
         updateTree(JSON.parse(document.getElementById('directory_tree_str').value), checkbox.value, false);
     });
+    const tree = JSON.parse(document.getElementById('directory_tree_str').value);
     document.getElementById('directory_tree_str').value = JSON.stringify(tree);
 }
 
@@ -454,7 +454,7 @@ function toggleAllCodeSnippets() {
     background-color: #e0e0e0;
 }
 @media (min-width: 1024px) {
-    #step_form {
+    .horizontal-layout {
         display: flex;
         gap: 2rem;
     }

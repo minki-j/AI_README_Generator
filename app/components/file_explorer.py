@@ -18,37 +18,41 @@ def FileExplorer(directory_tree_str, common_style):
         )
         raise ValueError("directory_tree is not properly formatted in JSON")
 
-    def render_tree(directory_tree_obj):
+    def render_tree(directory_tree_obj, current_path=''):
         if not directory_tree_obj:
             return []
         items = []
 
         for name, content in directory_tree_obj.items():
+            full_path = f"{current_path}/{name}".lstrip('/')
             if isinstance(content, dict):
                 items.append(
-                    Li(style="list-style-type: none; margin-left: 0;")(
-                        Div(
-                            Button(
-                                f"▼ {name}",
-                                cls="file-explorer-collapse-btn",
-                                onclick=f"toggleDirectory(this, '{name}')",
-                                style="background: none; border: none; cursor: pointer; padding: 0 5px; color: black; outline: none;",
-                            ),
+                    Li(
+                        style="list-style-type: none; margin-left: 0;",
+                        cls="file-explorer-directory",
+                    )(
+                        Button()(
+                            f"▼ {name}",
+                            onclick=f"toggleDirectory(this, '{name}')",
+                            style="background: none; border: none; cursor: pointer; padding: 0 5px; color: black; outline: none;",
                         ),
                         Ul(
                             id=f"dir-{name}",
                             style="padding-left: 1rem; margin-bottom: 0;",
-                        )(*render_tree(content)),
+                        )(*render_tree(content, full_path)),
                     )
                 )
             else:
                 items.append(
-                    Li(style="list-style-type: none; margin-left: 0; margin-bottom: 0;")(
+                    Li(
+                        style="list-style-type: none; margin-left: 0; margin-bottom: 0;"
+                    )(
                         Label(
                             Input(
                                 type="checkbox",
+                                cls="file-explorer-checkbox",
                                 name="file",
-                                value=name,
+                                value=full_path,  # Use full_path instead of name
                                 checked=content,
                                 style="accent-color: black; color: black;",
                                 onchange="this.style.backgroundColor = this.checked ? 'lightblue' : '';",
@@ -62,4 +66,8 @@ def FileExplorer(directory_tree_str, common_style):
     return Div(
         cls="file-explorer",
         style=common_style,
-    )(Ul(style="padding-left: 0; margin-bottom: 0;")(*render_tree(directory_tree_obj)))
+    )(
+        Ul(style="padding-left: 0; margin-bottom: 0;")(
+            *render_tree(directory_tree_obj)
+        ),
+    )
