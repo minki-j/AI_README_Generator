@@ -53,6 +53,7 @@ if readmes not in db.t or steps not in db.t or retrieved_chunks not in db.t:
     retrieved_chunks.create(
         id=str,
         step_id=str,
+        path=str,
         content=str,
         pk="id",
         foreign_keys=(("step_id", "steps")),

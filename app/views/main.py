@@ -85,7 +85,7 @@ def home_view(session):
                     cls="col-xs-12",
                 )(
                     P(
-                        "Please wait for a moment. We are indexing your project and generating steps to help you write a killer README."
+                        "Please wait for a moment. We are indexing your project and generating steps to help you write a README."
                     ),
                 ),
             ),

@@ -60,7 +60,7 @@ async def step_handler(
         r = main_graph.invoke(None, config)
         session["quota"] = (session["quota"][0] - 1, session["quota"][1])
         results = r.get("results", {})
-        retrieved_chunks = r.get("retrieved_chunks", None)
+        retrieved_chunks = r.get("retrieved_chunks", {})
     except Exception as e:
         raise e
 

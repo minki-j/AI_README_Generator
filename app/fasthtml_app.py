@@ -38,7 +38,7 @@ app, _ = fast_app(
     .my-indicator{
         display:none;
     }
-    .htmx-request .my-indicator{
+    .htmx-request.my-indicator{
         display:inline;
     }
     """

@@ -65,10 +65,11 @@ def insert_step_db(
             )
             # delete all retrieved_chunks with the step_id, then insert the new ones
             db.t.retrieved_chunks.delete_where("step_id = ?", [step_data["id"]])
-            for chunk in retrieved_chunks:
+            for path, chunk in retrieved_chunks.items():
                 db.t.retrieved_chunks.insert(
                     id=str(uuid.uuid4()),
                     step_id=step_data["id"],
+                    path=path,
                     content=chunk,
                 )
         else:
@@ -81,10 +82,11 @@ def insert_step_db(
                 answer=answer,
                 directory_tree_str=directory_tree_str,
             )
-            for chunk in retrieved_chunks:
+            for path, chunk in retrieved_chunks.items():
                 db.t.retrieved_chunks.insert(
                     id=str(uuid.uuid4()),
                     step_id=step_id,
+                    path=path,
                     content=chunk,
                 )
         return True

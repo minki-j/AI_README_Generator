@@ -17,9 +17,9 @@ def step_view(session, step_num: int, project_id: str):
             f"Step data not found for step_num: {step_num} and project_id: {project_id}"
         )
 
-    retrieved_chunks = []
+    retrieved_chunks = {}
     for chunk in db.t.retrieved_chunks.rows_where("step_id = ?", [step_data["id"]]):
-        retrieved_chunks.append(chunk["content"])
+        retrieved_chunks[chunk["path"]] = chunk["content"]
     return StepPage(
         step_num=step_num,
         total_step_num=len(STEP_LIST),

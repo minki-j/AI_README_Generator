@@ -54,7 +54,7 @@ def read_files(state: State):
     # TODO: Add an intelligent way to shorten the code snippets
 
     if not opened_files:
-        opened_files = []
+        opened_files = {}
     
     return {
         "retrieved_chunks": opened_files,

@@ -7,7 +7,7 @@ from app.utils.converters import to_path_map
 from app.agents.state_schema import State
 
 from .retrieve_with_path import read_files, add_user_chosen_files
-from .validate_file_path import validate_file_paths_from_LLM, correct_file_paths
+from .validate_file_path import validate_file_paths_from_LLM
 from .retrieve_with_colbert import retrieve_with_colbert
 from .retrieve_with_faiss import retrieve_with_faiss
 

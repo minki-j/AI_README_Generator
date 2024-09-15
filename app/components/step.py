@@ -23,14 +23,17 @@ def Step(
 
     common_style = "margin-bottom:1rem; background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px;"
     scrollable_style = (
-        common_style + " height: 300px; max-height: 1000px; overflow-y: auto; resize: vertical"
+        common_style
+        + " height: 300px; max-height: 1000px; overflow-y: auto; resize: vertical"
     )
     textarea_style = (
         common_style
-        + " min-height: 100px; max-height: 300px; overflow-y: auto; resize: vertical;"
+        + " min-height: 300px; max-height: 300px; overflow-y: auto; resize: vertical;"
     )
 
-    quota_reset_time = round((quota[1] + QUOTA_RESET_MINUTES * 60 - time.time()) / 60, 2)
+    quota_reset_time = round(
+        (quota[1] + QUOTA_RESET_MINUTES * 60 - time.time()) / 60, 2
+    )
 
     def make_page_list(total_step_num, current_step):
         page_list = []
@@ -118,88 +121,118 @@ def Step(
             hx_swap="outerHTML",
             hx_target="#step",
             hx_target_429="#quota_msg",
+            # TODO: add responsive layout for left and right column
         )(
-            Div(cls="collapsible-section")(
-                H5("Answer", onclick="toggleSection(this)"),
-                Div(cls="section-content")(
-                    Textarea(
-                        id="answer",
-                        name="answer",
-                        cls="dynamic-textarea",
-                        style=textarea_style,
-                    )(answer),
+            Div(cls="left-column")(
+                Div(cls="collapsible-section")(
+                    H5("Answer", onclick="toggleSection(this)"),
+                    Div(cls="section-content")(
+                        Textarea(
+                            id="answer",
+                            name="answer",
+                            cls="dynamic-textarea",
+                            style=textarea_style,
+                        )(answer),
+                    ),
+                ),
+                Div(cls="collapsible-section")(
+                    H5("Feedback", onclick="toggleSection(this)"),
+                    Div(cls="section-content")(
+                        Textarea(
+                            id="user_feedback",
+                            name="user_feedback",
+                            placeholder="Enter your feedback here",
+                            cls="dynamic-textarea",
+                            style=textarea_style,
+                        ),
+                    ),
                 ),
             ),
-            Div(cls="collapsible-section")(
-                H5("Retrieved Code Snippets", onclick="toggleSection(this)"),
-                Div(cls="section-content")(
-                    Div(
-                        cls="container",
-                        style=scrollable_style,
-                    )(
-                        *(
-                            [P("No code snippets are retrieved")]
-                            if not retrieved_chunks
-                            else [
-                                Pre(style="background-color: transparent; padding: 0; margin: 0;")(
-                                    Code(
-                                        chunk,
-                                        style="background-color: #f0f0f0; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+            Div(cls="right-column")(
+                Div(cls="collapsible-section")(
+                    Div(style="display: flex; align-items: center;")(
+                        H5("Retrieved Code Snippets", onclick="toggleSection(this)"),
+                        Button(
+                            "Collapse All",
+                            id="collapse_all_button_code_snippets",
+                            onclick="toggleAllCodeSnippets()",
+                            cls="toggle-all-btn",
+                            type="button",
+                            style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                        ),
+                    ),
+                    Div(cls="section-content")(
+                        Div(
+                            style=scrollable_style,
+                        )(
+                            *(
+                                [P("No code snippets are retrieved")]
+                                if not retrieved_chunks
+                                else [
+                                    Div(
+                                        P(
+                                            f"▼ {path}",
+                                            style="font-weight: semi-bold; margin-bottom: 0; cursor: pointer;",
+                                            onclick=f"toggleCodeSnippet('snippet-{i}')",
+                                        ),
+                                        Div(
+                                            id=f"snippet-{i}",
+                                            style="",
+                                        )(
+                                            Pre(
+                                                style="background-color: transparent; padding: 0; margin: 0;"
+                                            )(
+                                                Code(
+                                                    chunk,
+                                                    style="background-color: #f0f0f0; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+                                                )
+                                            )
+                                        ),
                                     )
-                                )
-                                for chunk in retrieved_chunks
-                            ]
-                        )
+                                    for i, (path, chunk) in enumerate(
+                                        retrieved_chunks.items()
+                                    )
+                                ]
+                            )
+                        ),
+                    ),
+                ),
+                Div(cls="collapsible-section")(
+                    Div(style="display: flex; align-items: center;")(
+                        H5("File Explorer", onclick="toggleSection(this)"),
+                        Button(
+                            "Collapse All",
+                            id="toggle-all-btn-file-explorer",
+                            cls="toggle-all-btn",
+                            type="button",
+                            onclick="toggleAllFileExplorer()",
+                            style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                        ),
+                        Button(
+                            "Uncheck All",
+                            id="uncheck-all-btn",
+                            type="button",
+                            onclick="uncheckAllFileExplorer()",
+                            style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                        ),
+                    ),
+                    Div(cls="section-content")(
+                        FileExplorer(directory_tree_str, scrollable_style),
+                        Input(
+                            type="hidden",
+                            id="directory_tree_str",
+                            name="directory_tree_str",
+                            value=directory_tree_str,
+                        ),
                     ),
                 ),
             ),
-            Div(cls="collapsible-section")(
-                Div(style="display: flex; align-items: center;")(
-                    H5("File Explorer", onclick="toggleSection(this)"),
-                    Button(
-                        "Collapse All",
-                        id="toggle-all-btn-file-explorer",
-                        cls="toggle-all-btn",
-                        type="button",
-                        onclick="toggleAllFileExplorer()",
-                        style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
-                    ),
-                    Button(
-                        "Uncheck All",
-                        id="uncheck-all-btn",
-                        type="button",
-                        onclick="uncheckAllFileExplorer()",
-                        style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
-                    ),
-                ),
-                Div(cls="section-content")(
-                    FileExplorer(directory_tree_str, scrollable_style),
-                    Input(
-                        type="hidden",
-                        id="directory_tree_str",
-                        name="directory_tree_str",
-                        value=directory_tree_str,
-                    ),
-                ),
-            ),
-            Div(cls="collapsible-section")(
-                H5("Feedback", onclick="toggleSection(this)"),
-                Div(cls="section-content")(
-                    Textarea(
-                        id="user_feedback",
-                        name="user_feedback",
-                        placeholder="Enter your feedback here",
-                        cls="dynamic-textarea",
-                        style=textarea_style,
-                    ),
-                ),
-            ),
-            Button(
-                "Apply Feedback",
-                id="apply_feedback_button",
-                type="submit",
-                cls="outline",
-            ),
+        ),
+        Button(
+            "Apply Feedback",
+            id="apply_feedback_button",
+            type="submit",
+            cls="outline",
         ),
         (
             Button(
@@ -354,6 +387,29 @@ function uncheckAllFileExplorer() {
     });
     document.getElementById('directory_tree_str').value = JSON.stringify(tree);
 }
+
+function toggleCodeSnippet(id) {
+    const snippet = document.getElementById(id);
+    snippet.style.display = snippet.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleAllCodeSnippets() {
+    const button = document.getElementById('collapse_all_button_code_snippets');
+    const snippets = document.querySelectorAll('[id^="snippet-"]');
+    const allCollapsed = Array.from(snippets).every(snippet => snippet.style.display === 'none');
+
+    snippets.forEach(snippet => {
+        snippet.style.display = allCollapsed ? 'block' : 'none';
+    });
+
+    const headers = document.querySelectorAll('.container > div > p');
+    headers.forEach(header => {
+        const arrow = header.textContent.slice(0, 1);
+        header.textContent = (allCollapsed ? '▼' : '▶') + header.textContent.slice(1);
+    });
+
+    button.textContent = allCollapsed ? 'Collapse All' : 'Expand All';
+}
 """
         ),
         Style(
@@ -396,6 +452,18 @@ function uncheckAllFileExplorer() {
 }
 #uncheck-all-btn:hover {
     background-color: #e0e0e0;
+}
+@media (min-width: 1024px) {
+    #step_form {
+        display: flex;
+        gap: 2rem;
+    }
+    .left-column {
+        flex: 1;
+    }
+    .right-column {
+        width: 50%;
+    }
 }
 """
         ),

@@ -61,20 +61,14 @@ def retrieve_with_colbert(state: State):
 
     print(f"Retrieved {len(retrieved_code_snippets)} code snippets")
 
-    # TODO: RAGatouille doesn't add metatdata to the documents so we need to add it manually
-    # formatted_snippets = [
-    #     f"{document.metadata["source"]}:\n{document.page_content}"
-    #     for document in retrieved_code_snippets
-    # ]
-
-    formatted_snippets = {
+    retrieved_code_snippets_dict = {
         "path_placeholder_for_colbert": document.page_content
         for document in retrieved_code_snippets
     }
 
     return {
-        "retrieved_chunks": retrieved_code_snippets,
-        # "opened_files": [
-        #     document.metadata["source"] for document in retrieved_code_snippets
-        # ],
+        "retrieved_chunks": retrieved_code_snippets_dict,
+        "opened_files": ["path_placeholder_for_colbert"],
     }
+
+    # TODO: RAGatouille doesn't add metatdata to the documents so we need to add it manually

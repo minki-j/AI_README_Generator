@@ -70,13 +70,15 @@ def retrieve_with_faiss(state: State):
 
     print(f"Retrieved {len(retrieved_code_snippets)} code snippets (hybrid search)")
 
-    formatted_snippets = {
-        document.metadata["source"].split("cloned_repositories/")[-1]: document.page_content
+    retrieved_code_snippets_dict = {
+        document.metadata["source"].split("cloned_repositories/")[
+            -1
+        ]: document.page_content
         for document in retrieved_code_snippets
     }
 
     return {
-        "retrieved_chunks": formatted_snippets,
+        "retrieved_chunks": retrieved_code_snippets_dict,
         "opened_files": [
             document.metadata["source"] for document in retrieved_code_snippets
         ],
