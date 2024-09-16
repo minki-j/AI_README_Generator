@@ -41,7 +41,8 @@ def answer_step_question(state: State) -> State:
         answer = previous_result.get("answer", "")
         if user_feedback:
             previous_answers_and_feedbacks.append(("human", user_feedback))
-        previous_answers_and_feedbacks.append(("ai", answer))
+        if previous_answers_and_feedbacks and previous_answers_and_feedbacks[-1] != ("ai", answer):
+            previous_answers_and_feedbacks.append(("ai", answer)) # TODO: This is a temporary fix to avoid the issue where AI and human messages are not alternating. This cause an erorr for Anthropic API. We need a better way to prevent this. 
     if previous_answers_and_feedbacks:
         first_message = ("human", step_question["prompt"])
         previous_answers_and_feedbacks.insert(0, first_message)

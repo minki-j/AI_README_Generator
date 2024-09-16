@@ -39,7 +39,6 @@ async def step_handler(
         user_feedback = form.get("user_feedback")
         directory_tree_str = form.get("directory_tree_str")
         directory_tree_dict = json.loads(directory_tree_str)
-        print(f"==>>directory_tree_dict: {directory_tree_dict}")
         retrieval_method = form.get("retrieval_method", None)
         session.setdefault(
             "retrieval_method", retrieval_method if retrieval_method else "FAISS"
@@ -83,17 +82,10 @@ async def step_handler(
     )
 
     if r:
-        return Step(
-            STEP_LIST[step_num - 1]["feedback_question"],
-            answer,
-            retrieved_chunks,
-            project_id,
-            step_num + 1,
-            len(STEP_LIST),
-            directory_tree_str,
-            session["retrieval_method"],
-            session.get("quota", (0, 0)),
-            is_last_step=True if step_num >= len(STEP_LIST) else False,
+        full_route = str(request.url_for("step_view"))
+        route = full_route.replace(str(request.base_url), "")
+        return RedirectResponse(
+            url=f"/{route}?step_num={step_num}&project_id={project_id}", status_code=303
         )
     else:
         return Div(

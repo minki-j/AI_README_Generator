@@ -1,10 +1,11 @@
 import uuid
 import json
 from datetime import datetime
-from app.utils.initialize_db import db, StepResults
+
+from app.utils.initialize_db import db
 
 
-def initialize_db(
+def initialize_project(
     session_id: str,
     project_id: str,
     answer: str,
@@ -12,9 +13,10 @@ def initialize_db(
     retrieved_chunks: list,
     directory_tree_dict: dict,
 ):
-    print(f"\n>>>> DB: initialize_db")
+    print(f"\n>>>> DB: initialize_project")
     try:
         directory_tree_str = json.dumps(directory_tree_dict)
+
         db.t.readmes.insert(
             id=project_id,
             user_id=session_id,  # TODO: Change to user_id once user authentication is implemented
@@ -32,10 +34,11 @@ def initialize_db(
             directory_tree_str=directory_tree_str,
         )
 
-        for chunk in retrieved_chunks:
+        for path, chunk in retrieved_chunks.items():
             db.t.retrieved_chunks.insert(
                 id=str(uuid.uuid4()),
                 step_id=step_id,
+                path=path,
                 content=chunk,
             )
 
@@ -108,8 +111,12 @@ def update_readme_content(project_id: str, content: str):
 def insert_step_results(project_id: str, results_json: str) -> bool:
     print(f"\n>>>> DB: insert_step_results")
     try:
+        StepResults = db.t.step_results.dataclass()
         step_result = StepResults(
-            id=str(uuid.uuid4()), readme_id=project_id, content=results_json, created_at_utc=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            id=str(uuid.uuid4()),
+            readme_id=project_id,
+            content=results_json,
+            created_at_utc=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         )
         db.t.step_results.insert(step_result)
         return True

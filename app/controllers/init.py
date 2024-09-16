@@ -4,7 +4,7 @@ import time
 from fasthtml.common import *
 
 from app.utils.get_repo_info import get_repo_info
-from app.utils.db_functions import initialize_db
+from app.utils.db_functions import initialize_project
 from app.utils.check_quota import check_quota
 from app.agents.main_graph import main_graph
 
@@ -60,7 +60,7 @@ async def step_initializer(
     if not answer:
         raise Exception("No answer found")
 
-    r = initialize_db(
+    r = initialize_project(
         session["session_id"],
         project_id,
         answer,

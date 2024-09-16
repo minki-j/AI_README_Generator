@@ -1,6 +1,7 @@
 import os
 from fasthtml.common import *
 
+
 if os.path.exists(f"/vol"):
     os.makedirs("/vol/data/main_database", exist_ok=True)
     db_path = os.path.join("/vol", "data", "main_database", "main.db")
@@ -8,6 +9,7 @@ else:
     os.makedirs("./data/main_database", exist_ok=True)
     db_path = os.path.join(".", "data", "main_database", "main.db")
 
+print(f">>>> DB: initialize database at {db_path}")
 db = database(db_path)
 
 users, steps, retrieved_chunks, readmes, step_results = (
@@ -81,7 +83,7 @@ Users, Readmes, Steps, RetrievedChunks, StepResults = (
 )
 
 try:
-    main_db_diagram = diagram(db.tables)    
+    main_db_diagram = diagram(db.tables)
     main_db_diagram.render(
         "data/main_database/main_db_diagram", format="png", cleanup=True
     )

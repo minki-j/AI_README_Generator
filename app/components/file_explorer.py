@@ -10,7 +10,7 @@ def FileExplorer(directory_tree_str, common_style):
         print(
             f"Error: Unable to parse directory_tree_str as JSON. Value: {directory_tree_str}"
         )
-        directory_tree_obj = {}  # Fallback to an empty dictionary
+        directory_tree_obj = {} 
 
     if not isinstance(directory_tree_obj, dict):
         print(

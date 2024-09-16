@@ -25,7 +25,6 @@ beforeware = Beforeware(
 
 app, _ = fast_app(
     live=True,
-    
     hdrs=(
         picolink,
         Link(
@@ -35,12 +34,43 @@ app, _ = fast_app(
         ),
         Style(
             """
-    .my-indicator{
-        display:none;
-    }
-    .htmx-request.my-indicator{
-        display:inline;
-    }
+.main-page-loader{
+    display:none;
+}
+.htmx-request.main-page-loader{
+    display:inline;
+    transform: translate(-50%, -50%);
+    animation: pulse 2s ease-in-out infinite !important;
+}
+.btn-loader {
+    position: relative;
+    color: inherit;
+    pointer-events: auto;
+    opacity: 1;
+}
+.htmx-request.btn-loader {
+    color: transparent;
+    pointer-events: none;
+}
+.htmx-request.btn-loader::after {
+    content: "Loading...";
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000000;
+    font-size: 14px;
+    animation: pulse 2s ease-in-out infinite !important;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.2; }
+    100% { opacity: 1; }
+}
+
     """
         ),
         MarkdownJS(),

@@ -13,7 +13,11 @@ from .utils.index_for_colbert import index_documents_with_colbert
 def retrieve_with_colbert(state: State):
     print("\n>>>> NODE: retrieve_with_colbert")
 
-    cache_dir = state["cache_dir"]
+    if os.path.exists(f"/vol/cache"):
+        cache_dir = os.path.join("/vol", state["cache_dir"])
+    else:
+        cache_dir = state["cache_dir"]
+
     queries = state["step_question"]["queries"]
     root_path = str(Path(state["cache_dir"]) / state["title"] / "cloned_repositories")
 

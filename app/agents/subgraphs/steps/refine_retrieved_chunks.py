@@ -11,13 +11,13 @@ from app.agents.common import chat_model_small
 
 def trim_retrieved_chunk(question: str, retrieved_chunks: str) -> str:
     prompt = ChatPromptTemplate.from_template(
-        """Leave only the parts of the code snippets that are most relevant to the question and replace the rest with "...". If the entire code snippet is not relevant, return None.
-        <question>
-        {question}
-        </question>
-        <code_snippets>
-        {retrieved_chunks}
-        </code_snippets>
+        """
+Instructions: Leave only the relevant parts of the code snippets that directly answer the question, replacing the irrelevant parts with "...". If none of the code is relevant to the question, return None.
+
+Input: <question>{question}</question>
+<code_snippets>{retrieved_chunks}</code_snippets>
+
+Output: Return ONLY the shortened code snippets without any additional explanations or comments. DO NOT add any comments like "Here is the shortened code snippet" or "The relevant part of the code is:". DD NOT inlcude the xml tag such as <code_snippets> and </code_snippets>.
         """
     )
 
@@ -31,6 +31,7 @@ def trim_retrieved_chunk(question: str, retrieved_chunks: str) -> str:
     )
 
     return response.content
+
 
 def refine_retrieved_chunks(state: State) -> State:
     print("\n>>>> NODE: trim_retrieved_chunks")

@@ -16,7 +16,10 @@ from .utils.chunking import chunk_with_AST_parser
 def retrieve_with_faiss(state: State):
     print("\n>>>> NODE: retrieve_with_faiss")
 
-    cache_dir = state["cache_dir"]
+    if os.path.exists(f"/vol"):
+        cache_dir = os.path.join("/vol", state["cache_dir"])
+    else:
+        cache_dir = state["cache_dir"]
     queries = state["step_question"]["queries"]
     root_path = str(Path(state["cache_dir"]) / state["title"] / "cloned_repositories")
 
@@ -29,7 +32,7 @@ def retrieve_with_faiss(state: State):
             documents = pickle.load(f)
         embedding = OpenAIEmbeddings(model="text-embedding-3-large")
         faiss_vectorstore = FAISS.load_local(
-            f"./cache/{state['title']}/faiss_vectorstore",
+            f"{cache_dir}/{state['title']}/faiss_vectorstore",
             embedding,
             allow_dangerous_deserialization=True,
         )

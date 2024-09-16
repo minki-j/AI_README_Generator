@@ -18,11 +18,12 @@ def check_quota(session):
             session["quota"] = (QUOTA_LIMIT, current_time)
             return None
         else:
-            add_toast(
-                session,
-                f"Please wait for {remaining_time} minutes to reset your quota",
-                "info",
-            )
+            #! Not working because this doesn't return FT objects
+            # add_toast(
+            #     session,
+            #     f"Please wait for {remaining_time} minutes to reset your quota",
+            #     "info",
+            # )
             print(f"Please wait for {remaining_time} minutes to reset your quota")
             return Response(
                 to_xml(

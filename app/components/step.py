@@ -13,7 +13,6 @@ def Step(
     retrieved_chunks,
     project_id,
     next_step: int,
-    total_step_num: int,
     directory_tree_str: str,
     retrieval_method: str,
     quota: tuple[int, int],
@@ -35,36 +34,6 @@ def Step(
         (quota[1] + QUOTA_RESET_MINUTES * 60 - time.time()) / 60, 2
     )
 
-    def make_page_list(total_step_num, current_step):
-        page_list = []
-        for i in range(1, total_step_num + 1):
-            common_style = "margin-bottom:0;"
-            if i <= int(current_step):
-                page_list.append(
-                    Li(cls="col-xs-2", style="list-style-type:none; margin-bottom:0;")(
-                        A(
-                            href=f"/step?step_num={i}&project_id={project_id}",
-                            style="text-decoration: none;",
-                        )(
-                            P(i, style=f"{common_style} color: #007bff;"),
-                        ),
-                    ),
-                )
-            else:
-                page_list.append(
-                    Li(cls="col-xs-2", style="list-style-type:none; margin-bottom:0;")(
-                        A(
-                            href="#",
-                            cls="disabled",
-                            style="text-decoration: none; pointer-events: none;",
-                        )(
-                            P(i, style=f"{common_style} color: #c0c0c0;"),
-                        ),
-                    ),
-                )
-        return page_list
-
-    current_step = next_step - 1
     return Div(id="step", hx_ext="response-targets")(
         Div(
             cls="control-panel",
@@ -119,8 +88,9 @@ def Step(
             id="step_form",
             hx_post=f"step?step_num={next_step - 1}&project_id={project_id}",
             hx_swap="outerHTML",
-            hx_target="#step",
+            hx_target="body",
             hx_target_429="#quota_msg",
+            hx_indicator=".btn-loader",
         )(
             Div(cls="horizontal-layout")(
                 Div(cls="left-column")(
@@ -163,6 +133,11 @@ def Step(
                                 style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
                             ),
                         ),
+                        P(
+                            style="font-size: 0.75rem; margin-bottom: 0.125rem; margin-top: 0.125rem; padding:0;"
+                        )(
+                            "An LLM will check if the code snippets are relevant to the answer and provide feedback. If not, it will be shown as None"
+                        ),
                         Div(cls="section-content")(
                             Div(
                                 style=scrollable_style,
@@ -173,7 +148,7 @@ def Step(
                                     else [
                                         Div(
                                             P(
-                                                f"▼ {path}",
+                                                f"▼ {path.split('/')[-1]}",
                                                 style="font-weight: semi-bold; margin-bottom: 0; cursor: pointer;",
                                                 onclick=f"toggleCodeSnippet('snippet-{i}')",
                                             ),
@@ -234,14 +209,14 @@ def Step(
                 "Apply Feedback",
                 id="apply_feedback_button",
                 type="submit",
-                cls="outline",
+                cls="outline btn-loader",
             ),
         ),
         (
             Button(
                 "Next Step",
                 type="submit",
-                cls="outline",
+                cls="outline btn-loader",
                 id="next_step_button",
                 hx_post=f"step?step_num={next_step}&project_id={project_id}",
                 hx_swap="outerHTML",
@@ -253,17 +228,12 @@ def Step(
             else Button(
                 "Finish",
                 type="submit",
-                cls="outline",
+                cls="outline btn-loader",
                 hx_post=f"step/final?project_id={project_id}",
                 hx_swap="innerHTML",
                 hx_target="body",
                 hx_target_429="#quota_msg",
                 hx_replace_url="true",
-            )
-        ),
-        Div(
-            Ol(cls="row center-xs middle-xs", style="padding-inline-start:0;")(
-                *make_page_list(total_step_num, current_step)
             )
         ),
         Script(
@@ -283,10 +253,7 @@ def Step(
 function updateTree(tree, fullPath, value) {
     const pathParts = fullPath.split('/');
     const fileName = pathParts.pop();
-    let currentLevel = tree; // Pass by reference
-    pathParts.forEach(path => {
-        currentLevel = currentLevel[path]; // Pass by reference
-    });
+    const currentLevel = pathParts.reduce((accumulator, path) => accumulator[path], tree);
     currentLevel[fileName] = value;
 }
 

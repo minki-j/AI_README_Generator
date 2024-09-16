@@ -9,19 +9,20 @@ from app.agents.state_schema import RetrievalMethod
 def home_view(session):
     print("\n>>>> VIEW: home_view")
     if "session_id" not in session:
-
+        print("initializing session")
         session["session_id"] = str(uuid.uuid4())
-        if "quota" not in session:
-            session["quota"] = (QUOTA_LIMIT, int(time.time()))
-        if "retrieval_method" not in session:
-            session["retrieval_method"] = RetrievalMethod.FAISS.name
-        db.t.users.insert(
-            id=session["session_id"],
-            name="",
-            email="",
-            password="",
-        )
-        # add_toast(session, f"Session ID created: {session['session_id']}", "info")
+    if "quota" not in session:
+        print("initializing quota")
+        session["quota"] = (QUOTA_LIMIT, int(time.time()))
+    if "retrieval_method" not in session:
+        print("initializing retrieval_method")
+        session["retrieval_method"] = RetrievalMethod.FAISS.name
+    db.t.users.insert(
+        id=session["session_id"],
+        name="",
+        email="",
+        password="",
+    )
 
     return (
         Title("AI README Generator"),
@@ -79,7 +80,7 @@ def home_view(session):
             ),
             Div(
                 id="loader",
-                cls="my-indicator row center-xs",
+                cls="main-page-loader row center-xs",
             )(
                 Div(
                     cls="col-xs-12",
