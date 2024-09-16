@@ -100,3 +100,6 @@ app.post("/init")(init_controller.step_initializer)
 app.post("/step")(step_controller.step_handler)
 app.post("/step/final")(step_controller.generate_readme)
 app.post("/update_retrieval_method")(step_controller.update_retrieval_method)
+
+
+serve()
