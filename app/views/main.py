@@ -1,29 +1,9 @@
-import time
 import uuid
 from fasthtml.common import *
-from app.utils.initialize_db import db
-from app.global_vars import QUOTA_LIMIT
-from app.agents.state_schema import RetrievalMethod
 
 
 def home_view(session):
     print("\n>>>> VIEW: home_view")
-    if "session_id" not in session:
-        print("initializing session")
-        session["session_id"] = str(uuid.uuid4())
-    if "quota" not in session:
-        print("initializing quota")
-        session["quota"] = (QUOTA_LIMIT, int(time.time()))
-    if "retrieval_method" not in session:
-        print("initializing retrieval_method")
-        session["retrieval_method"] = RetrievalMethod.FAISS.name
-    db.t.users.insert(
-        id=session["session_id"],
-        name="",
-        email="",
-        password="",
-    )
-
     return (
         Title("AI README Generator"),
         Main(id="step", cls="container", hx_ext="response-targets")(

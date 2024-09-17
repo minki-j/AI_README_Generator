@@ -1,14 +1,6 @@
-from varname import nameof as n
-from enum import Enum
-import pendulum
-import json
-
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import (
     AIMessage,
-    BaseMessage,
-    FunctionMessage,
-    SystemMessage,
     HumanMessage,
 )
 from app.agents.state_schema import State
@@ -16,7 +8,6 @@ from app.agents.state_schema import State
 from app.agents.common import chat_model
 
 from langchain_core.pydantic_v1 import BaseModel, Field
-from typing import List
 
 class Readme(BaseModel):
     content: str = Field(description="The generated README in markdown format")
@@ -46,8 +37,8 @@ def generate_readme(state: State):
 
     readme = chain.invoke(
         {
-            "step_answers": f"<step_answers>\n{"\n".join(step_answers)}\n</step_answers>\n" if step_answers else "",
-            "repo_info": f"<repo_info>\n{"\n".join(repo_info)}\n</repo_info>\n" if repo_info else "",
+            "step_answers": f"<step_answers>{', '.join(step_answers)}</step_answers>\n" if step_answers else "",
+            "repo_info": f"<repo_info>{', '.join(repo_info)}</repo_info>\n" if repo_info else "",
         }
     )
 

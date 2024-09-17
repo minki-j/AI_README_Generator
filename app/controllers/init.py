@@ -1,6 +1,4 @@
 import os
-import re
-import time
 from fasthtml.common import *
 
 from app.utils.get_repo_info import get_repo_info
@@ -8,7 +6,7 @@ from app.utils.db_functions import initialize_project
 from app.utils.check_quota import check_quota
 from app.agents.main_graph import main_graph
 
-from app.global_vars import STEP_LIST
+from app.global_vars import STEP_LIST, COLBERT_THRESHOLD
 
 from app.agents.state_schema import RetrievalMethod
 
@@ -26,12 +24,8 @@ async def step_initializer(
     form = await request.form()
     clone_url = form.get("clone_url")
 
-    if os.path.exists(f"/vol"):
-        cache_dir = f"/vol/cache"
-        os.makedirs(cache_dir, exist_ok=True)
-    else:
-        cache_dir = "./cache"
-        os.makedirs("./cache", exist_ok=True)
+    cache_dir = "./data/cache"
+    os.makedirs(cache_dir, exist_ok=True)
 
     repo_info = get_repo_info(clone_url, cache_dir)
     initial_state = {
@@ -40,7 +34,7 @@ async def step_initializer(
         "previous_step": 0,
         "current_step": 1,
         "step_question": STEP_LIST[0],
-        "colbert_threshold": 10,
+        "colbert_threshold": COLBERT_THRESHOLD,
         "retrieval_method": RetrievalMethod.FAISS,
     }
 

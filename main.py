@@ -1,4 +1,5 @@
 import time
+import uuid
 from fasthtml.common import *
 
 import app.views.main as main_views
@@ -6,16 +7,29 @@ import app.views.step as step_views
 import app.views.history as history_views
 import app.controllers.init as init_controller
 import app.controllers.step as step_controller
+import app.controllers.api as api
 
-
+from app.agents.state_schema import RetrievalMethod
+from app.utils.initialize_db import db
 from app.global_vars import QUOTA_LIMIT
 
 
 def user_auth_before(req, session):
-    quota = session.get("quota", None)
-    if quota is None:
-        print("Initializing quota")
+    if "session_id" not in session:
+        print("initializing session")
+        session["session_id"] = str(uuid.uuid4())
+        db.t.users.insert(
+            id=session["session_id"],
+            name="",
+            email="",
+            password="",
+        )
+    if "quota" not in session:
+        print("initializing quota")
         session["quota"] = (QUOTA_LIMIT, int(time.time()))
+    if "retrieval_method" not in session:
+        print("initializing retrieval_method")
+        session["retrieval_method"] = RetrievalMethod.FAISS.name
 
 
 beforeware = Beforeware(
@@ -24,7 +38,7 @@ beforeware = Beforeware(
 )
 
 app, _ = fast_app(
-    live=True,
+    # live=True,
     hdrs=(
         picolink,
         Link(
@@ -95,6 +109,7 @@ app.get("/")(main_views.home_view)
 app.get("/step")(step_views.step_view)
 app.get("/step/final")(step_views.result_view)
 app.get("/history")(history_views.history_view)
+app.get("/download_db")(api.download_db)
 
 app.post("/init")(init_controller.step_initializer)
 app.post("/step")(step_controller.step_handler)
@@ -102,4 +117,4 @@ app.post("/step/final")(step_controller.generate_readme)
 app.post("/update_retrieval_method")(step_controller.update_retrieval_method)
 
 
-serve()
+serve(reload=False)

@@ -1,11 +1,7 @@
 import os
-import time
-import requests
-from datetime import datetime
-from urllib.parse import urlparse, parse_qs
-import os
 import requests
 import pendulum
+from urllib.parse import urlparse, parse_qs
 
 
 def github_api_request(type, url, last_fetch_at, params=None):

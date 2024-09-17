@@ -25,9 +25,10 @@ class StepResult(TypedDict):
 
 
 class RetrievalMethod(Enum):
-    NONE = "None"
-    FAISS = "Faiss"
-    COLBERT = "ColBERT"
+    NONE = "NONE"
+    FAISS = "FAISS"
+    # COLBERT = "COLBERT"
+    #! Disabled for now as it takes too long to index
 
 
 class State(TypedDict):

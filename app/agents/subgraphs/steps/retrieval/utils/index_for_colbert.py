@@ -19,4 +19,4 @@ def index_documents_with_colbert(documents, cache_dir, index_name):
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    print(f"\n\n>>>> >>>Indexing with ColBERT is done in {elapsed_time:.2f} seconds<<<<<<<\n\n")
+    print(f">>> Indexing with ColBERT is done in {elapsed_time:.2f} seconds <<<<<\n")

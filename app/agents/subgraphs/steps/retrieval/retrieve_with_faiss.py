@@ -16,10 +16,7 @@ from .utils.chunking import chunk_with_AST_parser
 def retrieve_with_faiss(state: State):
     print("\n>>>> NODE: retrieve_with_faiss")
 
-    if os.path.exists(f"/vol"):
-        cache_dir = os.path.join("/vol", state["cache_dir"])
-    else:
-        cache_dir = state["cache_dir"]
+    cache_dir = state["cache_dir"]
     queries = state["step_question"]["queries"]
     root_path = str(Path(state["cache_dir"]) / state["title"] / "cloned_repositories")
 

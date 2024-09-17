@@ -2,12 +2,9 @@ import os
 from fasthtml.common import *
 
 
-if os.path.exists(f"/vol"):
-    os.makedirs("/vol/data/main_database", exist_ok=True)
-    db_path = os.path.join("/vol", "data", "main_database", "main.db")
-else:
-    os.makedirs("./data/main_database", exist_ok=True)
-    db_path = os.path.join(".", "data", "main_database", "main.db")
+
+os.makedirs("./data/main_database", exist_ok=True)
+db_path = os.path.join(".", "data", "main_database", "main.db")
 
 print(f">>>> DB: initialize database at {db_path}")
 db = database(db_path)
@@ -82,12 +79,12 @@ Users, Readmes, Steps, RetrievedChunks, StepResults = (
     step_results.dataclass(),
 )
 
-try:
-    main_db_diagram = diagram(db.tables)
-    main_db_diagram.render(
-        "data/main_database/main_db_diagram", format="png", cleanup=True
-    )
-except:
-    print(
-        "Error on generating DB visualization. Probably graphviz executables were not found. Please install Graphviz and add it to your system's PATH."
-    )
+# try:
+#     main_db_diagram = diagram(db.tables)
+#     main_db_diagram.render(
+#         "data/main_database/main_db_diagram", format="png", cleanup=True
+#     )
+# except:
+#     print(
+#         "Error on generating DB visualization. Probably graphviz executables were not found. Please install Graphviz and add it to your system's PATH."
+#     )

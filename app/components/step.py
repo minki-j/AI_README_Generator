@@ -133,15 +133,15 @@ def Step(
                                 style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
                             ),
                         ),
-                        P(
-                            style="font-size: 0.75rem; margin-bottom: 0.125rem; margin-top: 0.125rem; padding:0;"
-                        )(
-                            "An LLM will check if the code snippets are relevant to the answer and provide feedback. If not, it will be shown as None"
-                        ),
                         Div(cls="section-content")(
                             Div(
                                 style=scrollable_style,
                             )(
+                                P(
+                                    style="font-size: 0.75rem; margin-bottom: 0.125rem; margin-top: 0.125rem; padding:0;"
+                                )(
+                                    "An LLM will check if the code snippets are relevant to the answer and provide feedback. If not, it will be shown as None"
+                                ),
                                 *(
                                     [P("No code snippets are retrieved")]
                                     if not retrieved_chunks
@@ -170,7 +170,7 @@ def Step(
                                             retrieved_chunks.items()
                                         )
                                     ]
-                                )
+                                ),
                             ),
                         ),
                     ),
@@ -220,7 +220,7 @@ def Step(
                 id="next_step_button",
                 hx_post=f"step?step_num={next_step}&project_id={project_id}",
                 hx_swap="outerHTML",
-                hx_target="#step",
+                hx_target="body",
                 hx_target_429="#quota_msg",
                 hx_replace_url="true",
             )

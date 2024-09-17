@@ -80,11 +80,11 @@ def answer_step_question(state: State) -> State:
 
     response = chain.invoke(
         {
-            "question": f"<question>\n{step_question['prompt']}\n</question>\n" if step_question["prompt"] else "",
-            "retrieved_chunks": f"<code_snippets>\n{json.dumps(state['retrieved_chunks'], ensure_ascii=False)}\n</code_snippets>\n" if state["retrieved_chunks"] else "",
-            "user_feedback": f"<extra_instruction>\n{state.get('user_feedback', '')}\n</extra_instruction>\n" if state.get("user_feedback", "") else "",
-            "repo_info": f"<repo_info>\n{repo_info_str}\n</repo_info>\n" if repo_info_str else "",
-            "previous_step_answers": f"<key_information>\n{"\n".join(previous_step_answers)}\n</key_information>\n" if previous_step_answers else "",
+            "question": f"<question>{step_question['prompt']}</question>\n" if step_question["prompt"] else "",
+            "retrieved_chunks": f"<code_snippets>{json.dumps(state['retrieved_chunks'], ensure_ascii=False)}</code_snippets>\n" if state["retrieved_chunks"] else "",
+            "user_feedback": f"<extra_instruction>{state.get('user_feedback', '')}</extra_instruction>\n" if state.get("user_feedback", "") else "",
+            "repo_info": f"<repo_info>{repo_info_str}</repo_info>\n" if repo_info_str else "",
+            "previous_step_answers": f"<key_information>{', '.join(previous_step_answers)}\n</key_information>\n" if previous_step_answers else "",
         }
     )
 
