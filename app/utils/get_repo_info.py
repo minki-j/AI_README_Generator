@@ -1,6 +1,8 @@
 import os
 import re
 import subprocess
+import shutil
+from pathlib import Path
 
 from app.utils.github_api_call import fetch_commits, github_api_request
 from app.utils.generate_tree import generate_tree
@@ -62,21 +64,54 @@ def get_repo_info(clone_url, cache_dir):
     requirement_dir = os.path.join(cache_dir, repo_info["title"], "packages_used")
     os.makedirs(requirement_dir, exist_ok=True)
     save_path = os.path.join(requirement_dir, "requirements.txt")
-    subprocess.run(
-        "pipreqs --scan-notebooks --mode no-pin --savepath "
-        + save_path
-        + " "
-        + clone_dir,
-        capture_output=True,
-        check=True,
-        text=True,
-        shell=True,
-    )
-    with open(save_path, "r") as f:
-        requirements = f.read().splitlines()
 
-    requirements = [re.sub(r"==.*", "", requirement) for requirement in requirements]
+    def run_pipreqs(clone_dir, save_path, temp_dir):
+        cmd = f"pipreqs --scan-notebooks --mode no-pin --savepath {save_path} {clone_dir}"
 
-    repo_info["packages_used"] = ", ".join(requirements)
+        try:
+            subprocess.run(cmd, capture_output=True, check=True, text=True, shell=True)
+            print("pipreqs command executed successfully")
+            return True, None
+        except subprocess.CalledProcessError as e:
+            match = re.search(r"ERROR: Failed on file: (.*?)$", e.stderr, re.MULTILINE)
+            if match:
+                return False, match.group(1)
+            return False, None
+
+    try:
+        temp_dir = os.path.join(os.path.dirname(clone_dir), "temp_pipreqs")
+        os.makedirs(temp_dir, exist_ok=True)
+        moved_files = []
+        success = False
+
+        while not success:
+            success, failed_file = run_pipreqs(clone_dir, save_path, temp_dir)
+            if not success and failed_file:
+                dst = os.path.join(temp_dir, failed_file)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.move(failed_file, dst)
+                moved_files.append((failed_file, dst))
+                print(f"pipreqs error on {failed_file}, moved to temporary directory and retrying")
+            elif not success:
+                raise Exception("Failed to run pipreqs and couldn't identify the problematic file")
+
+        # Move files back to their original locations
+        for src, dst in moved_files:
+            shutil.move(dst, src)
+
+        with open(save_path, "r") as f:
+            requirements = f.read().splitlines()
+
+        requirements = [re.sub(r"==.*", "", requirement) for requirement in requirements]
+        repo_info["packages_used"] = ", ".join(requirements)
+
+    except Exception as e:
+        print(f"Error determining packages used: {e}")
+        repo_info["packages_used"] = "Unable to determine packages used"
+
+    finally:
+        # Clean up temporary directory
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
 
     return repo_info

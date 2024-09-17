@@ -48,7 +48,7 @@ def result_view(project_id: str):
             ),
             P("Congratulations! You have completed the README generation process. ", B("Here is the generated README:")),
             Div(
-                cls="marked",
+                cls="marked", #! Not working on Railway (works fine locally)
                 style="background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px;",
             )(readme_data.content if readme_data.content else "No content generated."),
         ),

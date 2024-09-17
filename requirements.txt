@@ -1,14 +1,14 @@
 faiss-cpu==1.8.0
-fastapi==0.112.2
+fastapi==0.115.0
 graphviz==0.20.3
 langchain==0.2.14
-langchain_anthropic==0.1.23
-langchain_community==0.2.12
-langchain_core==0.2.35
+langchain_anthropic==0.2.0
+langchain_community==0.3.0
+langchain_core==0.3.1
 langchain_openai==0.1.22
 langgraph==0.2.14
 langgraph-checkpoint-sqlite==1.0.0
-llama_index==0.11.1
+llama_index==0.10.65
 pendulum==3.0.0
 pipreqs==0.5.0
 psycopg2_binary==2.9.9
@@ -19,6 +19,7 @@ ragatouille==0.0.8.post4
 rank_bm25==0.2.2
 Requests==2.32.3
 scikit_learn==1.5.1
+tree_sitter==0.21.3
 tree_sitter_languages==1.10.2
 uvicorn==0.30.1
 varname==0.13.3
