@@ -37,8 +37,9 @@ beforeware = Beforeware(
     skip=[r"/favicon\.ico", r"/static/.*", r".*\.css", r".*\.js", "/login"],
 )
 
+
 app, _ = fast_app(
-    # live=True,
+    live=True,
     hdrs=(
         picolink,
         Link(
@@ -84,7 +85,6 @@ app, _ = fast_app(
     50% { opacity: 0.2; }
     100% { opacity: 1; }
 }
-
     """
         ),
         MarkdownJS(),

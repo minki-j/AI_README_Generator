@@ -13,12 +13,12 @@ from app.utils.get_user_picked_file_paths import get_user_picked_file_paths
 
 def do_need_retrieval(state: State):
     print("\n>>>> EDGE: do_need_retrieval")
-
     user_picked_file_paths = get_user_picked_file_paths(state["directory_tree_dict"])
-    print(f"==>> user_picked_file_paths: {len(user_picked_file_paths)}")
     if len(user_picked_file_paths) > 0 or state["step_question"]["retrieval_needed"]:
+        print("Retrieval needed")
         return n(subGraph_retrieval)
     else:
+        print("Retrieval not needed")
         return n(answer_step_question)
 
 

@@ -81,7 +81,6 @@ class State(TypedDict):
             # TODO: Need to reorder when line number data is included
             # TODO: In the meantime, just concatenate them
             if key in original:
-                print(f"Appending to {key}")
                 original[key] += "\n\n" + value 
             else:
                 original[key] = value

@@ -40,10 +40,8 @@ def refine_retrieved_chunks(state: State) -> State:
     long_chunks = {}
     for path, chunk in state["retrieved_chunks"].items():
         if len(chunk) > 1500:
-            print(f"==>> path: {path}, len: {len(chunk)}")
             long_chunks[path] = chunk
         else:
-            print(f"==>> path: {path}, len: {len(chunk)}")
             trimmed_chunks[path] = chunk
     queries = ", ".join(state["step_question"]["queries"])
 

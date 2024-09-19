@@ -32,6 +32,7 @@ if readmes not in db.t or steps not in db.t or retrieved_chunks not in db.t:
     readmes.create(
         id=str,
         user_id=str,
+        title=str,
         content=str,
         directory_tree_str=str,
         pk="id",

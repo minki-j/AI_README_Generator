@@ -12,21 +12,25 @@ from app.agents.subgraphs.generate_readme.graph import subGraph_generate_readme
 
 import os
 
-def check_if_last_step(state):
-    print("\n>>>> EDGE: check_if_last_step")
+def is_last_step(state):
+    print("\n>>>> EDGE: is_last_step")
     if state["current_step"] is None or state["total_number_of_steps"] is None:
         raise(ValueError("current_step or total_number_of_steps is None"))
     if int(state["current_step"]) > int(state["total_number_of_steps"]):
+        print("True: generate readme")
         return n(subGraph_generate_readme)
-    return n(check_if_regenerate_with_feedback)
+    print("False: move to next step")
+    return n(should_continue_next_step)
 
-def check_if_regenerate_with_feedback(state):
-    print("\n>>>> EDGE: check_if_regenerate_with_feedback")
+def should_continue_next_step(state):
+    print("\n>>>> EDGE: should_continue_next_step")
     if int(state["current_step"]) == int(state["previous_step"]):
+        print("False: reset retrieved chunks state variable")
         return {
             "retrieved_chunks": "RESET",
         }
     else:
+        print("True: increment previous step state variable")
         return{
             "previous_step": int(state["current_step"]),
         }
@@ -35,27 +39,27 @@ g = StateGraph(State)
 g.set_entry_point("entry")
 
 g.add_node("entry", RunnablePassthrough())
-g.add_edge("entry", "check_if_last_step")
+g.add_edge("entry", "is_last_step")
 
-g.add_node("check_if_last_step", RunnablePassthrough())
+g.add_node("is_last_step", RunnablePassthrough())
 g.add_conditional_edges(
-    "check_if_last_step",
-    check_if_last_step,
+    "is_last_step",
+    is_last_step,
     to_path_map(
         [n(subGraph_generate_readme),
-         n(check_if_regenerate_with_feedback)]
+         n(should_continue_next_step)]
     ),
 )
 
-g.add_node(n(check_if_regenerate_with_feedback), check_if_regenerate_with_feedback)
-g.add_edge(n(check_if_regenerate_with_feedback), n(subGraph_steps))
+g.add_node(n(should_continue_next_step), should_continue_next_step)
+g.add_edge(n(should_continue_next_step), n(subGraph_steps))
 
 
 g.add_node(n(subGraph_steps), subGraph_steps)
 g.add_edge(n(subGraph_steps), "human_in_the_loop")
 
 g.add_node("human_in_the_loop", RunnablePassthrough())
-g.add_edge("human_in_the_loop", "check_if_last_step")
+g.add_edge("human_in_the_loop", "is_last_step")
 
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
 g.add_edge(n(subGraph_generate_readme), END)

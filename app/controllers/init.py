@@ -57,6 +57,7 @@ async def step_initializer(
     r = initialize_project(
         session["session_id"],
         project_id,
+        repo_info["title"],
         answer,
         STEP_LIST[0]["feedback_question"],
         retrieved_chunks,

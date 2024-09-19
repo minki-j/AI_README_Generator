@@ -20,7 +20,7 @@ def Step(
 ):
     """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
 
-    common_style = "margin-bottom:1rem; background-color: #fbfcfc; border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px;"
+    common_style = "margin-bottom:1rem;  border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px;"
     scrollable_style = (
         common_style
         + " height: 300px; max-height: 1000px; overflow-y: auto; resize: vertical"
@@ -130,7 +130,7 @@ def Step(
                                 onclick="toggleAllCodeSnippets()",
                                 cls="toggle-all-btn",
                                 type="button",
-                                style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                                style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; ",
                             ),
                         ),
                         Div(cls="section-content")(
@@ -161,7 +161,7 @@ def Step(
                                                 )(
                                                     Code(
                                                         chunk,
-                                                        style="background-color: #f0f0f0; display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
+                                                        style="display: block; width: 100%; white-space: pre-wrap; word-break: break-all;",
                                                     )
                                                 )
                                             ),
@@ -183,14 +183,14 @@ def Step(
                                 cls="toggle-all-btn",
                                 type="button",
                                 onclick="toggleAllFileExplorer()",
-                                style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                                style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem;",
                             ),
                             Button(
                                 "Uncheck All",
                                 id="uncheck-all-btn",
                                 type="button",
                                 onclick="uncheckAllFileExplorer()",
-                                style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; color: black; ",
+                                style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; ",
                             ),
                         ),
                         Div(cls="section-content")(
@@ -209,14 +209,14 @@ def Step(
                 "Apply Feedback",
                 id="apply_feedback_button",
                 type="submit",
-                cls="outline btn-loader",
+                cls="btn-loader",
             ),
         ),
         (
             Button(
                 "Next Step",
                 type="submit",
-                cls="outline btn-loader",
+                cls="btn-loader",
                 id="next_step_button",
                 hx_post=f"step?step_num={next_step}&project_id={project_id}",
                 hx_swap="outerHTML",
@@ -228,7 +228,7 @@ def Step(
             else Button(
                 "Finish",
                 type="submit",
-                cls="outline btn-loader",
+                cls="btn-loader",
                 hx_post=f"step/final?project_id={project_id}",
                 hx_swap="innerHTML",
                 hx_target="body",
@@ -259,10 +259,8 @@ function updateTree(tree, fullPath, value) {
 
 document.addEventListener('change', function(e) {
     if (e.target.matches('.file-explorer input[type="checkbox"]')) {
-        console.log(`==>>${e.target.value} set to ${e.target.checked}`);
         let tree = JSON.parse(document.getElementById('directory_tree_str').value);
         updateTree(tree, e.target.value, e.target.checked);
-        console.log(`==>>tree: ${JSON.stringify(tree)}`);
         document.getElementById('directory_tree_str').value = JSON.stringify(tree);
     }
 });
@@ -311,7 +309,6 @@ function toggleAll() {
 }
 
 function toggleDirectory(btn, dirName) {
-    console.log('toggleDirectory called with btn:', btn, 'and dirName:', dirName);
     const dir = document.getElementById('dir-' + dirName);
     if (dir.style.display === 'none') {
         dir.style.display = 'block';
@@ -401,24 +398,11 @@ function toggleAllCodeSnippets() {
     box-shadow: none;
 }
 .toggle-all-btn {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
     padding: 0.125rem 0.5rem 0.125rem 0.5rem; 
     font-size: 0.75rem; 
-    color: black;
-}
-.toggle-all-btn:hover {
-    background-color: #e0e0e0;
 }
 #uncheck-all-btn {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
     padding: 5px 10px;
-    border-radius: 4px;
-}
-#uncheck-all-btn:hover {
-    background-color: #e0e0e0;
 }
 @media (min-width: 1024px) {
     .horizontal-layout {

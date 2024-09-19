@@ -8,6 +8,7 @@ from app.utils.initialize_db import db
 def initialize_project(
     session_id: str,
     project_id: str,
+    title: str,
     answer: str,
     feedback_question: str,
     retrieved_chunks: list,
@@ -20,6 +21,7 @@ def initialize_project(
         db.t.readmes.insert(
             id=project_id,
             user_id=session_id,  # TODO: Change to user_id once user authentication is implemented
+            title=title,
             content="",
             directory_tree_str=directory_tree_str,
         )

@@ -31,10 +31,11 @@ def FileExplorer(directory_tree_str, common_style):
                         style="list-style-type: none; margin-left: 0;",
                         cls="file-explorer-directory",
                     )(
-                        Button()(
-                            f"▼ {name}",
+                        Span(
                             onclick=f"toggleDirectory(this, '{name}')",
-                            style="background: none; border: none; cursor: pointer; padding: 0 5px; color: black; outline: none;",
+                            style="cursor: pointer; margin-bottom: 0.125rem;",
+                        )(
+                            f"▼ {name}",
                         ),
                         Ul(
                             id=f"dir-{name}",
@@ -54,8 +55,8 @@ def FileExplorer(directory_tree_str, common_style):
                                 name="file",
                                 value=full_path,  # Use full_path instead of name
                                 checked=content,
-                                style="accent-color: black; color: black;",
-                                onchange="this.style.backgroundColor = this.checked ? 'lightblue' : '';",
+                                style="accent-color: black;",
+                                # onchange="this.style.backgroundColor = this.checked ? 'lightblue' : '';",
                             ),
                             Span(name),
                         )

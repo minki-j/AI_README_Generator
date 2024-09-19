@@ -36,8 +36,18 @@ def StepPage(step_num, total_step_num, step_data, directory_tree_str, retrieval_
     return (
         Title("AI README Generator"),
         Main(cls="container", style="")(
-            A(href="/", style="text-decoration: none; color: inherit;")(
-                H1("AI README Generator")
+            Div(
+                cls="header-container",
+                style="display: flex; justify-content: space-between; align-items: center;",
+            )(
+                A(href="/", style="text-decoration: none; color: inherit;")(
+                    H1("AI README Generator")
+                ),
+                Button(
+                    id="themeToggle",
+                    style="background: none; border: none; cursor: pointer;",
+                    onclick="toggleTheme()",
+                )("🌓"),
             ),
             Step(
                 step_data["feedback_question"],
@@ -56,5 +66,22 @@ def StepPage(step_num, total_step_num, step_data, directory_tree_str, retrieval_
                 )
             ),
             Div(id="quota_msg", hx_ext="response-targets"),
+            Script(
+                """
+            function toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme) {
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                }
+            });
+        """
+            ),
         ),
     )
