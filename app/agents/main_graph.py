@@ -25,14 +25,15 @@ def is_last_step(state):
 def should_continue_next_step(state):
     print("\n>>>> EDGE: should_continue_next_step")
     if int(state["current_step"]) == int(state["previous_step"]):
-        print("False: reset retrieved chunks state variable")
+        print("False")
         return {
             "retrieved_chunks": "RESET",
         }
     else:
-        print("True: increment previous step state variable")
-        return{
+        print("True")
+        return {
             "previous_step": int(state["current_step"]),
+            "retrieved_chunks": "RESET",
         }
 
 g = StateGraph(State)

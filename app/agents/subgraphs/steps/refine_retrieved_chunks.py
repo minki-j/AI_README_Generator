@@ -1,3 +1,4 @@
+import os
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -22,6 +23,9 @@ Output: Return ONLY the shortened code snippets without any additional explanati
     )
 
     chain = prompt | chat_model_small
+
+    if os.getenv("DEBUG", "false") == "true":
+        return retrieved_chunks
 
     response = chain.invoke(
         {
@@ -58,6 +62,7 @@ def refine_retrieved_chunks(state: State) -> State:
             path = future_to_chunk[future]
             chunk = future.result()
             trimmed_chunks[path] = chunk
+            print(f"==>> trimmed_chunks: {trimmed_chunks}")
 
     return {
         "retrieved_chunks": {

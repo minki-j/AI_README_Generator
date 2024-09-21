@@ -69,17 +69,6 @@ def retrieve_with_colbert(state: State):
         for document in retrieved_code_snippets
     }
 
-    def get_memory_usage():
-        process = psutil.Process()
-        return process.memory_info().rss / 1024 / 1024  # Convert to MB
-
-    print(f"Memory usage before deletion: {get_memory_usage()}")
-    del RAG
-    del documents
-
-    gc.collect()
-    print(f"Memory usage after deletion: {get_memory_usage()}")
-
     return {
         "retrieved_chunks": retrieved_code_snippets_dict,
         "opened_files": ["path_placeholder_for_colbert"],

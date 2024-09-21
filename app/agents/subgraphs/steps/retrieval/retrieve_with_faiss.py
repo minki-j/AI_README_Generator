@@ -76,20 +76,6 @@ def retrieve_with_faiss(state: State):
         for document in retrieved_code_snippets
     }
 
-    def get_memory_usage():
-        process = psutil.Process()
-        return process.memory_info().rss / 1024 / 1024  # Convert to MB
-
-    print(f"Memory usage before deletion: {get_memory_usage()}")
-    del faiss_vectorstore
-    del faiss_retriever
-    del documents
-    del embedding
-    del bm25_retriever
-
-    gc.collect()
-    print(f"Memory usage after deletion: {get_memory_usage()}")
-
     return {
         "retrieved_chunks": retrieved_code_snippets_dict,
         "opened_files": [
