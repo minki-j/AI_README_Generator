@@ -4,9 +4,6 @@ import time
 from .file_explorer import FileExplorer
 from app.agents.state_schema import RetrievalMethod
 
-from app.global_vars import QUOTA_LIMIT, QUOTA_RESET_MINUTES
-
-
 def Step(
     feedback_question,
     answer,
@@ -18,7 +15,7 @@ def Step(
     quota: tuple[int, int],
     is_last_step=False,
 ):
-    """A step is a intermeidate process to generate a REAME file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
+    """A step is a intermeidate process to generate a README file. For example, there could be 3 steps where the first step is to generate the entry point of the repository, second step is to generate get_started section and third step is to generate the installation section."""
 
     common_style = "margin-bottom:1rem;  border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px;"
     scrollable_style = (
@@ -29,12 +26,13 @@ def Step(
         common_style
         + " min-height: 300px; max-height: 300px; overflow-y: auto; resize: vertical;"
     )
-
+    
     quota_reset_time = round(
-        (quota[1] + QUOTA_RESET_MINUTES * 60 - time.time()) / 60, 2
+        (quota[1] + int(os.getenv("QUOTA_RESET_MINUTES", 30)) * 60 - time.time()) / 60, 2
     )
 
-    return Div(id="step", hx_ext="response-targets")(
+            
+    return Div(id="step")(
         Div(
             cls="control-panel",
             style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1rem; gap: 1rem;",
@@ -78,7 +76,7 @@ def Step(
                 style="flex-wrap: nowrap; display: flex; align-items: center;",
             )(
                 P(
-                    f"Quota: {quota[0] if quota_reset_time > 0 else QUOTA_LIMIT} / Reset in {quota_reset_time if quota_reset_time > 0 else 0} mins",
+                    f"Quota: {quota[0] if quota_reset_time > 0 else int(os.getenv("QUOTA_LIMIT", 10))} / Reset in {quota_reset_time if quota_reset_time > 0 else 0} mins",
                     style="font-size: 0.75rem; margin: 0;",
                 ),
             ),
@@ -87,9 +85,10 @@ def Step(
         Form(
             id="step_form",
             hx_post=f"step?step_num={next_step - 1}&project_id={project_id}",
-            hx_swap="outerHTML",
-            hx_target="body",
+            hx_swap="innerHTML",
+            hx_target="main",
             hx_target_429="#quota_msg",
+            hx_target_500="#error_msg",
             hx_indicator=".btn-loader",
         )(
             Div(cls="horizontal-layout")(
@@ -175,23 +174,26 @@ def Step(
                         ),
                     ),
                     Div(cls="collapsible-section")(
-                        Div(style="display: flex; align-items: center;")(
-                            H5("File Explorer", onclick="toggleSection(this)"),
-                            Button(
-                                "Collapse All",
+                        Div()(
+                            Div(style="display: flex; align-items: center;")(
+                                H5("File Explorer", onclick="toggleSection(this)"),
+                                Button(
+                                    "Collapse All",
                                 id="toggle-all-btn-file-explorer",
                                 cls="toggle-all-btn",
                                 type="button",
                                 onclick="toggleAllFileExplorer()",
                                 style="margin-bottom: 0.5rem; margin-left: 1rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem;",
+                                ),
+                                Button(
+                                    "Uncheck All",
+                                    id="uncheck-all-btn",
+                                    type="button",
+                                    onclick="uncheckAllFileExplorer()",
+                                    style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; ",
+                                ),
                             ),
-                            Button(
-                                "Uncheck All",
-                                id="uncheck-all-btn",
-                                type="button",
-                                onclick="uncheckAllFileExplorer()",
-                                style="margin-bottom: 0.5rem; margin-left: 0.5rem; cursor: pointer; padding: 0.125rem 0.5rem 0.125rem 0.5rem; font-size: 0.75rem; ",
-                            ),
+                            P("Select the files that you want to include in the context of the LLM."),
                         ),
                         Div(cls="section-content")(
                             FileExplorer(directory_tree_str, scrollable_style),
@@ -219,9 +221,10 @@ def Step(
                 cls="btn-loader",
                 id="next_step_button",
                 hx_post=f"step?step_num={next_step}&project_id={project_id}",
-                hx_swap="outerHTML",
-                hx_target="body",
+                hx_swap="innerHTML",
+                hx_target="main",
                 hx_target_429="#quota_msg",
+                hx_target_500="#error_msg",
                 hx_replace_url="true",
             )
             if not is_last_step
@@ -231,8 +234,9 @@ def Step(
                 cls="btn-loader",
                 hx_post=f"step/final?project_id={project_id}",
                 hx_swap="innerHTML",
-                hx_target="body",
+                hx_target="main",
                 hx_target_429="#quota_msg",
+                hx_target_500="#error_msg",
                 hx_replace_url="true",
             )
         ),

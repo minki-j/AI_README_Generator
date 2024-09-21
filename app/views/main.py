@@ -23,8 +23,9 @@ def home_view(session):
             Form(
                 hx_post="init?project_id=" + str(uuid.uuid4()),
                 hx_swap="outerHTML",
-                hx_target="#step",
+                hx_target="main",
                 hx_target_429="#quota_msg",
+                hx_target_500="#error_msg",
                 hx_indicator="#loader",
                 hx_replace_url="true",
             )(
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ),
         ),
         Div(id="quota_msg"),
+        Div(id="error_msg"),
         Script(
             """
             function toggleTheme() {

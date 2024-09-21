@@ -6,7 +6,8 @@ from app.utils.db_functions import initialize_project
 from app.utils.check_quota import check_quota
 from app.agents.main_graph import main_graph
 
-from app.global_vars import STEP_LIST, COLBERT_THRESHOLD
+from app.step_list import STEP_LIST
+from app.utils.error_responses import error_modal
 
 from app.agents.state_schema import RetrievalMethod
 
@@ -34,8 +35,8 @@ async def step_initializer(
         "previous_step": 0,
         "current_step": 1,
         "step_question": STEP_LIST[0],
-        "colbert_threshold": COLBERT_THRESHOLD,
-        "retrieval_method": RetrievalMethod.FAISS,
+        "colbert_threshold": os.getenv("COLBERT_THRESHOLD"),
+        "retrieval_method": RetrievalMethod.FAISS.name,
     }
 
     try:
@@ -43,12 +44,12 @@ async def step_initializer(
             initial_state,
             {"configurable": {"thread_id": project_id}},
         )
-        session["quota"] = (session["quota"][0] - 1, session["quota"][1])
+        session["quota"] = (int(session["quota"][0]) - 1, session["quota"][1])
         results = r.get("results", {})
         retrieved_chunks = r.get("retrieved_chunks", None)
-
     except Exception as e:
-        raise e
+        print(f"Error at step_initializer main_graph invoke: {e}")
+        return error_modal(e)
 
     answer = results.get("1", [{}])[0].get("answer")
     if not answer:

@@ -35,7 +35,7 @@ def StepPage(step_num, total_step_num, step_data, directory_tree_str, retrieval_
     print(f"StepPage: step_num: {step_num}, total_step_num: {total_step_num}")
     return (
         Title("AI README Generator"),
-        Main(cls="container", style="")(
+        Main(cls="container", hx_ext="response-targets")(
             Div(
                 cls="header-container",
                 style="display: flex; justify-content: space-between; align-items: center;",
@@ -65,7 +65,6 @@ def StepPage(step_num, total_step_num, step_data, directory_tree_str, retrieval_
                     *make_page_list(total_step_num, step_num, step_data["project_id"])
                 )
             ),
-            Div(id="quota_msg", hx_ext="response-targets"),
             Script(
                 """
             function toggleTheme() {
@@ -84,4 +83,6 @@ def StepPage(step_num, total_step_num, step_data, directory_tree_str, retrieval_
         """
             ),
         ),
+        Div(id="quota_msg"),
+        Div(id="error_msg"),
     )

@@ -1,3 +1,4 @@
+import os
 from varname import nameof as n
 
 from langgraph.graph import END, StateGraph
@@ -10,8 +11,6 @@ from .retrieve_with_path import read_files, add_user_chosen_files
 from .validate_file_path import validate_file_paths_from_LLM
 from .retrieve_with_colbert import retrieve_with_colbert
 from .retrieve_with_faiss import retrieve_with_faiss
-
-from app.global_vars import DEFAULT_RETRIEVAL
 
 g = StateGraph(State)
 g.set_entry_point("entry")
@@ -32,7 +31,7 @@ g.add_node("choose_retrieval_method", RunnablePassthrough())
 
 def choose_retrieval_method(state):
     print("\n>>>> EDGE: choose_retrieval_method")
-    retrieval_method = state.get("retrieval_method", DEFAULT_RETRIEVAL).upper().strip()
+    retrieval_method = state.get("retrieval_method", os.getenv("DEFAULT_RETRIEVAL"))
 
     method_mapping = {
         "COLBERT": n(retrieve_with_colbert),

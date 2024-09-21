@@ -1,5 +1,7 @@
 import os
+import gc
 import pickle
+import psutil
 from pathlib import Path
 
 from ragatouille import RAGPretrainedModel
@@ -16,7 +18,7 @@ def retrieve_with_colbert(state: State):
     cache_dir = state["cache_dir"]
 
     queries = state["step_question"]["queries"]
-    root_path = str(Path(state["cache_dir"]) / state["title"] / "cloned_repositories")
+    cloned_repo_root_path = f"{state['cache_dir']}/{state['title']}/cloned_repositories"
 
     doc_path = f"{cache_dir}/{state['title']}/chunked_doc_llamaindex/documents.pkl"
     index_path = f"{cache_dir}/{state['title']}/colbert/indexes/1"
@@ -32,7 +34,7 @@ def retrieve_with_colbert(state: State):
             f"{cache_dir}/{state['title']}/chunked_doc_llamaindex", exist_ok=True
         )
 
-        documents = chunk_with_AST_parser(root_path, language="python")
+        documents = chunk_with_AST_parser(cloned_repo_root_path, language="python")
         if not documents:
             print("No documents found")
             raise ValueError("No documents found")
@@ -66,6 +68,17 @@ def retrieve_with_colbert(state: State):
         "path_placeholder_for_colbert": document
         for document in retrieved_code_snippets
     }
+
+    def get_memory_usage():
+        process = psutil.Process()
+        return process.memory_info().rss / 1024 / 1024  # Convert to MB
+
+    print(f"Memory usage before deletion: {get_memory_usage()}")
+    del RAG
+    del documents
+
+    gc.collect()
+    print(f"Memory usage after deletion: {get_memory_usage()}")
 
     return {
         "retrieved_chunks": retrieved_code_snippets_dict,

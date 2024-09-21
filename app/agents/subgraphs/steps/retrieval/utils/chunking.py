@@ -4,7 +4,6 @@ from llama_index.core import SimpleDirectoryReader
 from app.utils.converters import convert_docs_from_llamaindex_to_langchain
 
 def chunk_with_AST_parser(directory_path: str, language: str = "python", framework="llamaindex"):
-
     documents = SimpleDirectoryReader(
         input_dir=directory_path,
         required_exts=[".py"],

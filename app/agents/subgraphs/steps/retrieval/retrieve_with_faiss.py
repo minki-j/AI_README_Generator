@@ -1,6 +1,7 @@
 import os
+import gc
 import pickle
-from pathlib import Path
+import psutil
 
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai.embeddings import OpenAIEmbeddings
@@ -16,10 +17,8 @@ from .utils.chunking import chunk_with_AST_parser
 def retrieve_with_faiss(state: State):
     print("\n>>>> NODE: retrieve_with_faiss")
 
-    cache_dir = state["cache_dir"]
-    queries = state["step_question"]["queries"]
-    root_path = str(Path(state["cache_dir"]) / state["title"] / "cloned_repositories")
-
+    cache_dir = state["cache_dir"] 
+    cloned_repository_root_path = f"{cache_dir}/{state['title']}/cloned_repositories"
     doc_path = f"{cache_dir}/{state['title']}/chunked_doc_langchain/documents.pkl"
     index_path = f"{cache_dir}/{state['title']}/faiss_vectorstore"
 
@@ -40,7 +39,7 @@ def retrieve_with_faiss(state: State):
         )
 
         documents = chunk_with_AST_parser(
-            root_path, language="python", framework="langchain"
+            cloned_repository_root_path, language="python", framework="langchain"
         )
         if not documents:
             print("No documents found")
@@ -64,7 +63,7 @@ def retrieve_with_faiss(state: State):
         retrievers=[bm25_retriever, faiss_retriever], weights=[0.5, 0.5]
     )
     retrieved_code_snippets = []
-    for query in queries:  # TODO parallelize this
+    for query in state["step_question"]["queries"]:  # TODO parallelize this
         result = ensemble_retriever.invoke(query)
         retrieved_code_snippets.extend(result)
 
@@ -76,6 +75,20 @@ def retrieve_with_faiss(state: State):
         ]: document.page_content
         for document in retrieved_code_snippets
     }
+
+    def get_memory_usage():
+        process = psutil.Process()
+        return process.memory_info().rss / 1024 / 1024  # Convert to MB
+
+    print(f"Memory usage before deletion: {get_memory_usage()}")
+    del faiss_vectorstore
+    del faiss_retriever
+    del documents
+    del embedding
+    del bm25_retriever
+
+    gc.collect()
+    print(f"Memory usage after deletion: {get_memory_usage()}")
 
     return {
         "retrieved_chunks": retrieved_code_snippets_dict,

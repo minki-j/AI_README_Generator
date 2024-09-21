@@ -58,11 +58,12 @@ def get_page_num(url):
     return params.get("page", [None])[0]
 
 
-def fetch_paginated_github_api_request(initial_url, params=None):
+def fetch_paginated_github_api_request(initial_url, params=None, max_page=1):
     next_url = "first_page"
     results = []
     is_overflowed = False
 
+    page_num = 1
     while True:
         if next_url == "first_page":
             response = github_api_request(
@@ -89,6 +90,10 @@ def fetch_paginated_github_api_request(initial_url, params=None):
         else:
             print(f"Failed to fetch {next_url}: {response.status_code}")
             print(response.links.get("next", {}).get("url"))
+            break
+
+        page_num += 1
+        if max_page and page_num > max_page:
             break
 
     return results, response, is_overflowed

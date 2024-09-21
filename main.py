@@ -2,6 +2,9 @@ import time
 import uuid
 from fasthtml.common import *
 
+import uvicorn
+from uvicorn.config import Config
+
 import app.views.main as main_views
 import app.views.step as step_views
 import app.views.history as history_views
@@ -11,7 +14,6 @@ import app.controllers.api as api
 
 from app.agents.state_schema import RetrievalMethod
 from app.utils.initialize_db import db
-from app.global_vars import QUOTA_LIMIT
 
 
 def user_auth_before(req, session):
@@ -26,7 +28,7 @@ def user_auth_before(req, session):
         )
     if "quota" not in session:
         print("initializing quota")
-        session["quota"] = (QUOTA_LIMIT, int(time.time()))
+        session["quota"] = (int(os.getenv("QUOTA_LIMIT", 10)), int(time.time()))
     if "retrieval_method" not in session:
         print("initializing retrieval_method")
         session["retrieval_method"] = RetrievalMethod.FAISS.name
@@ -46,6 +48,11 @@ app, _ = fast_app(
             rel="stylesheet",
             href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css",
             type="text/css",
+        ),
+        MarkdownJS(),
+        HighlightJS(langs=["python", "javascript", "html", "css"]),
+        Script(
+            src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"
         ),
         Style(
             """
@@ -79,18 +86,42 @@ app, _ = fast_app(
     font-size: 14px;
     animation: pulse 2s ease-in-out infinite !important;
 }
-
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.2; }
     100% { opacity: 1; }
 }
+.error-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.error-modal .error-content {
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    height: 80%;
+    overflow: auto;
+    position: relative;
+    background-color: var(--pico-background-color);
+    border: var(--pico-primary-border);
+}
+.error-modal .error-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    border: none;
+}
     """
-        ),
-        MarkdownJS(),
-        HighlightJS(langs=["python", "javascript", "html", "css"]),
-        Script(
-            src="https://unpkg.com/htmx-ext-response-targets@2.0.0/response-targets.js"
         ),
     ),
     exception_handlers={
@@ -116,5 +147,6 @@ app.post("/step")(step_controller.step_handler)
 app.post("/step/final")(step_controller.generate_readme)
 app.post("/update_retrieval_method")(step_controller.update_retrieval_method)
 
-
-serve(reload=False)
+running_on_server = os.environ.get("RAILWAY_ENVIRONMENT_NAME") == "production"
+print(f">>>> running_on_server: {running_on_server}")
+serve(reload=not running_on_server)

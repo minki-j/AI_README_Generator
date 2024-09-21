@@ -1,15 +1,9 @@
-DEBUG = False
-DEFAULT_RETRIEVAL = "FAISS"
-COLBERT_THRESHOLD = 10
-SKIP_LLM_CALLINGS = False
-QUOTA_LIMIT = 15
-QUOTA_RESET_MINUTES = 30
 STEP_LIST = [
     {
         "prompt": "What are the core packages used in this project?",
         "queries": [],
         "feedback_question": "Are these packages core to your project?",
-        "retrieval_needed": False,
+        "retrieval_needed": True,
         "repo_info_to_look_up": [
             "packages_used",
             "directory_tree",
@@ -32,13 +26,13 @@ STEP_LIST = [
         "retrieval_needed": True,
         "repo_info_to_look_up": [],
     },
-    # {
-    #     "prompt": "What is the entry point of the codebase?",
-    #     "queries": ["Entry point of the codebase", "How to run the codebase"],
-    #     "feedback_question": "Is this the entry point of your project?",
-    #     "retrieval_needed": False,
-    #     "repo_info_to_look_up": [],
-    # },
+    {
+        "prompt": "What is the entry point of the codebase?",
+        "queries": ["Entry point of the codebase", "How to run the codebase"],
+        "feedback_question": "Is this the entry point of your project?",
+        "retrieval_needed": True,
+        "repo_info_to_look_up": [],
+    },
     # {
     #     "prompt": "Write the installation instructions for this repository.",
     #     "queries": ["Installation instructions", "How to install this repository?"],

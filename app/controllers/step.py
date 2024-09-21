@@ -12,9 +12,9 @@ from app.utils.db_functions import (
 from app.utils.check_quota import check_quota
 from app.agents.main_graph import main_graph
 from app.utils.initialize_db import db
+from app.utils.error_responses import error_modal
 
-from app.global_vars import STEP_LIST
-from app.global_vars import DEBUG
+from app.step_list import STEP_LIST
 from app.agents.state_schema import State
 from app.agents.state_schema import RetrievalMethod
 
@@ -62,11 +62,12 @@ async def step_handler(
             as_node="human_in_the_loop",
         )
         r = main_graph.invoke(None, config)
-        session["quota"] = (session["quota"][0] - 1, session["quota"][1])
+        session["quota"] = (int(session["quota"][0]) - 1, session["quota"][1])
         results = r.get("results", {})
         retrieved_chunks = r.get("retrieved_chunks", {})
     except Exception as e:
-        raise e
+        print(f"Error: {e}")
+        return error_modal(e)
 
     answer = results.get(str(step_num), [{}])[-1].get("answer")
     if answer is None:
@@ -88,15 +89,12 @@ async def step_handler(
             url=f"/{route}?step_num={step_num}&project_id={project_id}", status_code=303
         )
     else:
-        return Div(
-            "Error: Something went wrong. Please try again later.",
-            cls="error-message",
-        )
+        return error_modal("Error: DB insert failed.")
 
 
 async def generate_readme(session, project_id: str, request: Request):
     print("\n>>>> CTRL: generate_readme")
-    if DEBUG:
+    if os.getenv("DEBUG", "false").lower() == "true":
         # print("DEBUG MODE. SKIP GRAPH")
         r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
         if r:
@@ -106,10 +104,7 @@ async def generate_readme(session, project_id: str, request: Request):
                 url=f"/{route}?project_id={project_id}", status_code=303
             )
         else:
-            return Div(
-                "Error: Something went wrong. Please try again later.",
-                cls="error-message",
-            )
+            return error_modal("Error: update_readme_content failed")
 
     config = {"configurable": {"thread_id": project_id}}
     r = main_graph.update_state(
@@ -123,7 +118,7 @@ async def generate_readme(session, project_id: str, request: Request):
         None,
         config,
     )
-    session["quota"] = (session["quota"][0] - 1, session["quota"][1])
+    session["quota"] = (int(session["quota"][0]) - 1, session["quota"][1])
     generated_readme = r.get("generated_readme", None)
     db_res = update_readme_content(project_id, generated_readme)
 
@@ -141,10 +136,7 @@ async def generate_readme(session, project_id: str, request: Request):
             url=f"/{route}?project_id={project_id}", status_code=303
         )
     else:
-        return Div(
-            "Error: Something went wrong. Please try again later.",
-            cls="error-message",
-        )
+        return error_modal("Error: update_readme_content failed")
 
 
 async def update_retrieval_method(session, request: Request):

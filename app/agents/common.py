@@ -6,7 +6,6 @@ from langchain_openai import ChatOpenAI, OpenAI
 from langchain_anthropic import ChatAnthropic, Anthropic
 
 load_dotenv('.env', override=True)
-
 DEFAULT_MODEL = os.getenv("DEFAULT_MODEL")
 FALLBACK_MODEL = os.getenv("FALLBACK_MODEL")
 LLM_TEMPERATURE = os.getenv("LLM_TEMPERATURE")

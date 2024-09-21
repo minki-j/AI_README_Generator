@@ -1,10 +1,9 @@
 import json
-
+import os
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
 
-from app.global_vars import SKIP_LLM_CALLINGS
 from app.agents.state_schema import State
 from app.agents.common import chat_model
 from app.utils.get_user_picked_file_paths import get_user_picked_file_paths
@@ -59,7 +58,7 @@ def answer_step_question(state: State) -> State:
 
     chain = prompt | chat_model.with_structured_output(Answer)
 
-    if SKIP_LLM_CALLINGS:
+    if os.getenv("SKIP_LLM_CALLINGS", "false").lower() == "true":
         print("DEBUG MODE: SKIP answer_step_question node")
         return {
             "results": {
@@ -72,7 +71,7 @@ def answer_step_question(state: State) -> State:
                 ]
             }
         }
-    
+
     previous_step_answers = []
     for step_num, step_results in results.items():
         if int(step_num) < int(state["current_step"]):
