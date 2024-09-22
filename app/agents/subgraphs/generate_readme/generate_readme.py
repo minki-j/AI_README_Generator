@@ -1,3 +1,5 @@
+import os
+
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import (
     AIMessage,
@@ -5,7 +7,7 @@ from langchain_core.messages import (
 )
 from app.agents.state_schema import State
 
-from app.agents.common import chat_model
+from app.agents.llm_models import chat_model
 
 from langchain_core.pydantic_v1 import BaseModel, Field
 
@@ -18,7 +20,6 @@ def generate_readme(state: State):
     repo_info = []
     repo_info.append(f"Directory Tree: {state['directory_tree']}")
     repo_info.append(f"Packages Used: {state['packages_used']}")
-
 
     step_answers = []
     for step_num, results in state["results"].items():
@@ -35,6 +36,20 @@ def generate_readme(state: State):
 
     chain = prompt | chat_model.with_structured_output(Readme)
 
+    if os.getenv("SKIP_LLM_CALLINGS", "false").lower() == "true":
+        print("DEBUG MODE: SKIP answer_step_question node")
+        return {
+            "generated_readme": "DEBUG MODE: SKIP generate_readme node",
+            "results": {
+                "final": [
+                    {
+                        "answer": "DEBUG MODE: SKIP generate_readme node",
+                        "opened_files": [],
+                    }
+                ]
+            },
+        }
+    
     readme = chain.invoke(
         {
             "step_answers": f"<step_answers>{', '.join(step_answers)}</step_answers>\n" if step_answers else "",

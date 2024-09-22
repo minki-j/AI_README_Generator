@@ -8,8 +8,9 @@ class StepQ(TypedDict):
         "prompt": "What is the entry point of the codebase?",
         "queries": ["Entry point of the codebase", "How to run the codebase"],
         "feedback_question": "Is this the entry point of your project?",
+        "retrieval_needed": "True" or "False",
+        "repo_info_to_look_up": ["repo_description_by_user", "directory_tree", "packages_used"],
     """
-
     prompt: str
     queries: list[str]
     feedback_question: str
@@ -98,12 +99,12 @@ class State(TypedDict):
     colbert_threshold: float
 
     # Ephemeral Variables
-    # Will be reset after each step
+    # Will be RESET after each step
     valid_paths: Annotated[List[str], merge_lists]
     corrected_paths: List[str]
 
     # Short Term Memory
-    # Will be updated after each step
+    # May be UPDATED after each step
     previous_step: int
     current_step: int
     retrieved_chunks: Annotated[Dict[str, str], handle_retrieved_chunks]

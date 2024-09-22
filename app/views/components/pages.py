@@ -1,6 +1,6 @@
 from fasthtml.common import *
 
-from app.components.step import Step
+from app.views.components.step import Step
 
 def make_page_list(total_step_num, current_step, project_id):
     page_list = []

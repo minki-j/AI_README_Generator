@@ -7,7 +7,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
 
 from app.agents.state_schema import State
-from app.agents.common import chat_model_small
+from app.agents.llm_models import chat_model_small
 
 
 def trim_retrieved_chunk(question: str, retrieved_chunks: str) -> str:
@@ -24,7 +24,7 @@ Output: Return ONLY the shortened code snippets without any additional explanati
 
     chain = prompt | chat_model_small
 
-    if os.getenv("DEBUG", "false") == "true":
+    if os.getenv("SKIP_LLM_CALLINGS", "false").lower() == "true":
         return retrieved_chunks
 
     response = chain.invoke(

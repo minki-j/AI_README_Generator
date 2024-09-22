@@ -1,22 +1,18 @@
 import json
-import time
 from fasthtml.common import *
-from pprint import pprint
 
-from app.components.step import Step
 from app.utils.db_functions import (
     insert_step_db,
     update_readme_content,
     insert_step_results,
 )
 from app.utils.check_quota import check_quota
-from app.agents.main_graph import main_graph
-from app.utils.initialize_db import db
 from app.utils.error_responses import error_modal
+from app.utils.initialize_db import db
+
+from app.agents.main_graph import main_graph
 
 from app.step_list import STEP_LIST
-from app.agents.state_schema import State
-from app.agents.state_schema import RetrievalMethod
 
 
 async def step_handler(
@@ -94,17 +90,6 @@ async def step_handler(
 
 async def generate_readme(session, project_id: str, request: Request):
     print("\n>>>> CTRL: generate_readme")
-    if os.getenv("DEBUG", "false").lower() == "true":
-        # print("DEBUG MODE. SKIP GRAPH")
-        r = update_readme_content(project_id, "DEBUG MODE. README GENERATED")
-        if r:
-            full_route = str(request.url_for("generate_readme"))
-            route = full_route.replace(str(request.base_url), "")
-            return RedirectResponse(
-                url=f"/{route}?project_id={project_id}", status_code=303
-            )
-        else:
-            return error_modal("Error: update_readme_content failed")
 
     config = {"configurable": {"thread_id": project_id}}
     r = main_graph.update_state(

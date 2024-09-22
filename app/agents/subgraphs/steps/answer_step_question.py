@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
 
 from app.agents.state_schema import State
-from app.agents.common import chat_model
+from app.agents.llm_models import chat_model
 from app.utils.get_user_picked_file_paths import get_user_picked_file_paths
 
 class Answer(BaseModel):
@@ -76,6 +76,7 @@ def answer_step_question(state: State) -> State:
     for step_num, step_results in results.items():
         if int(step_num) < int(state["current_step"]):
             previous_step_answers.append(step_results[-1]["answer"])
+    previous_step_answers_str = '\n'.join(previous_step_answers)
 
     response = chain.invoke(
         {
@@ -83,7 +84,7 @@ def answer_step_question(state: State) -> State:
             "retrieved_chunks": f"<code_snippets>{json.dumps(state['retrieved_chunks'], ensure_ascii=False)}</code_snippets>\n" if state["retrieved_chunks"] else "",
             "user_feedback": f"<extra_instruction>{state.get('user_feedback', '')}</extra_instruction>\n" if state.get("user_feedback", "") else "",
             "repo_info": f"<repo_info>{repo_info_str}</repo_info>\n" if repo_info_str else "",
-            "previous_step_answers": f"<key_information>{', '.join(previous_step_answers)}\n</key_information>\n" if previous_step_answers else "",
+            "previous_step_answers": f"<key_information>\n{previous_step_answers_str}\n</key_information>\n" if previous_step_answers else "",
         }
     )
 

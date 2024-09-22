@@ -1,15 +1,12 @@
 import os
-import gc
 import pickle
-import psutil
-from pathlib import Path
 
 from ragatouille import RAGPretrainedModel
 
 from app.agents.state_schema import State
 
-from .utils.chunking import chunk_with_AST_parser
-from .utils.index_for_colbert import index_documents_with_colbert
+from .chunking import chunk_with_AST_parser
+from .index_for_colbert import index_documents_with_colbert
 
 
 def retrieve_with_colbert(state: State):

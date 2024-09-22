@@ -20,47 +20,35 @@ def is_last_step(state):
         print("True: generate readme")
         return n(subGraph_generate_readme)
     print("False: move to next step")
-    return n(should_continue_next_step)
-
-def should_continue_next_step(state):
-    print("\n>>>> EDGE: should_continue_next_step")
-    if int(state["current_step"]) == int(state["previous_step"]):
-        print("False")
-        return {
-            "retrieved_chunks": "RESET",
-        }
-    else:
-        print("True")
-        return {
-            "previous_step": int(state["current_step"]),
-            "retrieved_chunks": "RESET",
-        }
+    return n(subGraph_steps)
 
 g = StateGraph(State)
-g.set_entry_point("entry")
+g.set_entry_point("reset_variables")
 
-g.add_node("entry", RunnablePassthrough())
-g.add_edge("entry", "is_last_step")
+g.add_node(
+    "reset_variables",
+    lambda state: {
+        #! Always reset variables in the root level.
+        "previous_step": int(state["current_step"]),
+        "retrieved_chunks": "RESET", #TODO: Need to handle conditionally
+        "valid_paths": "RESET",
+        "corrected_paths": [],
+    },
+)
+g.add_edge("reset_variables", "is_last_step")
 
 g.add_node("is_last_step", RunnablePassthrough())
 g.add_conditional_edges(
     "is_last_step",
     is_last_step,
-    to_path_map(
-        [n(subGraph_generate_readme),
-         n(should_continue_next_step)]
-    ),
+    to_path_map([n(subGraph_generate_readme), n(subGraph_steps)]),
 )
-
-g.add_node(n(should_continue_next_step), should_continue_next_step)
-g.add_edge(n(should_continue_next_step), n(subGraph_steps))
-
 
 g.add_node(n(subGraph_steps), subGraph_steps)
 g.add_edge(n(subGraph_steps), "human_in_the_loop")
 
 g.add_node("human_in_the_loop", RunnablePassthrough())
-g.add_edge("human_in_the_loop", "is_last_step")
+g.add_edge("human_in_the_loop", "reset_variables")
 
 g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
 g.add_edge(n(subGraph_generate_readme), END)

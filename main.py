@@ -10,7 +10,7 @@ import app.views.step as step_views
 import app.views.history as history_views
 import app.controllers.init as init_controller
 import app.controllers.step as step_controller
-import app.controllers.api as api
+import app.controllers.admin as admin
 
 from app.agents.state_schema import RetrievalMethod
 from app.utils.initialize_db import db
@@ -33,12 +33,10 @@ def user_auth_before(req, session):
         print("initializing retrieval_method")
         session["retrieval_method"] = RetrievalMethod.FAISS.name
 
-
 beforeware = Beforeware(
     user_auth_before,
     skip=[r"/favicon\.ico", r"/static/.*", r".*\.css", r".*\.js", "/login"],
 )
-
 
 app, _ = fast_app(
     live=True,
@@ -140,7 +138,7 @@ app.get("/")(main_views.home_view)
 app.get("/step")(step_views.step_view)
 app.get("/step/final")(step_views.result_view)
 app.get("/history")(history_views.history_view)
-app.get("/download_db")(api.download_db)
+app.get("/download_db")(admin.download_db)
 
 app.post("/init")(init_controller.step_initializer)
 app.post("/step")(step_controller.step_handler)

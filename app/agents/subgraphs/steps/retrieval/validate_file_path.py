@@ -3,7 +3,7 @@ from pathlib import Path
 
 from app.agents.state_schema import State
 
-from app.agents.common import chat_model
+from app.agents.llm_models import chat_model
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -14,6 +14,12 @@ class PathCorrection(BaseModel):
 
 def validate_file_paths_from_LLM(state: State):
     print("\n>>>> NODE: validate_file_paths_from_LLM")
+    if os.getenv("SKIP_LLM_CALLINGS", "false").lower() == "true":
+        print("DEBUG MODE: SKIP validate_file_paths_from_LLM node")
+        invalid_paths = []
+        return {
+            "valid_paths": [],
+        }
 
     FILE_PATH_VALIDATION_TRIES = 3
     root_path = str(Path(state["cache_dir"]) / "cloned_repositories" / state["title"])
@@ -40,6 +46,7 @@ def validate_file_paths_from_LLM(state: State):
             break
 
         print(f"Invalid paths: {invalid_paths}")
+
         invalid_paths = chain.invoke(
             {
                 "invalid_paths": ", ".join(invalid_paths),

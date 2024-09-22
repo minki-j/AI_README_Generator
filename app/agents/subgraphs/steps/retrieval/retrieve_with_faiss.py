@@ -1,7 +1,5 @@
 import os
-import gc
 import pickle
-import psutil
 
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai.embeddings import OpenAIEmbeddings
@@ -11,7 +9,7 @@ from langchain_community.vectorstores import FAISS
 
 from app.agents.state_schema import State
 
-from .utils.chunking import chunk_with_AST_parser
+from .chunking import chunk_with_AST_parser
 
 
 def retrieve_with_faiss(state: State):
@@ -58,13 +56,12 @@ def retrieve_with_faiss(state: State):
     bm25_retriever.k = 2
 
     faiss_retriever = faiss_vectorstore.as_retriever(search_kwargs={"k": 2})
-
     ensemble_retriever = EnsembleRetriever(
         retrievers=[bm25_retriever, faiss_retriever], weights=[0.5, 0.5]
     )
     retrieved_code_snippets = []
     for query in state["step_question"]["queries"]:  # TODO parallelize this
-        result = ensemble_retriever.invoke(query)
+        result = faiss_retriever.invoke(query)
         retrieved_code_snippets.extend(result)
 
     print(f"Retrieved {len(retrieved_code_snippets)} code snippets (hybrid search)")

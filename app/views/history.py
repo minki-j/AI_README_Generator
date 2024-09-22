@@ -1,6 +1,6 @@
 from fasthtml.common import *
 
-from app.components.step import Step
+from app.views.components.step import Step
 
 from app.step_list import STEP_LIST
 from app.utils.initialize_db import db

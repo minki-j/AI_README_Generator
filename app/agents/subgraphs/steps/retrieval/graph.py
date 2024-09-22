@@ -15,13 +15,7 @@ from .retrieve_with_faiss import retrieve_with_faiss
 g = StateGraph(State)
 g.set_entry_point("entry")
 
-g.add_node(
-    "entry",
-    lambda _: {
-        "retrieved_chunks": "RESET",
-        "valid_paths": "RESET",
-    },
-)
+g.add_node("entry", RunnablePassthrough())
 g.add_edge("entry", n(add_user_chosen_files))
 g.add_edge("entry", n(validate_file_paths_from_LLM))
 g.add_edge("entry", "choose_retrieval_method")
