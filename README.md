@@ -2,7 +2,7 @@
 
 AI_README_Generator is an AI-powered tool that automates GitHub repository analysis to create comprehensive README documentation.
 
-This project leverages various technologies such as LangChain, LangGraph, ColBERT, tree-sitter parsers, and advanced semantic analysis to provide meaningful insights into repository contents. By orchestrating multi-step processes that seek confirmation from users, it not only refines results iteratively but also collects a self-evaluation dataset used to improve the system.
+This project leverages various technologies such as LangChain, LangGraph, FastHTML, ColBERT, tree-sitter parsers, and advanced semantic analysis to provide meaningful insights into repository contents. By orchestrating multi-step processes that seek confirmation from users, it not only refines results iteratively but also collects a self-evaluation dataset used to improve the system.
 
 Currently, the system only supports Python projects, but there are plans to expand support to other languages.
 
@@ -11,14 +11,13 @@ Currently, the system only supports Python projects, but there are plans to expa
 ![System Architecture Flow](./architecture_flow.png)
 
 ## Features
+### 1. **Cognitive Architecture for Agents with LangGraph**
 
-### 1. **Intelligent Code Retrieval**
+- The system is designed using a graph-based cognitive architecture using LangGraph.
+
+### 2. **Code Retrieval**
 
 - The system utilizes **ColBERT**, a neural information retrieval model based on cross encoder, to perform context-aware retrieval of documents and code snippets within the repository. This ensures that the most relevant information is identified and utilized for analysis and README generation.
-
-### 2. **Modular, Graph-Based Architecture**
-
-- The system is designed using a modular, graph-based architecture using LangGraph. Each distinct processing stage is represented as a subgraph.
 
 ### 3. Smart Chunking
 
@@ -43,12 +42,12 @@ Currently, the system only supports Python projects, but there are plans to expa
 ## Technologies Used
 
 - **LangChain/LangGraph**: Orchestrates the agentic flow for code retrieval, analysis, and documentation generation.
+- **FastHTML**: Web development with python.
 - **ColBERT(RAGatouille)**: A neural information retrieval model that enhances context-aware code retrieval.
 - **Tree-sitter**: Provides language-specific parsing capabilities for multi-language support.
 
 ## How to run
 
-Run locally:
 ```bash
 # Install required packages
 pip install -r requirements.txt
