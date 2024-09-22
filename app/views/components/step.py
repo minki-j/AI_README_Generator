@@ -139,7 +139,7 @@ def Step(
                                 P(
                                     style="font-size: 0.75rem; margin-bottom: 0.125rem; margin-top: 0.125rem; padding:0;"
                                 )(
-                                    "An LLM will check if the code snippets are relevant to the answer and provide feedback. If not, it will be shown as None"
+                                    "An LLM will check if the code snippets are relevant to the answer. If not, it will be shown as None"
                                 ),
                                 *(
                                     [P("No code snippets are retrieved")]

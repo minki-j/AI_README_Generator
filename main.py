@@ -146,5 +146,9 @@ app.post("/step/final")(step_controller.generate_readme)
 app.post("/update_retrieval_method")(step_controller.update_retrieval_method)
 
 running_on_server = os.environ.get("RAILWAY_ENVIRONMENT_NAME") == "production"
-print(f">>>> running_on_server: {running_on_server}")
-serve(reload=not running_on_server)
+serve(
+    reload=not running_on_server,
+    reload_excludes=[
+        "data/**",
+    ],
+)  #! exclude not working

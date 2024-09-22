@@ -2,7 +2,6 @@ import os
 import re
 import subprocess
 import shutil
-from pathlib import Path
 
 from app.utils.github_api_call import fetch_commits, github_api_request
 from app.utils.generate_tree import generate_tree
@@ -66,10 +65,17 @@ def get_repo_info(clone_url, cache_dir):
     save_path = os.path.join(requirement_dir, "requirements.txt")
 
     def run_pipreqs(clone_dir, save_path, temp_dir):
-        cmd = f"pipreqs --scan-notebooks --mode no-pin --savepath {save_path} {clone_dir}"
+        # Use list form for the command to avoid shell=True
+        cmd = [
+            "pipreqs",
+            "--scan-notebooks",
+            "--mode", "no-pin",
+            "--savepath", save_path,
+            clone_dir
+        ]
 
         try:
-            subprocess.run(cmd, capture_output=True, check=True, text=True, shell=True)
+            subprocess.run(cmd, capture_output=True, check=True, text=True)
             print("pipreqs command executed successfully")
             return True, None
         except subprocess.CalledProcessError as e:
@@ -87,17 +93,19 @@ def get_repo_info(clone_url, cache_dir):
         while not success:
             success, failed_file = run_pipreqs(clone_dir, save_path, temp_dir)
             if not success and failed_file:
-                dst = os.path.join(temp_dir, failed_file)
+                dst = os.path.join(temp_dir, os.path.basename(failed_file))
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
-                shutil.move(failed_file, dst)
+                shutil.copy2(failed_file, dst)  # Use copy2 instead of move
+                os.remove(failed_file)  # Remove the original file after copying
                 moved_files.append((failed_file, dst))
-                print(f"pipreqs error on {failed_file}, moved to temporary directory and retrying")
+                print(f"pipreqs error on {failed_file}, copied to temporary directory and retrying")
             elif not success:
                 raise Exception("Failed to run pipreqs and couldn't identify the problematic file")
 
         # Move files back to their original locations
         for src, dst in moved_files:
-            shutil.move(dst, src)
+            shutil.copy2(dst, src)  # Use copy2 instead of move
+            os.remove(dst)  # Remove the temporary file after copying back
 
         with open(save_path, "r") as f:
             requirements = f.read().splitlines()

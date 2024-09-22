@@ -47,23 +47,12 @@ Currently, the system only supports Python projects, but there are plans to expa
 - **Tree-sitter**: Provides language-specific parsing capabilities for multi-language support.
 
 ## How to run
-Build the Docker image (terminal at the workdir):
-```bash
-docker build -t readmegen .
-```
-
-Run the container:
-```bash
-docker run -p 8000:8000 readmegen
-```
 
 Run locally:
 ```bash
-export $(grep -v '^#' .env | xargs)
-uvicorn app.fasthtml_app:app --reload --reload-dir ./app --reload-exclude cache --reload-exclude data --reload-exclude graph_diagrams
-```
+# Install required packages
+pip install -r requirements.txt
 
-To deploy the web server:
-```bash
-modal deploy app.modal_app
+# Run the application
+python main.py
 ```

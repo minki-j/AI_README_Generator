@@ -29,27 +29,27 @@ def generate_readme(state: State):
         [
             (
                 "human",
-                "Based on the collected information about the Github repository, write a README.\n{step_answers}\n{repo_info}\n",
+                "Based on the collected information about the Github repository, write a README.\n{step_answers}\n{repo_info}\n Make sure it is a proper markdown format.", 
             ),
         ]
     )
 
     chain = prompt | chat_model.with_structured_output(Readme)
 
-    if os.getenv("SKIP_LLM_CALLINGS", "false").lower() == "true":
-        print("DEBUG MODE: SKIP answer_step_question node")
-        return {
-            "generated_readme": "DEBUG MODE: SKIP generate_readme node",
-            "results": {
-                "final": [
-                    {
-                        "answer": "DEBUG MODE: SKIP generate_readme node",
-                        "opened_files": [],
-                    }
-                ]
-            },
-        }
-    
+    # if os.getenv("SKIP_LLM_CALLINGS", "false").lower() == "true":
+    #     print("DEBUG MODE: SKIP answer_step_question node")
+    #     return {
+    #         "generated_readme": "DEBUG MODE: SKIP generate_readme node",
+    #         "results": {
+    #             "final": [
+    #                 {
+    #                     "answer": "DEBUG MODE: SKIP generate_readme node",
+    #                     "opened_files": [],
+    #                 }
+    #             ]
+    #         },
+    #     }
+
     readme = chain.invoke(
         {
             "step_answers": f"<step_answers>{', '.join(step_answers)}</step_answers>\n" if step_answers else "",
@@ -57,10 +57,12 @@ def generate_readme(state: State):
         }
     )
 
-    return {"generated_readme": readme.content,
+    readme_content = readme.content
+
+    return {"generated_readme": readme_content,
             "results": {
                 "final": [{
-                    "answer": readme.content,
+                    "answer": readme_content,
                     "opened_files": [],
                 }]
             }
