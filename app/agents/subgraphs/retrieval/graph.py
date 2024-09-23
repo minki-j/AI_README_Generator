@@ -68,7 +68,7 @@ g.add_edge(
 
 g.add_edge("rendezvous", END)
 
-subGraph_retrieval = g.compile()
+retrieval_graph = g.compile()
 
-with open("./app/agents/graph_diagrams/subGraph_retrieval.png", "wb") as f:
-    f.write(subGraph_retrieval.get_graph().draw_mermaid_png())
+with open("./app/agents/graph_diagrams/retrieval_graph.png", "wb") as f:
+    f.write(retrieval_graph.get_graph().draw_mermaid_png())

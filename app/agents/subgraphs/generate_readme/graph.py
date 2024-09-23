@@ -17,8 +17,8 @@ g.add_edge("entry", n(generate_readme))
 g.add_node(n(generate_readme), generate_readme)
 g.add_edge(n(generate_readme), END)
 
-subGraph_generate_readme = g.compile()
+generate_readme_graph = g.compile()
 
 
-with open("./app/agents/graph_diagrams/subGraph_generate_readme.png", "wb") as f:
-    f.write(subGraph_generate_readme.get_graph().draw_mermaid_png())
+with open("./app/agents/graph_diagrams/generate_readme_graph.png", "wb") as f:
+    f.write(generate_readme_graph.get_graph().draw_mermaid_png())

@@ -64,8 +64,7 @@ def answer_step_question(state: State) -> State:
             "results": {
                 state["current_step"]: [
                     {
-                        "answer": "This is a placeholder answer for debugging mode. "
-                        * 20,
+                        "answer": "This is a placeholder answer for debugging mode. ",
                         "opened_files": [],
                     }
                 ]

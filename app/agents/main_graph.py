@@ -7,8 +7,8 @@ from langchain_core.runnables import RunnablePassthrough
 from app.agents.state_schema import State
 from app.utils.converters import to_path_map
 
-from app.agents.subgraphs.steps.graph import subGraph_steps
-from app.agents.subgraphs.generate_readme.graph import subGraph_generate_readme
+from app.agents.subgraphs.steps.graph import steps_graph
+from app.agents.subgraphs.generate_readme.graph import generate_readme_graph
 
 import os
 
@@ -18,9 +18,9 @@ def is_last_step(state):
         raise(ValueError("current_step or total_number_of_steps is None"))
     if int(state["current_step"]) > int(state["total_number_of_steps"]):
         print("True: generate readme")
-        return n(subGraph_generate_readme)
+        return n(generate_readme_graph)
     print("False: move to next step")
-    return n(subGraph_steps)
+    return n(steps_graph)
 
 g = StateGraph(State)
 g.set_entry_point("reset_variables")
@@ -41,17 +41,17 @@ g.add_node("is_last_step", RunnablePassthrough())
 g.add_conditional_edges(
     "is_last_step",
     is_last_step,
-    to_path_map([n(subGraph_generate_readme), n(subGraph_steps)]),
+    to_path_map([n(generate_readme_graph), n(steps_graph)]),
 )
 
-g.add_node(n(subGraph_steps), subGraph_steps)
-g.add_edge(n(subGraph_steps), "human_in_the_loop")
+g.add_node(n(steps_graph), steps_graph)
+g.add_edge(n(steps_graph), "human_in_the_loop")
 
 g.add_node("human_in_the_loop", RunnablePassthrough())
 g.add_edge("human_in_the_loop", "reset_variables")
 
-g.add_node(n(subGraph_generate_readme), subGraph_generate_readme)
-g.add_edge(n(subGraph_generate_readme), END)
+g.add_node(n(generate_readme_graph), generate_readme_graph)
+g.add_edge(n(generate_readme_graph), END)
 
 
 os.makedirs("./data/graph_checkpoints", exist_ok=True)
