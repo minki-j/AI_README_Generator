@@ -36,19 +36,19 @@ def generate_readme(state: State):
 
     chain = prompt | chat_model.with_structured_output(Readme)
 
-    # if os.getenv("SKIP_LLM_CALLINGS", "false").lower() == "true":
-    #     print("DEBUG MODE: SKIP answer_step_question node")
-    #     return {
-    #         "generated_readme": "DEBUG MODE: SKIP generate_readme node",
-    #         "results": {
-    #             "final": [
-    #                 {
-    #                     "answer": "DEBUG MODE: SKIP generate_readme node",
-    #                     "opened_files": [],
-    #                 }
-    #             ]
-    #         },
-    #     }
+    if os.getenv("SKIP_LLM_CALLINGS", "false").lower() == "true":
+        print("DEBUG MODE: SKIP answer_step_question node")
+        return {
+            "generated_readme": "DEBUG MODE: SKIP generate_readme node",
+            "results": {
+                "final": [
+                    {
+                        "answer": "DEBUG MODE: SKIP generate_readme node",
+                        "opened_files": [],
+                    }
+                ]
+            },
+        }
 
     readme = chain.invoke(
         {

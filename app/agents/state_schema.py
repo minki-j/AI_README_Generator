@@ -112,6 +112,7 @@ class State(TypedDict):
     user_feedback: str
     directory_tree_dict: dict  # For indicating which files are retrieved
     retrieval_method: RetrievalMethod
+    LLM_chosen_file_paths: List[str]
 
     # Long Term Memory
     results: Annotated[Dict[str, List[StepResult]], merge_results]

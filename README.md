@@ -50,6 +50,8 @@ Currently, the system only supports Python projects, but there are plans to expa
 
 ```bash
 # Install required packages
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 
 # Run the application

@@ -12,12 +12,14 @@ from .validate_file_path import validate_file_paths_from_LLM
 from .retrieve_with_colbert import retrieve_with_colbert
 from .retrieve_with_faiss import retrieve_with_faiss
 
+from app.agents.subgraphs.decision_maker.graph import decision_maker_graph
+
 g = StateGraph(State)
 g.set_entry_point("entry")
 
 g.add_node("entry", RunnablePassthrough())
 g.add_edge("entry", n(add_user_chosen_files))
-g.add_edge("entry", n(validate_file_paths_from_LLM))
+g.add_edge("entry", "LLM_decides_file_paths")
 g.add_edge("entry", "choose_retrieval_method")
 
 g.add_node("choose_retrieval_method", RunnablePassthrough())
@@ -50,6 +52,25 @@ g.add_edge(n(add_user_chosen_files), n(read_files))
 
 g.add_node(n(retrieve_with_colbert), retrieve_with_colbert)
 g.add_node(n(retrieve_with_faiss), retrieve_with_faiss)
+
+def call_decision_maker_graph(state):
+    print("\n>>>> NODE: LLM_decides_file_paths")
+    file_paths = decision_maker_graph.invoke(
+        {
+            "problem_statement": "pick 3 files from the directory",
+            "context": {
+                "directory_tree": state.get("directory_tree", None),
+                "step_question": state.get["step_question"]["prompt"],
+                "is_discussion_finished": False,
+                "is_round_finished": False,
+                "round_loop_count": 0,
+            },
+        }
+    )
+    print(f"===> result: {file_paths}")
+    return {"LLM_chosen_file_paths": file_paths}
+g.add_node("LLM_decides_file_paths", call_decision_maker_graph)
+g.add_edge("LLM_decides_file_paths", n(validate_file_paths_from_LLM))
 
 g.add_node(n(validate_file_paths_from_LLM), validate_file_paths_from_LLM)
 g.add_edge(n(validate_file_paths_from_LLM), n(read_files))

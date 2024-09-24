@@ -32,7 +32,7 @@ def validate_file_paths_from_LLM(state: State):
 
     chain = prompt | chat_model.with_structured_output(PathCorrection)
 
-    LLM_chosen_file_paths = []  # TODO
+    LLM_chosen_file_paths = state["LLM_chosen_file_paths"]
     invalid_paths = LLM_chosen_file_paths
     validated_file_paths = []
     for i in range(FILE_PATH_VALIDATION_TRIES):
