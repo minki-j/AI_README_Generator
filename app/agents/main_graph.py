@@ -64,4 +64,4 @@ with SqliteSaver.from_conn_string(db_path) as memory:
 
 os.makedirs("./app/agents/graph_diagrams", exist_ok=True)
 with open("./app/agents/graph_diagrams/main_graph.png", "wb") as f:
-    f.write(main_graph.get_graph().draw_mermaid_png())
+    f.write(main_graph.get_graph(xray=10).draw_mermaid_png())
