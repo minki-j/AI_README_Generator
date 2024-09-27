@@ -12,7 +12,7 @@ from .validate_file_path import validate_file_paths_from_LLM
 from .retrieve_with_colbert import retrieve_with_colbert
 from .retrieve_with_faiss import retrieve_with_faiss
 
-g = StateGraph(State)
+g = StateGraph(State) #separate subgraph variable
 g.set_entry_point("entry")
 
 g.add_node("entry", RunnablePassthrough())

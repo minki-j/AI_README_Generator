@@ -24,7 +24,8 @@ async def step_initializer(
 
     form = await request.form()
     clone_url = form.get("clone_url")
-
+    readme_subtitle = form.get("readme_subtitle")
+    print(f"==>> readme_subtitle: {readme_subtitle}")
     cache_dir = "./data/cache"
     os.makedirs(cache_dir, exist_ok=True)
 

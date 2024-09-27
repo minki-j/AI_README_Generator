@@ -1,6 +1,7 @@
 import uuid
 from fasthtml.common import *
 
+from app.views.components.subtitle_selector import subtitle_selector
 
 def home_view(session):
     print("\n>>>> VIEW: home_view")
@@ -52,6 +53,7 @@ def home_view(session):
                     id="clone_url_guide_msg",
                     style="display: none; padding-left: 1rem;",
                 ),
+                subtitle_selector(),
                 Script(
                     """
 document.addEventListener('DOMContentLoaded', function() {
