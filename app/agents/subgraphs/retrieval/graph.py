@@ -70,5 +70,6 @@ g.add_edge("rendezvous", END)
 
 retrieval_graph = g.compile()
 
+os.makedirs("./app/agents/graph_diagrams", exist_ok=True)
 with open("./app/agents/graph_diagrams/retrieval_graph.png", "wb") as f:
     f.write(retrieval_graph.get_graph().draw_mermaid_png())

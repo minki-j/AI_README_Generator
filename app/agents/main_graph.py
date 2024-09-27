@@ -62,5 +62,6 @@ with SqliteSaver.from_conn_string(db_path) as memory:
         checkpointer=memory, interrupt_before=["human_in_the_loop"]
     )
 
+os.makedirs("./app/agents/graph_diagrams", exist_ok=True)
 with open("./app/agents/graph_diagrams/main_graph.png", "wb") as f:
     f.write(main_graph.get_graph().draw_mermaid_png())
