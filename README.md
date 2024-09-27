@@ -14,6 +14,7 @@ Currently, the system only supports Python projects, but there are plans to expa
 
 ![LangGraph Agentic Flow](./app/agents/graph_diagrams/main_graph.png)
 
+
 ## Features
 ### 1. **Cognitive Architecture for Agents with LangGraph**
 
