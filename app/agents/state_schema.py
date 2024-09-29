@@ -98,6 +98,7 @@ class State(TypedDict):
     total_number_of_steps: int
     colbert_threshold: float
 
+    #! Move this to retrieval subgraph state variables
     # Ephemeral Variables
     # Will be RESET after each step
     valid_paths: Annotated[List[str], merge_lists]

@@ -4,7 +4,7 @@ from pathlib import Path
 from app.agents.state_schema import State
 
 from app.agents.llm_models import chat_model
-from langchain_core.pydantic_v1 import BaseModel
+from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 
 

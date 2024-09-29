@@ -9,7 +9,7 @@ from app.agents.state_schema import State
 
 from app.agents.llm_models import chat_model
 
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 class Readme(BaseModel):
     content: str = Field(description="The generated README in markdown format")

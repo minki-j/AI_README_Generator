@@ -3,7 +3,7 @@ import json
 
 from typing import Any, List
 from langchain_core.tools import Tool
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from e2b_code_interpreter import CodeInterpreter
 from langchain_core.messages import BaseMessage, ToolMessage
 from langchain.agents.output_parsers.tools import (
