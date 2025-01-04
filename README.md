@@ -54,6 +54,10 @@ Currently, the system only supports Python projects, but there are plans to expa
 ## How to run
 
 ```bash
+# Initialize virtual environment
+python -m venv venv
+source venv/bin/activate
+
 # Install required packages
 pip install -r requirements.txt
 
