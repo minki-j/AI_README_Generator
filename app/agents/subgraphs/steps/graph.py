@@ -44,5 +44,5 @@ g.add_edge(n(answer_step_question), END)
 steps_graph = g.compile()
 
 
-with open("./app/agents/graph_diagrams/steps_graph.png", "wb") as f:
-    f.write(steps_graph.get_graph().draw_mermaid_png())
+# with open("./app/agents/graph_diagrams/steps_graph.png", "wb") as f:
+#     f.write(steps_graph.get_graph().draw_mermaid_png())

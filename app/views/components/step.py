@@ -30,6 +30,8 @@ def Step(
     quota_reset_time = round(
         (quota[1] + int(os.getenv("QUOTA_RESET_MINUTES", 30)) * 60 - time.time()) / 60, 2
     )
+    
+    quota_limit = int(os.getenv("QUOTA_LIMIT", 10))
 
             
     return Div(id="step")(
@@ -76,7 +78,7 @@ def Step(
                 style="flex-wrap: nowrap; display: flex; align-items: center;",
             )(
                 P(
-                    f"Quota: {quota[0] if quota_reset_time > 0 else int(os.getenv("QUOTA_LIMIT", 10))} / Reset in {quota_reset_time if quota_reset_time > 0 else 0} mins",
+                    f"Quota: {quota[0] if quota_reset_time > 0 else quota_limit} / Reset in {quota_reset_time if quota_reset_time > 0 else 0} mins",
                     style="font-size: 0.75rem; margin: 0;",
                 ),
             ),

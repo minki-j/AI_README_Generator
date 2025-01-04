@@ -21,6 +21,6 @@ g.add_edge(n(generate_readme), END)
 generate_readme_graph = g.compile()
 
 
-os.makedirs("./app/agents/graph_diagrams", exist_ok=True)
-with open("./app/agents/graph_diagrams/generate_readme_graph.png", "wb") as f:
-    f.write(generate_readme_graph.get_graph().draw_mermaid_png())
+# os.makedirs("./app/agents/graph_diagrams", exist_ok=True)
+# with open("./app/agents/graph_diagrams/generate_readme_graph.png", "wb") as f:
+#     f.write(generate_readme_graph.get_graph().draw_mermaid_png())
